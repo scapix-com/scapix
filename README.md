@@ -201,7 +201,7 @@ When running CMake, specify scapix_bridge (cpp, java, objc, python):
 $ cmake -Dscapix_bridge=python
 ```
 
-This will build shared library with all your C++ classes derived from **scapix::bridge::object** exposed to pythod.
+This will build shared library with all your C++ classes derived from **scapix::bridge::object** exposed to python.
 
 ## scapix::java::link
 
