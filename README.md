@@ -167,18 +167,22 @@ Develop on any platform (MacOS, Windows, Linux), using any IDE with CMake suppor
 
 ## Installation
 
-In your project root execute:
+Add Scapix as git submodule to your project:
 
 ```bash
-$ git submodule add https://github.com/scapix-com/scapix.git scapix
-$ git submodule init
-$ git submodule update
+$ git submodule add https://github.com/scapix-com/scapix
+```
+
+Or clone anywhere on your computer:
+
+```bash
+$ git clone https://github.com/scapix-com/scapix
 ```
 
 Add to your project CMakeLists.txt file:
 
 ```cmake
-set(SCAPIX_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/scapix)
+set(SCAPIX_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/scapix) // path to Scapix folder
 include(${SCAPIX_ROOT}/project/cmake/modules/scapix.cmake)
 
 // must come after all calls to target_include_directories() and target_link_libraries() for the target
@@ -190,6 +194,14 @@ scapix_bridge_headers(
     "${CMAKE_CURRENT_SOURCE_DIR}/source/header3.h"
 )
 ```
+
+When running CMake, specify scapix_bridge (cpp, java, objc, python):
+
+```bash
+$ cmake -Dscapix_bridge=python
+```
+
+This will build shared library with all your C++ classes derived from **scapix::bridge::object** exposed to pythod.
 
 ## scapix::java::link
 
