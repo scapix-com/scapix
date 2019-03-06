@@ -1,0 +1,89 @@
+Terms and conditions
+
+This is the Scapix Language Bridge License Agreement
+
+1. Introduction
+
+1.1 The Scapix Language Bridge is licensed to you subject to the terms of the License Agreement. The License Agreement forms a legally binding contract between you and Scapix in relation to your use of the Scapix Language Bridge.
+
+1.2 "Scapix" means Boris Rasin (boris@scapix.com), author of Scapix Language Bridge, residing in Holon, Israel.
+
+2. Accepting this License Agreement
+
+2.1 In order to use the Scapix Language Bridge, you must first agree to the License Agreement. You may not use the Scapix Language Bridge if you do not accept the License Agreement.
+
+2.2 You may not use the Scapix Language Bridge and may not accept the License Agreement if you are a person barred from receiving the Scapix Language Bridge under the laws of the United States or other countries, including the country in which you are resident or from which you use the Scapix Language Bridge.
+
+2.3 If you are agreeing to be bound by the License Agreement on behalf of your employer or other entity, you represent and warrant that you have full legal authority to bind your employer or such entity to the License Agreement. If you do not have the requisite authority, you may not accept the License Agreement or use the Scapix Language Bridge on behalf of your employer or other entity.
+
+3. Scapix Language Bridge License from Scapix
+
+3.1 Subject to the terms of the License Agreement, Scapix grants you a limited, worldwide, royalty-free, non-assignable, non-exclusive, and non-sublicensable license to use the Scapix Language Bridge solely to develop applications.
+
+3.2 You agree that Scapix or third parties own all legal right, title and interest in and to the Scapix Language Bridge, including any Intellectual Property Rights that subsist in the Scapix Language Bridge. "Intellectual Property Rights" means any and all rights under patent law, copyright law, trade secret law, trademark law, and any and all other proprietary rights. Scapix reserves all rights not expressly granted to you.
+
+3.3 You may not use the Scapix Language Bridge for any purpose not expressly permitted by the License Agreement. Except to the extent required by applicable third party licenses, you may not copy (except for backup purposes), modify, adapt, redistribute, decompile, reverse engineer, disassemble, or create derivative works of the Scapix Language Bridge or any part of the Scapix Language Bridge.
+
+3.4 Use, reproduction and distribution of components of the Scapix Language Bridge licensed under an open source software license are governed solely by the terms of that open source software license and not the License Agreement.
+
+3.5 You agree that the form and nature of the Scapix Language Bridge that Scapix provides may change without prior notice to you and that future versions of the Scapix Language Bridge may be incompatible with applications developed on previous versions of the Scapix Language Bridge. You agree that Scapix may stop (permanently or temporarily) providing the Scapix Language Bridge (or any features within the Scapix Language Bridge) to you or to users generally at Scapix's sole discretion, without prior notice to you.
+
+3.6 Nothing in the License Agreement gives you a right to use any of Scapix's trade names, trademarks, service marks, logos, domain names, or other distinctive brand features.
+
+3.7 You agree that you will not remove, obscure, or alter any proprietary rights notices (including copyright and trademark notices) that may be affixed to or contained within the Scapix Language Bridge.
+
+4. Use of the Scapix Language Bridge by You
+
+4.1 Scapix agrees that it obtains no right, title or interest from you (or your licensors) under the License Agreement in or to any software applications that you develop using the Scapix Language Bridge, including any intellectual property rights that subsist in those applications.
+
+4.2 You agree to use the Scapix Language Bridge and write applications only for purposes that are permitted by (a) the License Agreement and (b) any applicable law, regulation or generally accepted practices or guidelines in the relevant jurisdictions (including any laws regarding the export of data or software to and from the United States or other relevant countries).
+
+4.3 You agree that you are solely responsible for (and that Scapix has no responsibility to you or to any third party for) any breach of your obligations under the License Agreement, any applicable third party contract or Terms of Service, or any applicable law or regulation, and for the consequences (including any loss or damage which Scapix or any third party may suffer) of any such breach.
+
+5. Terminating this License Agreement
+
+5.1 The License Agreement will continue to apply until terminated by either you or Scapix as set out below.
+
+5.2 If you want to terminate the License Agreement, you may do so by ceasing your use of the Scapix Language Bridge.
+
+5.3 Scapix may at any time, terminate the License Agreement with you if: (A) you have breached any provision of the License Agreement; or (B) Scapix is required to do so by law; or (C) the partner with whom Scapix offered certain parts of Scapix Language Bridge (such as APIs) to you has terminated its relationship with Scapix or ceased to offer certain parts of the Scapix Language Bridge to you; or (D) Scapix decides to no longer provide the Scapix Language Bridge or certain parts of the Scapix Language Bridge to users in the country in which you are resident or from which you use the service, or the provision of the Scapix Language Bridge or certain Scapix Language Bridge services to you by Scapix is, in Scapix's sole discretion, no longer commercially viable.
+
+5.4 When the License Agreement comes to an end, all of the legal rights, obligations and liabilities that you and Scapix have benefited from, been subject to (or which have accrued over time whilst the License Agreement has been in force) or which are expressed to continue indefinitely, shall be unaffected by this cessation, and the provisions of paragraph 10.7 shall continue to apply to such rights, obligations and liabilities indefinitely.
+
+6. DISCLAIMER OF WARRANTIES
+
+6.1 YOU EXPRESSLY UNDERSTAND AND AGREE THAT YOUR USE OF THE SCAPIX LANGUAGE BRIDGE IS AT YOUR SOLE RISK AND THAT THE SCAPIX LANGUAGE BRIDGE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF ANY KIND FROM Scapix.
+
+6.2 YOUR USE OF THE SCAPIX LANGUAGE BRIDGE AND ANY MATERIAL DOWNLOADED OR OTHERWISE OBTAINED THROUGH THE USE OF THE SCAPIX LANGUAGE BRIDGE IS AT YOUR OWN DISCRETION AND RISK AND YOU ARE SOLELY RESPONSIBLE FOR ANY DAMAGE TO YOUR COMPUTER SYSTEM OR OTHER DEVICE OR LOSS OF DATA THAT RESULTS FROM SUCH USE.
+
+6.3 SCAPIX FURTHER EXPRESSLY DISCLAIMS ALL WARRANTIES AND CONDITIONS OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES AND CONDITIONS OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+
+7. LIMITATION OF LIABILITY
+
+7.1 YOU EXPRESSLY UNDERSTAND AND AGREE THAT SCAPIX, ITS SUBSIDIARIES AND AFFILIATES, AND ITS LICENSORS SHALL NOT BE LIABLE TO YOU UNDER ANY THEORY OF LIABILITY FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR EXEMPLARY DAMAGES THAT MAY BE INCURRED BY YOU, INCLUDING ANY LOSS OF DATA, WHETHER OR NOT SCAPIX OR ITS REPRESENTATIVES HAVE BEEN ADVISED OF OR SHOULD HAVE BEEN AWARE OF THE POSSIBILITY OF ANY SUCH LOSSES ARISING.
+
+8. Indemnification
+
+8.1 To the maximum extent permitted by law, you agree to defend, indemnify and hold harmless Scapix, its affiliates and their respective directors, officers, employees and agents from and against any and all claims, actions, suits or proceedings, as well as any and all losses, liabilities, damages, costs and expenses (including reasonable attorneys fees) arising out of or accruing from (a) your use of the Scapix Language Bridge, (b) any application you develop on the Scapix Language Bridge that infringes any copyright, trademark, trade secret, trade dress, patent or other intellectual property right of any person or defames any person or violates their rights of publicity or privacy, and (c) any non-compliance by you with the License Agreement.
+
+9. Changes to the License Agreement
+
+9.1 Scapix may make changes to the License Agreement as it distributes new versions of the Scapix Language Bridge. When these changes are made, Scapix will make a new version of the License Agreement available on the website where the Scapix Language Bridge is made available.
+
+10. General Legal Terms
+
+10.1 The License Agreement constitutes the whole legal agreement between you and Scapix and governs your use of the Scapix Language Bridge (excluding any services which Scapix may provide to you under a separate written agreement), and completely replaces any prior agreements between you and Scapix in relation to the Scapix Language Bridge.
+
+10.2 You agree that if Scapix does not exercise or enforce any legal right or remedy which is contained in the License Agreement (or which Scapix has the benefit of under any applicable law), this will not be taken to be a formal waiver of Scapix's rights and that those rights or remedies will still be available to Scapix.
+
+10.3 If any court of law, having the jurisdiction to decide on this matter, rules that any provision of the License Agreement is invalid, then that provision will be removed from the License Agreement without affecting the rest of the License Agreement. The remaining provisions of the License Agreement will continue to be valid and enforceable.
+
+10.4 You acknowledge and agree that each member of the group of companies of which Scapix is the parent shall be third party beneficiaries to the License Agreement and that such other companies shall be entitled to directly enforce, and rely upon, any provision of the License Agreement that confers a benefit on (or rights in favor of) them. Other than this, no other person or company shall be third party beneficiaries to the License Agreement.
+
+10.5 EXPORT RESTRICTIONS. THE SCAPIX LANGUAGE BRIDGE IS SUBJECT TO UNITED STATES EXPORT LAWS AND REGULATIONS. YOU MUST COMPLY WITH ALL DOMESTIC AND INTERNATIONAL EXPORT LAWS AND REGULATIONS THAT APPLY TO THE SCAPIX LANGUAGE BRIDGE. THESE LAWS INCLUDE RESTRICTIONS ON DESTINATIONS, END USERS AND END USE.
+
+10.6 The rights granted in the License Agreement may not be assigned or transferred by either you or Scapix without the prior written approval of the other party. Neither you nor Scapix shall be permitted to delegate their responsibilities or obligations under the License Agreement without the prior written approval of the other party.
+
+10.7 The License Agreement, and your relationship with Scapix under the License Agreement, shall be governed by the laws of the State of Israel. You and Scapix agree to submit to the exclusive jurisdiction of the courts located within the Tel-Aviv District to resolve any legal matter arising from the License Agreement. Notwithstanding this, you agree that Scapix shall still be allowed to apply for injunctive remedies (or an equivalent type of urgent legal relief) in any jurisdiction.
+
+March 1, 2019
