@@ -203,9 +203,9 @@ $ cmake -Dscapix_bridge=python
 
 This will build shared library with all your C++ classes derived from **scapix::bridge::object** exposed to python.
 
-## scapix::java::link
+## scapix::link::java
 
-**scapix::java::link** library provides C++ interface to JNI (Java Native Interface) API.
+**scapix::link::java** library provides C++ interface to JNI (Java Native Interface) API.
 It may be used on it's own in any application, or it may be used in a platform dependent part of an application utilizing [Scapix Language Bridge](https://www.scapix.com/tutorial/introduction).
 
 Example using generic API (without generated headers):
@@ -236,7 +236,8 @@ void test_string()
 }
 ```
 
-In both cases, **scapix::java::link** library automatically takes care of all JNI resource management and JVM exceptions processing.
+In both cases, **scapix::link::java** library automatically takes care of all JNI resource management and JVM exceptions processing.
+See full [example](https://github.com/scapix-com/example2).
 
 ## License
 
