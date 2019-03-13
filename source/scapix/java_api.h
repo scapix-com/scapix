@@ -9,6 +9,7 @@
 
 #include <scapix/link/java/object_base.h>
 #include <scapix/link/java/ref.h>
+#include <scapix/link/java/convert.h>
 
 namespace scapix {
 namespace java_api {
