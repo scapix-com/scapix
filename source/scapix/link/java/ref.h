@@ -8,6 +8,7 @@
 #define SCAPIX_LINK_JAVA_REF_H
 
 #include <utility>
+#include <experimental/type_traits>
 #include <scapix/meta/string.h>
 #include <scapix/link/java/type_traits.h>
 #include <scapix/link/java/function.h>
@@ -98,7 +99,7 @@ template <typename T, typename = void>
 class array;
 
 template <typename T, typename ...Params>
-struct generic_type;
+struct generic_type {};
 
 template <typename T, typename Extends = object<>>
 struct generic;
@@ -153,15 +154,54 @@ struct element_type<detail::cast<T>>
 
 using scope = detail::api::scope;
 
+// convert
+
+// C++20
+template <typename T>
+using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
+
+template <typename Jni, typename Cpp, typename = void>
+struct convert;
+
+template <typename Jni, typename Cpp>
+decltype(auto) convert_jni(Cpp&& cpp)
+{
+    return convert<remove_cvref_t<Jni>, remove_cvref_t<Cpp>>::jni(std::forward<Cpp>(cpp));
+}
+
+template <typename Cpp, typename Jni>
+decltype(auto) convert_cpp(Jni&& jni)
+{
+    return convert<remove_cvref_t<Jni>, remove_cvref_t<Cpp>>::cpp(std::forward<Jni>(jni));
+}
+
+template<typename Jni, typename Cpp>
+using has_convert_jni_t = decltype(std::declval<Jni>() = convert<remove_cvref_t<Jni>, remove_cvref_t<Cpp>>::jni(std::declval<Cpp>()));
+
+template<typename Jni, typename Cpp>
+using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<remove_cvref_t<Jni>, remove_cvref_t<Cpp>>::cpp(std::declval<Jni>()));
+
+// is_ref
+
+template <typename T = object<>, scope Scope = scope::generic>
+class ref;
+
+template<typename T>
+struct is_ref : std::false_type {};
+
+template<typename T, scope Scope>
+struct is_ref<ref<T, Scope>> : std::true_type {};
+
+template<typename T>
+constexpr bool is_ref_v = is_ref<T>::value;
+
 /*
 
 Implementation for owning reference types: local_ref, global_ref, weak_ref.
 
 */
 
-// to do: prevent instantiating ref<ref<>>
-
-template <typename T = object<>, scope Scope = scope::generic>
+template <typename T, scope Scope>
 class ref
 {
 public:
@@ -171,14 +211,15 @@ public:
 	using handle_type = typename element_type_friend::handle_type;
 	using class_name = typename element_type_friend::class_name;
 
-	template <typename Y>
-	using enable_if_convertible_from = std::enable_if_t
-	<
+    static_assert(!is_ref_v<T> && !is_ref_v<element_type>);
+
+    template <typename Y>
+	static constexpr bool convertible_from =
 		std::is_same_v<class_name, SCAPIX_META_STRING("java/lang/Object")> ||
 		std::is_base_of_v<element_type, typename ref<Y>::element_type> ||
 		std::is_same_v<class_name, typename ref<Y>::class_name> ||
 		detail::is_cast<Y>::value
-	>;
+	;
 
 	constexpr scope get_scope() { return Scope; }
 
@@ -188,12 +229,12 @@ public:
 
 	ref(const ref& r) : object(new_ref(r)) {}
 
-	template <typename Y, scope S, typename = enable_if_convertible_from<Y>>
+    template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref(const ref<Y, S>& r) : object(new_ref(r)) {}
 
 	ref(ref&& r) : object(r.release()) {}
 
-	template <typename Y, scope S, typename = enable_if_convertible_from<Y>>
+    template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref(ref<Y, S>&& r) : object(nullptr)
 	{
 		if (get_scope() == r.get_scope())
@@ -206,7 +247,7 @@ public:
 		}
 	}
 
-	~ref()
+    ~ref()
 	{
 		if (handle())
     		detail::api::ref<Scope>::delete_ref(handle());
@@ -218,7 +259,7 @@ public:
 		return *this;
 	}
     
-	template <typename Y, scope S, typename = enable_if_convertible_from<Y>>
+    template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref& operator = (const ref<Y, S>& r)
 	{
 		ref(r).swap(*this);
@@ -231,7 +272,7 @@ public:
 		return *this;
 	}
 
-	template <typename Y, scope S, typename = enable_if_convertible_from<Y>>
+    template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref& operator = (ref<Y, S>&& r)
 	{
 		ref(std::move(r)).swap(*this);
@@ -301,14 +342,15 @@ public:
 	using handle_type = typename element_type_friend::handle_type;
 	using class_name = typename element_type_friend::class_name;
 
+    static_assert(!is_ref_v<T> && !is_ref_v<element_type>);
+    
 	template <typename Y>
-	using enable_if_convertible_from = std::enable_if_t
-	<
+	static constexpr bool convertible_from =
 		std::is_same_v<class_name, SCAPIX_META_STRING("java/lang/Object")> ||
 		std::is_base_of_v<element_type, typename ref<Y>::element_type> ||
 		std::is_same_v<class_name, typename ref<Y>::class_name> ||
 		detail::is_cast<Y>::value
-	>;
+	;
 
 	scope get_scope() { return scp; }
 
@@ -325,15 +367,27 @@ public:
     
 	ref(const ref& r) : object(r.handle()), scp(scope::generic) {}
     
-	template <typename Y, scope S, typename = enable_if_convertible_from<Y>>
+    template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref(const ref<Y, S>& r) : object(r.handle()), scp(scope::generic) {}
 
 	ref(ref&& r) : object(r.release()), scp(r.get_scope()) {}
 
-	template <typename Y, scope S, typename = enable_if_convertible_from<Y>>
+    template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref(ref<Y, S>&& r) : object(r.release()), scp(r.get_scope()) {}
 
-	~ref()
+    template <typename X, typename = std::enable_if_t<std::experimental::is_detected_v<has_convert_jni_t, ref, X>>>
+    ref(X&& x)
+        : ref(convert_jni<ref>(std::forward<X>(x)))
+    {
+    }
+
+    template <typename X, typename = std::enable_if_t<std::experimental::is_detected_v<has_convert_cpp_t, ref, X> && !std::is_same_v<X, bool>>>
+    operator X() const
+    {
+        return convert_cpp<X>(*this);
+    }
+
+    ~ref()
 	{
 		if (handle())
 		{
@@ -358,7 +412,7 @@ public:
 		return *this;
 	}
 
-	template <typename Y, scope S, typename = enable_if_convertible_from<Y>>
+    template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref& operator = (const ref<Y, S>& r)
 	{
 		ref(r).swap(*this);
@@ -371,7 +425,7 @@ public:
 		return *this;
 	}
     
-	template <typename Y, scope S, typename = enable_if_convertible_from<Y>>
+    template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref& operator = (ref<Y, S>&& r)
 	{
 		ref(std::move(r)).swap(*this);

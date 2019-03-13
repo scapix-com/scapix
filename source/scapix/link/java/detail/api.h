@@ -49,7 +49,7 @@ struct call<R(Args...)>
 	template <typename T>
 	static java::ref<T> new_object(jclass cls, jmethodID id, Args... args)
 	{
-		return check_exception(type<T>::new_object(cls, id, arg(args)...));
+		return check_exception(type<java::ref<T>>::new_object(cls, id, arg(args)...));
 	}
 
 private:
@@ -170,20 +170,20 @@ inline void set_array_region(java::ref<T[]> obj, jsize start, jsize len, const T
 template <typename T>
 inline local_ref<T[]> new_array(jsize len, java::ref<T> init)
 {
-	return check_exception(type<T>::new_array(len, init));
+	return check_exception(type<java::ref<T>>::new_array(len, init));
 }
 
 template <typename T>
 inline local_ref<T> get_array_element(java::ref<T[]> obj, jsize index)
 {
 	check_exception_on_destroy check;
-	return type<T>::get_array_element(obj, index);
+	return type<java::ref<T>>::get_array_element(obj, index);
 }
 
 template <typename T>
 inline void set_array_element(java::ref<T[]> obj, jsize index, java::ref<T> value)
 {
-	type<T>::set_array_element(obj, index, value);
+	type<java::ref<T>>::set_array_element(obj, index, value);
 	check_exception();
 }
 

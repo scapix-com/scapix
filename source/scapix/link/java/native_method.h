@@ -26,8 +26,8 @@ struct param
 
     using Cpv = std::remove_reference_t<Cpp>;
 
-    static Jni jni(Cpp v) { return convert<Jni>(v); }
-    static Cpv cpp(Jni v) { return convert<Cpp>(v); }
+    static Jni jni(Cpp v) { return convert_jni<Jni>(v); }
+    static Cpv cpp(Jni v) { return convert_cpp<Cpp>(v); }
 };
 
 template <typename T, typename Cpp>
@@ -35,7 +35,7 @@ struct param<ref<T>, Cpp>
 {
     static jobject jni(Cpp v)
     {
-        auto res = convert<ref<T>>(v);
+        auto res = convert_jni<ref<T>>(v);
 
         assert(res.get_scope() == scope::local || res.get_scope() == scope::generic);
 
@@ -47,7 +47,7 @@ struct param<ref<T>, Cpp>
 
     static decltype(auto) cpp(jobject v)
     {
-        return convert<Cpp>(ref<T>(static_cast<typename ref<T>::handle_type>(v)));
+        return convert_cpp<Cpp>(ref<T>(static_cast<typename ref<T>::handle_type>(v)));
     }
 };
 

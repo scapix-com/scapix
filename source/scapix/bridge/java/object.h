@@ -95,8 +95,8 @@ protected:
 
 private:
 
-	template <typename T1, typename T2, typename>
-	friend struct link::java::convert_shared_impl;
+	template <typename Jni, typename Cpp, typename>
+	friend struct link::java::convert_shared;
 
 	link::java::local_ref<SCAPIX_META_STRING("com/scapix/Bridge")> get_ref()
 	{
@@ -148,9 +148,9 @@ struct class_name<bridge::java::init<T>>
 // used to convert 'this'
 
 template <typename Jni, typename T>
-struct convert_impl<Jni, bridge::java::init<T>>
+struct convert<Jni, bridge::java::init<T>>
 {
-    static bridge::java::init<T> convert(ref<class_name_t<T>> v)
+    static bridge::java::init<T> cpp(ref<class_name_t<T>> v)
     {
         return bridge::java::init<T>(std::move(v));
     }
@@ -159,23 +159,23 @@ struct convert_impl<Jni, bridge::java::init<T>>
 // used to convert 'this'
 
 template <typename Jni, typename T>
-struct convert_impl<Jni, T, std::enable_if_t<bridge::is_object<T>>>
+struct convert<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 {
-	static T& convert(ref<class_name_t<T>> v)
+	static T& cpp(ref<class_name_t<T>> v)
     {
         return *reinterpret_cast<T*>(static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(std::move(v))->template get_field<SCAPIX_META_STRING("ptr"), jlong>());
     }
 };
 
 template <typename Jni, typename T>
-struct convert_shared_impl<Jni, T, std::enable_if_t<bridge::is_object<T>>>
+struct convert_shared<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 {
-	static std::shared_ptr<T> convert(ref<class_name_t<T>> v)
+	static std::shared_ptr<T> cpp(ref<class_name_t<T>> v)
     {
         return reinterpret_cast<T*>(static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(std::move(v))->template get_field<SCAPIX_META_STRING("ptr"), jlong>())->shared_from_this();
     }
 
-    static ref<class_name_t<T>> convert(std::shared_ptr<T> v)
+    static ref<class_name_t<T>> jni(std::shared_ptr<T> v)
     {
         return static_pointer_cast<class_name_t<T>>(v->get_ref());
     }

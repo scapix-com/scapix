@@ -21,7 +21,7 @@ void throw_exception(jthrowable e)
 
 	env()->ExceptionClear();
 
-//	auto msg = convert<std::string>::cpp(exception->call_method<SCAPIX_META_STRING("getMessage"), ref<string>()>());
+//	std::string msg = exception->call_method<SCAPIX_META_STRING("getMessage"), ref<string>()>();
 
 	// if com.scapix.NativeException is not found, native_exception::class_object() causes infitine recursion:
 	// libc++abi.dylib: __cxa_guard_acquire detected deadlock
