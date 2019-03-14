@@ -244,5 +244,5 @@ See full [example](https://github.com/scapix-com/example2).
 Please carefully read [license agreement](LICENSE.txt).
 
 **In short:**
-If you comply with [license agreement](LICENSE.txt), you may use [Scapix Language Bridge](https://www.scapix.com) for free to build commercial and/or open source applications.
+If you comply with [license agreement](LICENSE.txt), you may use [Scapix Language Bridge](https://www.scapix.com) free of charge to build commercial and/or open source applications.
 You may NOT modify and/or redistribute the [Scapix Language Bridge](https://www.scapix.com) product itself.
