@@ -5,6 +5,10 @@ cmake_minimum_required(VERSION 3.8.2)
 #   scapix_platform
 #   scapix_java_api
 
+if(NOT scapix_java_api)
+    set(scapix_java_api jdk-11.0.2)
+endif()
+
 # temp: use boost headers from host os
 # to do: https://github.com/moritz-wundke/Boost-for-Android
 
@@ -34,9 +38,13 @@ source_group(TREE ${SCAPIX_ROOT}/java_api/${scapix_java_api}/scapix/java_api PRE
 source_group(TREE ${SCAPIX_ROOT}/doc PREFIX "doc" FILES ${doc_sources})
 
 set(bridges
+    "cpp"
     "java"
     "objc"
-    "swift"
+    "python"
+#   "swift"
+#   "csharp"
+#   "jscript"
 )
 
 foreach(bridge ${bridges})
@@ -59,7 +67,6 @@ set_target_properties(scapix PROPERTIES
 
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/source)
 
-set(BOOST_ROOT c:/library/dev/boost_1_67_0)
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.67 REQUIRED)
 target_include_directories(scapix PUBLIC ${Boost_INCLUDE_DIRS})
@@ -70,13 +77,7 @@ if(${scapix_bridge} STREQUAL java AND NOT ANDROID)
     target_link_libraries(scapix ${JNI_LIBRARIES})
 endif()
 
-if(NOT scapix_java_api)
-    set(scapix_java_api jdk7)
-endif()
-
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${scapix_java_api})
-
-#endif()
 
 set_target_properties(scapix PROPERTIES LINKER_LANGUAGE CXX)
 target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${scapix_bridge} SCAPIX_BRIDGE_${scapix_bridge} SCAPIX_PLATFORM=${scapix_platform})
