@@ -15,8 +15,8 @@ namespace scapix {
 namespace link {
 namespace objc {
 
-template <typename To, typename From, typename>
-struct convert_impl;
+template <typename ObjC, typename Cpp, typename>
+struct convert_shared;
 
 } // namespace objc
 } // namespace link
@@ -71,8 +71,8 @@ protected:
 
 private:
 
-    template <typename To, typename From, typename>
-    friend struct link::objc::convert_impl;
+    template <typename ObjC, typename Cpp, typename>
+    friend struct link::objc::convert_shared;
     
     template <typename Wrapper>
     Wrapper get_wrapper();
@@ -122,7 +122,7 @@ struct init_impl<void(Args...)>
     template <typename T, typename Wrapper, typename ...ObjcArgs>
     static void init(Wrapper* wrapper, ObjcArgs... args)
     {
-        attach(*std::make_shared<T>(link::objc::convert<Args>(args)...), CFBridgingRetain(wrapper));
+        attach(*std::make_shared<T>(link::objc::convert_cpp<Args>(args)...), CFBridgingRetain(wrapper));
     }
 };
 
@@ -142,7 +142,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
     static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
     {
-        return link::objc::convert<ObjcRet>((link::objc::convert<Class>(wrapper).*Func)(link::objc::convert<Args>(args)...));
+        return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(args)...));
     }
 };
 
@@ -152,7 +152,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
     static void call(Wrapper* wrapper, ObjcArgs... args)
     {
-        (link::objc::convert<Class>(wrapper).*Func)(link::objc::convert<Args>(args)...);
+        (link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(args)...);
     }
 };
 
@@ -162,7 +162,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
     static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
     {
-        return link::objc::convert<ObjcRet>((link::objc::convert<Class>(wrapper).*Func)(link::objc::convert<Args>(args)...));
+        return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(args)...));
     }
 };
 
@@ -172,7 +172,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
     static void call(Wrapper* wrapper, ObjcArgs... args)
     {
-        (link::objc::convert<Class>(wrapper).*Func)(link::objc::convert<Args>(args)...);
+        (link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(args)...);
     }
 };
 
@@ -182,7 +182,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename ...ObjcArgs>
     static ObjcRet call(ObjcArgs... args)
     {
-        return link::objc::convert<ObjcRet>((*Func)(link::objc::convert<Args>(args)...));
+        return link::objc::convert_objc<ObjcRet>((*Func)(link::objc::convert_cpp<Args>(args)...));
     }
 };
 
@@ -192,7 +192,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename ...ObjcArgs>
     static void call(ObjcArgs... args)
     {
-        (*Func)(link::objc::convert<Args>(args)...);
+        (*Func)(link::objc::convert_cpp<Args>(args)...);
     }
 };
 
@@ -210,23 +210,23 @@ namespace objc {
 
 // only used to convert 'this'
 
-template <typename Bridge, typename Wrapper>
-struct convert_impl<Bridge, Wrapper, std::enable_if_t<bridge::is_object<Bridge>>>
+template <typename Wrapper, typename Bridge>
+struct convert<Wrapper, Bridge, std::enable_if_t<bridge::is_object<Bridge>>>
 {
     static_assert(bridge::objc::is_wrapper<Wrapper>);
     
-    static Bridge& convert(Wrapper value)
+    static Bridge& cpp(Wrapper value)
     {
         return *static_cast<Bridge*>(value->shared.get());
     }
 };
 
-template <typename Bridge, typename Wrapper>
-struct convert_impl<std::shared_ptr<Bridge>, Wrapper, std::enable_if_t<bridge::is_object<Bridge>>>
+template <typename Wrapper, typename Bridge>
+struct convert_shared<Wrapper, Bridge, std::enable_if_t<bridge::is_object<Bridge>>>
 {
     static_assert(bridge::objc::is_wrapper<Wrapper>);
     
-    static std::shared_ptr<Bridge> convert(Wrapper value)
+    static std::shared_ptr<Bridge> cpp(Wrapper value)
     {
         if (!value)
             return nullptr;
@@ -234,7 +234,7 @@ struct convert_impl<std::shared_ptr<Bridge>, Wrapper, std::enable_if_t<bridge::i
         return std::static_pointer_cast<Bridge>(value->shared);
     }
 
-    static Wrapper convert(std::shared_ptr<Bridge> value)
+    static Wrapper objc(std::shared_ptr<Bridge> value)
     {
         // to do: use [NSNull null] instead of nil for values inside NSArray (and NSDictionary, NSSet?)
 
