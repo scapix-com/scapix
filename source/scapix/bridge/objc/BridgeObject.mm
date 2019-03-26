@@ -1,7 +1,5 @@
 // this file should be compiled with: -fno-objc-arc
 
-#ifdef __OBJC__
-
 #include <scapix/bridge/objc/object.h>
 
 @implementation BridgeObject
@@ -71,5 +69,3 @@
 }
 
 @end
-
-#endif // __OBJC__
