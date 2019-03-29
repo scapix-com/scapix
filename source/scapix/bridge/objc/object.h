@@ -32,7 +32,8 @@ protected:
     
     ~object_base()
     {
-        CFRelease(wrapper);
+        if (wrapper)
+            CFRelease(wrapper);
     }
 
     template <typename T>
