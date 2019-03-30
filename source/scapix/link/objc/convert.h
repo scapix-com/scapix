@@ -216,9 +216,6 @@ struct convert<NSString*, std::string>
     }
 };
 
-// to do: replace nullptr values with [NSNull null]
-// to do: direct bridge to Swift would be more efficient (https://developer.apple.com/documentation/swift/array)
-
 template <typename Array, typename T, typename A>
 struct convert<Array, std::vector<T, A>, std::enable_if_t<std::is_convertible_v<Array, NSArray*>>>
 {
@@ -266,6 +263,13 @@ struct convert<Dictionary, std::map<K, T, C, A>, std::enable_if_t<std::is_conver
         {
             map.emplace(convert_cpp<K>(key), convert_cpp<T>([value objectForKey:key]));
         }
+
+//        __block std::map<K, T, C, A> map;
+//
+//        [value enumerateKeysAndObjectsUsingBlock:^(objc_key key, objc_value obj, BOOL *stop)
+//        {
+//            map.emplace(convert_cpp<K>(key), convert_cpp<T>(obj));
+//        }];
 
         return map;
     }
@@ -377,9 +381,9 @@ struct convert<Set, std::set<K, C, A>, std::enable_if_t<std::is_convertible_v<Se
 template <typename ObjcR, typename ...ObjcArgs, typename R, typename ...Args>
 struct convert<ObjcR(^)(ObjcArgs...), std::function<R(Args...)>>
 {
-    using block = ObjcR(^)(ObjcArgs...);
+    using block_type = ObjcR(^)(ObjcArgs...);
 
-    static std::function<R(Args...)> cpp(const block& value)
+    static std::function<R(Args...)> cpp(block_type value)
     {
         return [value = std::move(value)](Args... args)
         {
@@ -390,7 +394,7 @@ struct convert<ObjcR(^)(ObjcArgs...), std::function<R(Args...)>>
         };
     }
 
-    static block objc(const std::function<R(Args...)>& value)
+    static block_type objc(std::function<R(Args...)>&& value)
     {
         return [value = std::move(value)](ObjcArgs... args)
         {

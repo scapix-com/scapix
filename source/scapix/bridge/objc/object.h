@@ -84,7 +84,7 @@ private:
 } // namespace bridge
 } // namespace scapix
 
-#ifdef __OBJC__
+#if defined(__OBJC__) && __has_feature(objc_arc)
 
 #include <scapix/link/objc/convert.h>
 #import "BridgeObjectPrivate.h"
@@ -95,6 +95,7 @@ namespace objc {
 
 inline void object_base::attach(CFTypeRef obj)
 {
+    assert(obj);
     assert(!wrapper);
     wrapper = obj;
     
@@ -106,7 +107,11 @@ template <typename Wrapper>
 inline Wrapper object<T>::get_wrapper()
 {
     if (!wrapper)
-        attach(CFBridgingRetain([std::remove_pointer_t<Wrapper> alloc]));
+    {
+        Wrapper w = [std::remove_pointer_t<Wrapper> alloc];
+        attach(CFBridgingRetain(w));
+        return w;
+    }
 
     return (__bridge Wrapper)wrapper;
 }
@@ -237,8 +242,6 @@ struct convert_shared<Wrapper, Bridge, std::enable_if_t<bridge::is_object<Bridge
 
     static Wrapper objc(std::shared_ptr<Bridge> value)
     {
-        // to do: use [NSNull null] instead of nil for values inside NSArray (and NSDictionary, NSSet?)
-
         if (!value)
             return nil;
         

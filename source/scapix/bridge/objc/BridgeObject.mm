@@ -1,6 +1,7 @@
 // this file should be compiled with: -fno-objc-arc
 
 #include <scapix/bridge/objc/object.h>
+#import "BridgeObjectPrivate.h"
 
 @implementation BridgeObject
 
@@ -10,7 +11,7 @@
     shared = ptr->shared_from_this();
 }
 
-- (BOOL)retainWeakReference
+-(BOOL)retainWeakReference
 {
     // from NSObject.mm:
     // _objc_rootTryRetain() is called exclusively by _objc_loadWeak(),
@@ -31,6 +32,20 @@
     // which is holding strong reference to us.
 
     return [super retainWeakReference];
+}
+
+-(instancetype)retain
+{
+    {
+        std::lock_guard<std::recursive_mutex> lock(mutex);
+
+        if (!shared)
+            // This can only happen from object<T>::get_wrapper()
+            // and we know weak.lock() will succeed.
+            shared = weak.lock();
+    }
+
+    return [super retain];
 }
 
 -(oneway void)release

@@ -57,7 +57,10 @@ foreach(bridge ${bridges})
     endif()
 endforeach()
 
-set_source_files_properties(${SCAPIX_ROOT}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_FLAGS -fno-objc-arc)
+if(${scapix_bridge} STREQUAL objc)
+    target_compile_options(scapix PUBLIC "-fobjc-arc")
+    set_source_files_properties(${SCAPIX_ROOT}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_FLAGS -fno-objc-arc)
+endif()
 
 set_target_properties(scapix PROPERTIES
     CXX_STANDARD 17
