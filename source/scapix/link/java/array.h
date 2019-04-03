@@ -7,6 +7,7 @@
 #ifndef SCAPIX_LINK_JAVA_ARRAY_H
 #define SCAPIX_LINK_JAVA_ARRAY_H
 
+#include <stdexcept>
 #include <scapix/link/java/object.h>
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/lock.h>
