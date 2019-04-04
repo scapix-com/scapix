@@ -181,7 +181,8 @@ set(generated_sources
     ${generated_sources_python}
 )
 
-set_source_files_properties(${generated_sources} PROPERTIES GENERATED TRUE)
+# GENERATED property implicitly set for OUTPUT arguments of add_custom_command()
+#set_source_files_properties(${generated_sources} PROPERTIES GENERATED TRUE)
 
 string(CONCAT generated_sources_var_name "generated_sources_" ${scapix_bridge})
 
