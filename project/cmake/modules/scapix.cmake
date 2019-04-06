@@ -147,7 +147,6 @@ foreach(bridge_header ${bridge_headers})
 
     list(APPEND output_files_java
             "${PROJECT_ROOT}/generated/bridge/java/${domain_path}/${bridge_header_name}.java"
-            "${PROJECT_ROOT}/generated/bridge/java/${bridge_header_name}.h"
             "${PROJECT_ROOT}/generated/bridge/java/${bridge_header_name}.cpp"
     )
 
