@@ -8,57 +8,57 @@
 #define SCAPIX_LINK_JAVA_MONITOR_H
 
 #include <utility>
+#include <cassert>
 #include <scapix/link/java/ref.h>
-#include <scapix/link/java/detail/env.h>
 
 namespace scapix {
 namespace link {
 namespace java {
 
+template <typename T>
 class monitor
 {
 public:
 
-	monitor(local_ref& ptr)
-	{
-		if (detail::env()->MonitorEnter(ptr.get()) == 0)
-			object = ptr.get();
-		else
-			object = 0;
-	}
+	// Generally, caller is responsible to insure the reference (not only the object) is alive while monitor is active.
+	// But if an owning reference is moved here, monitor will take ownership.
 
-	monitor(global_ref& ptr)
+	monitor(ref<T> obj)
+		: object(std::move(obj))
 	{
-		if (detail::env()->MonitorEnter(ptr.get()) == 0)
-			object = ptr.get();
-		else
-			object = 0;
-	}
-
-	~monitor()
-	{
-		if (object)
-			detail::env()->MonitorExit(object);
-	}
-
-	void reset()
-	{
-		monitor().swap(*this);
+		[[maybe_unused]] auto result = detail::env()->MonitorEnter(object.handle());
+		assert(result == 0);
 	}
 
 	monitor(const monitor&) = delete;
 	monitor& operator = (const monitor&) = delete;
 
 	monitor(monitor&& source) :
-		object(source.object)
+		object(source.release())
 	{
-		source.object = 0;
 	}
 
 	monitor& operator = (monitor&& source)
 	{
 		monitor(std::move(source)).swap(*this);
 		return *this;
+	}
+
+	~monitor()
+	{
+		if (object)
+		{
+			[[maybe_unused]] auto result = detail::env()->MonitorExit(object.handle());
+			assert(result == 0);
+		}
+	}
+
+	explicit operator bool() const { return object != nullptr; }
+	ref<T> get() const { return object; }
+
+	void reset()
+	{
+		monitor().swap(*this);
 	}
 
 	void swap(monitor& source)
@@ -69,13 +69,15 @@ public:
 
 private:
 
-	monitor() : object(0) {}
+	monitor() {}
+	ref<T> release() { return std::move(object); }
 
-	jobject object;
+	ref<T> object;
 
 };
 
-inline void swap(monitor& a, monitor& b)
+template <typename T>
+inline void swap(monitor<T>& a, monitor<T>& b)
 {
 	a.swap(b);
 }
