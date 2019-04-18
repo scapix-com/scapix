@@ -53,7 +53,7 @@ public:
 		}
 	}
 
-	explicit operator bool() const { return object != nullptr; }
+	explicit operator bool() const { return bool(object); }
 	ref<T> get() const { return object; }
 
 	void reset()
