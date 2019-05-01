@@ -8,10 +8,11 @@ if(${scapix_bridge} STREQUAL python)
     target_link_libraries(${target} PRIVATE ${Python_LIBRARIES})
 
     # set(Boost_USE_STATIC_LIBS ON)
-    # find_package(Boost 1.67 COMPONENTS python${Python_VERSION_MAJOR}${Python_VERSION_MINOR} REQUIRED)
+    # find_package(Boost REQUIRED python${Python_VERSION_MAJOR}${Python_VERSION_MINOR})
     # target_include_directories(${target} PUBLIC ${Boost_INCLUDE_DIRS})
     # target_link_libraries(${target} PRIVATE Boost::python${Python_VERSION_MAJOR}${Python_VERSION_MINOR})
 
+    hunter_add_package(pybind11)
     find_package(pybind11 REQUIRED)
     target_link_libraries(${target} PRIVATE pybind11::module)
     set_target_properties(${target} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")

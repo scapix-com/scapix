@@ -1,20 +1,16 @@
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.14)
 
-# expected vars: 
-#   scapix_bridge
-#   scapix_platform
-#   scapix_java_api
+if(NOT scapix_bridge)
+    set(scapix_bridge cpp)
+endif()
+
+if(NOT scapix_platform)
+    set(scapix_platform generic)
+endif()
 
 if(NOT scapix_java_api)
     set(scapix_java_api jdk-11.0.2)
 endif()
-
-# temp: use boost headers from host os
-# to do: https://github.com/moritz-wundke/Boost-for-Android
-
-#set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
-#set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
 set(SCAPIX_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 get_filename_component(SCAPIX_ROOT ${SCAPIX_ROOT} ABSOLUTE)
@@ -42,9 +38,9 @@ set(bridges
     "java"
     "objc"
     "python"
+#   "cs"
 #   "swift"
-#   "csharp"
-#   "jscript"
+#   "js"
 )
 
 foreach(bridge ${bridges})
@@ -71,7 +67,8 @@ set_target_properties(scapix PROPERTIES
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/source)
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost 1.67 REQUIRED)
+hunter_add_package(Boost)
+find_package(Boost REQUIRED)
 target_include_directories(scapix PUBLIC ${Boost_INCLUDE_DIRS})
 
 if(${scapix_bridge} STREQUAL java AND NOT ANDROID)
