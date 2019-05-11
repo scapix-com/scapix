@@ -81,7 +81,6 @@ endif()
 
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
 
-#set_target_properties(scapix PROPERTIES LINKER_LANGUAGE CXX)
 target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
 
 if (MSVC)
