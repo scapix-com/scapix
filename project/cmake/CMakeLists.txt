@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
+project(scapix CXX)
+
 if(NOT SCAPIX_BRIDGE)
     set(SCAPIX_BRIDGE cpp)
 endif()
@@ -15,15 +17,15 @@ endif()
 set(SCAPIX_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 get_filename_component(SCAPIX_ROOT ${SCAPIX_ROOT} ABSOLUTE)
 
-file(GLOB_RECURSE sources
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS
     ${SCAPIX_ROOT}/source/*.*
 )
 
-file(GLOB_RECURSE java_api_sources
+file(GLOB_RECURSE java_api_sources CONFIGURE_DEPENDS
     ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API}/scapix/java_api/*.*
 )
 
-file(GLOB_RECURSE doc_sources
+file(GLOB_RECURSE doc_sources CONFIGURE_DEPENDS
     ${SCAPIX_ROOT}/doc/*.*
 )
 
@@ -45,7 +47,7 @@ set(bridges
 
 foreach(bridge ${bridges})
     if(NOT ${SCAPIX_BRIDGE} STREQUAL ${bridge})
-        file(GLOB_RECURSE bridge_sources
+        file(GLOB_RECURSE bridge_sources CONFIGURE_DEPENDS
             ${SCAPIX_ROOT}/source/scapix/link/${bridge}/*.*
             ${SCAPIX_ROOT}/source/scapix/bridge/${bridge}/*.*
         )
@@ -79,7 +81,7 @@ endif()
 
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
 
-set_target_properties(scapix PROPERTIES LINKER_LANGUAGE CXX)
+#set_target_properties(scapix PROPERTIES LINKER_LANGUAGE CXX)
 target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
 
 if (MSVC)
