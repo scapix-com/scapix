@@ -80,7 +80,6 @@ if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
 endif()
 
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
-
 target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
 
 if (MSVC)
