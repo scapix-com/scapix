@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.14)
 
-if(NOT scapix_bridge)
-    set(scapix_bridge cpp)
+if(NOT SCAPIX_BRIDGE)
+    set(SCAPIX_BRIDGE cpp)
 endif()
 
-if(NOT scapix_platform)
-    set(scapix_platform generic)
+if(NOT SCAPIX_PLATFORM)
+    set(SCAPIX_PLATFORM generic)
 endif()
 
-if(NOT scapix_java_api)
-    set(scapix_java_api jdk-11.0.2)
+if(NOT SCAPIX_JAVA_API)
+    set(SCAPIX_JAVA_API jdk-11.0.2)
 endif()
 
 set(SCAPIX_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
@@ -20,7 +20,7 @@ file(GLOB_RECURSE sources
 )
 
 file(GLOB_RECURSE java_api_sources
-    ${SCAPIX_ROOT}/java_api/${scapix_java_api}/scapix/java_api/*.*
+    ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API}/scapix/java_api/*.*
 )
 
 file(GLOB_RECURSE doc_sources
@@ -30,7 +30,7 @@ file(GLOB_RECURSE doc_sources
 add_library(scapix ${sources} ${java_api_sources} ${doc_sources})
 
 source_group(TREE ${SCAPIX_ROOT}/source PREFIX "source" FILES ${sources})
-source_group(TREE ${SCAPIX_ROOT}/java_api/${scapix_java_api}/scapix/java_api PREFIX "java_api" FILES ${java_api_sources})
+source_group(TREE ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API}/scapix/java_api PREFIX "java_api" FILES ${java_api_sources})
 source_group(TREE ${SCAPIX_ROOT}/doc PREFIX "doc" FILES ${doc_sources})
 
 set(bridges
@@ -44,7 +44,7 @@ set(bridges
 )
 
 foreach(bridge ${bridges})
-    if(NOT ${scapix_bridge} STREQUAL ${bridge})
+    if(NOT ${SCAPIX_BRIDGE} STREQUAL ${bridge})
         file(GLOB_RECURSE bridge_sources
             ${SCAPIX_ROOT}/source/scapix/link/${bridge}/*.*
             ${SCAPIX_ROOT}/source/scapix/bridge/${bridge}/*.*
@@ -53,7 +53,7 @@ foreach(bridge ${bridges})
     endif()
 endforeach()
 
-if(${scapix_bridge} STREQUAL objc)
+if(${SCAPIX_BRIDGE} STREQUAL objc)
     target_compile_options(scapix PUBLIC "-fobjc-arc")
     set_source_files_properties(${SCAPIX_ROOT}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_FLAGS -fno-objc-arc)
 endif()
@@ -71,16 +71,16 @@ hunter_add_package(Boost)
 find_package(Boost REQUIRED)
 target_include_directories(scapix PUBLIC ${Boost_INCLUDE_DIRS})
 
-if(${scapix_bridge} STREQUAL java AND NOT ANDROID)
+if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
     find_package(JNI REQUIRED)
     target_include_directories(scapix PUBLIC ${JNI_INCLUDE_DIRS})
     target_link_libraries(scapix ${JNI_LIBRARIES})
 endif()
 
-target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${scapix_java_api})
+target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
 
 set_target_properties(scapix PROPERTIES LINKER_LANGUAGE CXX)
-target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${scapix_bridge} SCAPIX_BRIDGE_${scapix_bridge} SCAPIX_PLATFORM=${scapix_platform})
+target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
 
 if (MSVC)
     target_compile_options(scapix PUBLIC /MP /wd4584)

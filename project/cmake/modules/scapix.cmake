@@ -1,7 +1,7 @@
 function(scapix_bridge_headers target domain)
 set(bridge_headers ${ARGN})
 
-if(${scapix_bridge} STREQUAL python)
+if(${SCAPIX_BRIDGE} STREQUAL python)
     #set(Python_USE_STATIC_LIBS ON)
     find_package (Python COMPONENTS Development)
     target_include_directories(${target} PRIVATE ${Python_INCLUDE_DIRS})
@@ -18,7 +18,7 @@ if(${scapix_bridge} STREQUAL python)
     set_target_properties(${target} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")
 endif()
 
-if(${scapix_bridge} STREQUAL objc)
+if(${SCAPIX_BRIDGE} STREQUAL objc)
     target_compile_options(${target} PUBLIC "-fobjc-arc")
 endif()
 
@@ -184,7 +184,7 @@ set(generated_sources
 # GENERATED property implicitly set for OUTPUT arguments of add_custom_command()
 #set_source_files_properties(${generated_sources} PROPERTIES GENERATED TRUE)
 
-string(CONCAT generated_sources_var_name "generated_sources_" ${scapix_bridge})
+string(CONCAT generated_sources_var_name "generated_sources_" ${SCAPIX_BRIDGE})
 
 set_source_files_properties(${generated_sources} PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties(${${generated_sources_var_name}} PROPERTIES HEADER_FILE_ONLY FALSE)
