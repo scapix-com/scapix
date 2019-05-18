@@ -87,7 +87,7 @@ if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
     target_link_libraries(scapix PUBLIC ${JNI_LIBRARIES})
 endif()
 
-if (MSVC)
+if(MSVC)
     target_compile_options(scapix PUBLIC /MP /wd4584)
 
     if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)

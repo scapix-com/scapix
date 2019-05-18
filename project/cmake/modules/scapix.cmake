@@ -8,10 +8,9 @@ if(${SCAPIX_BRIDGE} STREQUAL python)
     set_target_properties(${target} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")
 endif()
 
-
-if(${SCAPIX_BRIDGE} STREQUAL objc)
-    target_compile_options(${target} PUBLIC "-fobjc-arc")
-endif()
+# if(${SCAPIX_BRIDGE} STREQUAL objc)
+#     target_compile_options(${target} PUBLIC "-fobjc-arc")
+# endif()
 
 target_link_libraries(${target} PUBLIC scapix)
 
