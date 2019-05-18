@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.14)
 
+include("modules/HunterGate.cmake")
+
+HunterGate(
+    URL "https://github.com/ruslo/hunter/archive/v0.23.171.tar.gz"
+    SHA1 "5d68bcca78eee347239ca5f4d34f4b6c12683154"
+)
+
 project(scapix CXX)
 
 if(NOT SCAPIX_BRIDGE)
@@ -67,20 +74,18 @@ set_target_properties(scapix PROPERTIES
 )
 
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/source)
+target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
+target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
 
-set(Boost_USE_STATIC_LIBS ON)
 hunter_add_package(Boost)
 find_package(Boost REQUIRED)
-target_include_directories(scapix PUBLIC ${Boost_INCLUDE_DIRS})
+target_link_libraries(scapix PUBLIC Boost::boost)
 
 if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
     find_package(JNI REQUIRED)
     target_include_directories(scapix PUBLIC ${JNI_INCLUDE_DIRS})
-    target_link_libraries(scapix ${JNI_LIBRARIES})
+    target_link_libraries(scapix PUBLIC ${JNI_LIBRARIES})
 endif()
-
-target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
-target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
 
 if (MSVC)
     target_compile_options(scapix PUBLIC /MP /wd4584)
