@@ -144,18 +144,41 @@ std::int32_t (int)
 std::int64_t (long long)
 float
 double
-std::string
-std::vector
-std::map
-std::set
-std::unordered_map
-std::unordered_set
-std::function
-std::shared_ptr
+std::string (UTF-8 encoding)
+std::vector<value>
+std::map<key,value>
+std::set<key>
+std::unordered_map<key,value>
+std::unordered_set<key>
+std::function<type>
+std::shared_ptr<type>
 ```
 
-Objects (of classes derived from scapix::bridge::object) are bridged by reference and should be passed as `std::shared_ptr<Type>`.
+Arbitrary nesting is supported.
+Classes derived from [`scapix::bridge::object`](https://www.scapix.com/documentation/bridge_object) are bridged by reference and can only be passed as `std::shared_ptr<type>`.
 All other types are bridged by copy.
+
+Example:
+
+```cpp
+#include <scapix/bridge/object.h>
+
+class test : public scapix::bridge::object<test>
+{
+public:
+
+    // these functions are bridged: all parameter and return value types are supported
+
+    void func1(const std::vector<std::shared_ptr<test>>&);
+    void func2(std::function<void(std::vector<std::shared_ptr<test>)>);
+    std::map<std::string, std::shared_ptr<test>> func3();
+
+    // these functions are not bridged: not all parameter and return value types are supported
+
+    void func10(void*);
+
+};
+```
 
 ## Documentation
 
