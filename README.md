@@ -144,17 +144,17 @@ std::int32_t (int)
 std::int64_t (long long)
 float
 double
-std::shared_ptr
-std::weak_ptr
+std::string
 std::vector
 std::map
 std::set
 std::unordered_map
 std::unordered_set
 std::function
+std::shared_ptr
 ```
 
-Objects (of classes derived from scapix::bridge::object) are bridged by reference and should be passed as std::shared_ptr<Type>.
+Objects (of classes derived from scapix::bridge::object) are bridged by reference and should be passed as `std::shared_ptr<Type>`.
 All other types are bridged by copy.
 
 ## Documentation
