@@ -1,3 +1,25 @@
+function(camel_case source target)
+    set(up true)
+    set(res "")
+
+    string(LENGTH ${source} source_length)
+    math(EXPR last_char_index "${source_length} - 1")
+
+    foreach(char_index RANGE ${last_char_index})
+        string(SUBSTRING "${source}" "${char_index}" "1" char)
+        if(char STREQUAL "_")
+            set(up true)
+        else()
+            if(up)
+                string(TOUPPER ${char} char)
+                set(up false)
+            endif()
+            string(APPEND res ${char})
+        endif()
+    endforeach()
+    set(${target} ${res} PARENT_SCOPE)
+endfunction(camel_case)
+
 function(scapix_bridge_headers target domain)
 set(bridge_headers ${ARGN})
 
@@ -113,21 +135,20 @@ foreach(bridge_header ${bridge_headers})
 
     get_filename_component(bridge_header_name ${bridge_header} NAME_WE)
     file(RELATIVE_PATH bridge_header_relative ${PROJECT_ROOT} ${bridge_header})
+    camel_case(${bridge_header_name} bridge_header_name_camel)
 
     set(output_files_java)
     set(output_files_objc)
     set(output_files_python)
 
-    # to do: convert java/objc file name to upper camel case
-
     list(APPEND output_files_java
-            "${PROJECT_ROOT}/generated/bridge/java/${domain_path}/${bridge_header_name}.java"
+            "${PROJECT_ROOT}/generated/bridge/java/${domain_path}/${bridge_header_name_camel}.java"
             "${PROJECT_ROOT}/generated/bridge/java/${bridge_header_name}.cpp"
     )
 
     list(APPEND output_files_objc
-            "${PROJECT_ROOT}/generated/bridge/objc/${scapix_project_name}/bridge/${bridge_header_name}.h"
-            "${PROJECT_ROOT}/generated/bridge/objc/${scapix_project_name}/bridge/${bridge_header_name}.mm"
+            "${PROJECT_ROOT}/generated/bridge/objc/${scapix_project_name}/bridge/${bridge_header_name_camel}.h"
+            "${PROJECT_ROOT}/generated/bridge/objc/${scapix_project_name}/bridge/${bridge_header_name_camel}.mm"
     )
 
     list(APPEND output_files_python
