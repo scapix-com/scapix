@@ -46,7 +46,7 @@ protected:
 	object_base() = default;
 
 	link::java::weak_ref<SCAPIX_META_STRING("com/scapix/Bridge")> wrapper;
-	std::shared_ptr<void> self;
+	std::shared_ptr<object_base> self;
 
     friend jint on_load(JavaVM *vm, void *reserved);
 
@@ -172,7 +172,7 @@ struct convert_shared<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 {
 	static std::shared_ptr<T> cpp(ref<class_name_t<T>> v)
     {
-        return reinterpret_cast<T*>(static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(std::move(v))->template get_field<SCAPIX_META_STRING("ptr"), jlong>())->shared_from_this();
+		return static_pointer_cast<T>(reinterpret_cast<bridge::java::object_base*>(static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(std::move(v))->template get_field<SCAPIX_META_STRING("ptr"), jlong>())->shared_from_this());
     }
 
     static ref<class_name_t<T>> jni(std::shared_ptr<T> v)
