@@ -40,6 +40,8 @@ protected:
             CFRelease(wrapper);
     }
 
+private:
+
 	void swap(object_base& other)
 	{
 		using std::swap;
@@ -54,13 +56,18 @@ protected:
     
     void attach(CFTypeRef obj, std::shared_ptr<object_base> shared_this);
 
+	template <typename ObjC, typename Cpp, typename>
+	friend struct link::objc::convert_shared;
+
+	template <typename Wrapper>
+	Wrapper get_wrapper(std::shared_ptr<object_base> shared_this);
+
     // @class BridgeObject
     CFTypeRef wrapper = nullptr;
 
 };
 
 // to do: inheritance should be private
-// to do: drop template parameter (no longer used)
 
 template <typename>
 class object : public object_base
@@ -72,14 +79,6 @@ protected:
 	object(object&&) = default;
 	object& operator =(const object&) = default;
 	object& operator =(object&&) = default;
-
-private:
-
-    template <typename ObjC, typename Cpp, typename>
-    friend struct link::objc::convert_shared;
-    
-    template <typename Wrapper>
-    Wrapper get_wrapper(std::shared_ptr<object_base> shared_this);
 
 };
 
@@ -105,9 +104,11 @@ inline void object_base::attach(CFTypeRef obj, std::shared_ptr<object_base> shar
     [(__bridge BridgeObject*)obj attachObject:shared_this];
 }
 
-template <typename T>
+// to do: with indirect inheritance support,
+// wrappers should depend on actual object type.
+
 template <typename Wrapper>
-inline Wrapper object<T>::get_wrapper(std::shared_ptr<object_base> shared_this)
+inline Wrapper object_base::get_wrapper(std::shared_ptr<object_base> shared_this)
 {
     if (!wrapper)
     {

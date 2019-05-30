@@ -30,6 +30,8 @@ protected:
 	object_base& operator =(const object_base&) { return *this; }
 	object_base& operator =(object_base&&) = default;
 
+private:
+
 	template <typename>
 	friend class init;
 
@@ -37,9 +39,6 @@ protected:
 	friend struct link::java::convert_shared;
 
 	friend jint on_load(JavaVM *vm, void *reserved);
-
-	link::java::weak_ref<SCAPIX_META_STRING("com/scapix/Bridge")> wrapper;
-	std::shared_ptr<object_base> self;
 
 	void attach(link::java::ref<SCAPIX_META_STRING("com/scapix/Bridge")> obj, std::shared_ptr<object_base> shared_this)
 	{
@@ -50,6 +49,23 @@ protected:
 		self = std::move(shared_this);
 
 		wrapper->set_field<SCAPIX_META_STRING("ptr")>(reinterpret_cast<jlong>(this));
+	}
+
+	// to do: with indirect inheritance support,
+	// wrappers should depend on actual object type.
+
+	template <typename T>
+	link::java::local_ref<SCAPIX_META_STRING("com/scapix/Bridge")> get_ref(std::shared_ptr<T> shared_this)
+	{
+		link::java::local_ref<SCAPIX_META_STRING("com/scapix/Bridge")> local(wrapper);
+
+		if (!local)
+		{
+			local = link::java::static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(link::java::object<link::java::class_name_t<T>>::template new_object<void(link::java::ref<SCAPIX_META_STRING("com/scapix/Bridge$Tag")>)>(nullptr));
+			attach(local, std::move(shared_this));
+		}
+
+		return local;
 	}
 
 	const std::shared_ptr<object_base>& scapix_shared()
@@ -64,10 +80,12 @@ protected:
 		self.reset(); // might destroy this object
 	}
 
+	link::java::weak_ref<SCAPIX_META_STRING("com/scapix/Bridge")> wrapper;
+	std::shared_ptr<object_base> self;
+
 };
 
 // to do: inheritance should be private
-// to do: drop template parameter (no longer used)
 
 template <typename>
 class object : public object_base
@@ -79,28 +97,6 @@ protected:
 	object(object&&) = default;
 	object& operator =(const object&) = default;
 	object& operator =(object&&) = default;
-
-private:
-
-	template <typename Jni, typename Cpp, typename>
-	friend struct link::java::convert_shared;
-
-	template <typename T>
-	link::java::local_ref<SCAPIX_META_STRING("com/scapix/Bridge")> get_ref(std::shared_ptr<T> shared_this)
-	{
-        link::java::local_ref<SCAPIX_META_STRING("com/scapix/Bridge")> local(wrapper);
-
-		// to do: with indirect inheritance support,
-		// wrappers can no longer be lazily created (also in ObjC).
-
-		if (!local)
-        {
-            local = link::java::static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(link::java::object<link::java::class_name_t<T>>::template new_object<void(link::java::ref<SCAPIX_META_STRING("com/scapix/Bridge$Tag")>)>(nullptr));
-			attach(local, std::move(shared_this));
-        }
-
-        return local;
-	}
 
 };
 
