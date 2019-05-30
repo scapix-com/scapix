@@ -5,10 +5,10 @@
 
 @implementation BridgeObject
 
--(void)attachObject:(scapix::bridge::objc::object_base*)ptr
+-(void)attachObject:(std::shared_ptr<scapix::bridge::objc::object_base>)ptr
 {
-    weak = ptr->weak_from_this();
-    shared = ptr->shared_from_this();
+    weak = ptr;
+    shared = ptr;
 }
 
 -(BOOL)retainWeakReference

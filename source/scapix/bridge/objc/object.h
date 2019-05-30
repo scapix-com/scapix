@@ -24,51 +24,54 @@ struct convert_shared;
 namespace bridge {
 namespace objc {
 
-class object_base : public std::enable_shared_from_this<object_base>
+class object_base
 {
 protected:
     
-    object_base() = default;
-    
+	object_base() = default;
+	object_base(const object_base&) {}
+	object_base(object_base&& other) : wrapper(other.wrapper) { other.wrapper = nullptr; }
+	object_base& operator =(const object_base&) { return *this; }
+	object_base& operator =(object_base&& other) { object_base(std::move(other)).swap(*this); return *this; }
+
     ~object_base()
     {
         if (wrapper)
             CFRelease(wrapper);
     }
 
-    template <typename T>
-    friend void attach(T& cpp, CFTypeRef objc)
+	void swap(object_base& other)
+	{
+		using std::swap;
+		swap(wrapper, other.wrapper);
+	}
+
+	template <typename T>
+	friend void attach(const std::shared_ptr<T>& cpp, CFTypeRef objc)
     {
-        cpp.attach(objc);
+        cpp->attach(objc, cpp);
     }
     
-    void attach(CFTypeRef obj);
+    void attach(CFTypeRef obj, std::shared_ptr<object_base> shared_this);
 
     // @class BridgeObject
     CFTypeRef wrapper = nullptr;
 
 };
 
-// to do: inheritance should be private, not to expose protected members
+// to do: inheritance should be private
+// to do: drop template parameter (no longer used)
 
-template <typename T>
+template <typename>
 class object : public object_base
 {
-public:
-    
-    std::shared_ptr<T> shared_from_this()
-    {
-        return std::static_pointer_cast<T>(object_base::shared_from_this());
-    }
-    
-    std::shared_ptr<const T> shared_from_this() const
-    {
-        return std::static_pointer_cast<T>(object_base::shared_from_this());
-    }
-    
 protected:
 
-    object() = default;
+	object() = default;
+	object(const object&) = default;
+	object(object&&) = default;
+	object& operator =(const object&) = default;
+	object& operator =(object&&) = default;
 
 private:
 
@@ -76,7 +79,7 @@ private:
     friend struct link::objc::convert_shared;
     
     template <typename Wrapper>
-    Wrapper get_wrapper();
+    Wrapper get_wrapper(std::shared_ptr<object_base> shared_this);
 
 };
 
@@ -93,23 +96,23 @@ namespace scapix {
 namespace bridge {
 namespace objc {
 
-inline void object_base::attach(CFTypeRef obj)
+inline void object_base::attach(CFTypeRef obj, std::shared_ptr<object_base> shared_this)
 {
     assert(obj);
     assert(!wrapper);
     wrapper = obj;
     
-    [(__bridge BridgeObject*)obj attachObject:this];
+    [(__bridge BridgeObject*)obj attachObject:shared_this];
 }
 
 template <typename T>
 template <typename Wrapper>
-inline Wrapper object<T>::get_wrapper()
+inline Wrapper object<T>::get_wrapper(std::shared_ptr<object_base> shared_this)
 {
     if (!wrapper)
     {
         Wrapper w = [std::remove_pointer_t<Wrapper> alloc];
-        attach(CFBridgingRetain(w));
+        attach(CFBridgingRetain(w), shared_this);
         return w;
     }
 
@@ -128,7 +131,7 @@ struct init_impl<void(Args...)>
     template <typename T, typename Wrapper, typename ...ObjcArgs>
     static void init(Wrapper* wrapper, ObjcArgs... args)
     {
-        attach(*std::make_shared<T>(link::objc::convert_cpp<Args>(args)...), CFBridgingRetain(wrapper));
+        attach(std::make_shared<T>(link::objc::convert_cpp<Args>(args)...), CFBridgingRetain(wrapper));
     }
 };
 
@@ -245,7 +248,7 @@ struct convert_shared<Wrapper, Bridge, std::enable_if_t<bridge::is_object<Bridge
         if (!value)
             return nil;
         
-        return value->template get_wrapper<Wrapper>();
+        return value->template get_wrapper<Wrapper>(value);
     }
 };
 

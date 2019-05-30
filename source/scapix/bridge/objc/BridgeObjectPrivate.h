@@ -26,6 +26,6 @@ class object_base;
     std::shared_ptr<scapix::bridge::objc::object_base> shared;
 }
 
--(void)attachObject:(scapix::bridge::objc::object_base*)ptr;
+-(void)attachObject:(std::shared_ptr<scapix::bridge::objc::object_base>)ptr;
 
 @end

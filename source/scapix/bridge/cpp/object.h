@@ -13,8 +13,8 @@ namespace scapix {
 namespace bridge {
 namespace cpp {
 
-template <typename T>
-class object : public std::enable_shared_from_this<T>
+template <typename>
+class object
 {
 };
 

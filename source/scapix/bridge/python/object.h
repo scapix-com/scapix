@@ -13,16 +13,9 @@ namespace scapix {
 namespace bridge {
 namespace python {
 
-template <typename T>
-class object : public std::enable_shared_from_this<T>
+template <typename>
+class object
 {
-	// temporary make class polymorphic, until pybind11 bug is fixed:
-	// https://github.com/pybind/pybind11/issues/1790
-
-public:
-
-	virtual ~object() = default;
-
 };
 
 } // namespace python
