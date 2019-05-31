@@ -160,9 +160,10 @@ foreach(bridge_header ${bridge_headers})
     list(APPEND generated_sources_python ${output_files_python})
 
     add_custom_command(
-            OUTPUT ${output_files_java} ${output_files_objc}  ${output_files_python}
+            OUTPUT ${output_files_java} ${output_files_objc} ${output_files_python}
             COMMAND ${SCAPIX_ROOT}/bin/${CMAKE_HOST_SYSTEM_NAME}/scapix -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=c++17 -v -DSCAPIX_BRIDGE=cpp "-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>" -I${SCAPIX_ROOT}/std/libcxx -I${SCAPIX_ROOT}/std/clang
             DEPENDS ${bridge_header}
+            IMPLICIT_DEPENDS CXX ${bridge_header}
             WORKING_DIRECTORY ${PROJECT_ROOT}
             COMMENT "Running Scapix Bridge for ${bridge_header_relative}"
             COMMAND_EXPAND_LISTS
