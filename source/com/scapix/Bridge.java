@@ -9,10 +9,11 @@ import com.scapix.NativeException; // force compilation
 
 public class Bridge
 {
-	protected class Tag {}
-	protected Bridge() {}
-	protected void finalize() { _finalize(); ptr = 0; }
+	protected static final class Nop {}
+	protected static final Nop nop = null;
+	protected Bridge(Nop nop) {}
 
+	protected void finalize() { _finalize(); ptr = 0; }
     private native void _finalize();
 	private long ptr;
 

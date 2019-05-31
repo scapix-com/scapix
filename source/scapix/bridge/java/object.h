@@ -61,7 +61,7 @@ private:
 
 		if (!local)
 		{
-			local = link::java::static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(link::java::object<link::java::class_name_t<T>>::template new_object<void(link::java::ref<SCAPIX_META_STRING("com/scapix/Bridge$Tag")>)>(nullptr));
+			local = link::java::static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(link::java::object<link::java::class_name_t<T>>::template new_object<void(link::java::ref<SCAPIX_META_STRING("com/scapix/Bridge$Nop")>)>(nullptr));
 			attach(local, std::move(shared_this));
 		}
 
