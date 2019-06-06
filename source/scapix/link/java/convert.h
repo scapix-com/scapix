@@ -7,6 +7,7 @@
 #ifndef SCAPIX_LINK_JAVA_CONVERT_H
 #define SCAPIX_LINK_JAVA_CONVERT_H
 
+#include <memory>
 #include <string>
 #include <vector>
 #include <map>
