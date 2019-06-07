@@ -58,6 +58,7 @@ struct concat<String1, String2, Strings...> : concat_t<concat_t<String1, String2
 } // namespace scapix
 
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wgnu-string-literal-operator-template"
 
 template <typename Char, Char... Chars>
