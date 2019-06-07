@@ -121,7 +121,10 @@ private:
 template <typename ClassName, typename ...Methods>
 constexpr JNINativeMethod native_methods<ClassName, Methods...>::methods[];
 
-template <typename Name, typename JniType, typename Type, Type Method>
+// std::decay is a workaround for GCC:
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=82773
+
+template <typename Name, typename JniType, typename Type, std::decay_t<Type> Method>
 class native_method
 {
 public:
