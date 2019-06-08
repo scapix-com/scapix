@@ -154,7 +154,7 @@ private:
 			try
 			{
                 if constexpr (std::is_void_v<R>)
-                    return (param<ref<class_name_t<Class>>, Class>::cpp(thiz).*Method)(param<JniArgs, Args>::cpp(args)...);
+                    return (param<ref<class_name_t<Class>>, Class&>::cpp(thiz).*Method)(param<JniArgs, Args>::cpp(args)...);
                 else
                     return param<JniR, R>::jni((param<ref<class_name_t<Class>>, Class>::cpp(thiz).*Method)(param<JniArgs, Args>::cpp(args)...));
 			}
@@ -181,7 +181,7 @@ private:
             try
             {
                 if constexpr (std::is_void_v<R>)
-                    return (param<ref<class_name_t<Class>>, Class>::cpp(thiz).*Method)(param<JniArgs, Args>::cpp(args)...);
+                    return (param<ref<class_name_t<Class>>, Class&>::cpp(thiz).*Method)(param<JniArgs, Args>::cpp(args)...);
                 else
                     return param<JniR, R>::jni((param<ref<class_name_t<Class>>, Class>::cpp(thiz).*Method)(param<JniArgs, Args>::cpp(args)...));
             }
