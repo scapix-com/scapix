@@ -84,7 +84,7 @@ struct convert_string
         
 		auto bytes = obj->call_method<SCAPIX_META_STRING("getBytes"), ref<jbyte[]>(ref<charset>)>(utf8_charset());
 		std::string str(bytes->size(), char());
-		bytes->get_region(0, (jsize)str.size(), (jbyte*)str.data());
+		bytes->get_region(0, static_cast<jsize>(str.size()), (jbyte*)str.data());
         
 		return str;
 	}
@@ -93,8 +93,8 @@ struct convert_string
 	{
 //		return string::new_(str.data());
 
-		auto bytes = array<jbyte>::new_((jsize)str.size());
-		bytes->set_region(0, (jsize)str.size(), (const jbyte*)str.data());
+		auto bytes = array<jbyte>::new_(static_cast<jsize>(str.size()));
+		bytes->set_region(0, static_cast<jsize>(str.size()), (const jbyte*)str.data());
 
 		return string::new_object<void(ref<jbyte[]>, ref<charset>)>(bytes, utf8_charset());
 	}
@@ -155,14 +155,14 @@ struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<is_primitive_v
 	static std::vector<T, A> cpp(ref<array<J>> a)
 	{
 		std::vector<T, A> v(a->size());
-		a->get_region(0, v.size(), v.data());
+		a->get_region(0, static_cast<jsize>(v.size()), reinterpret_cast<J*>(v.data()));
 		return v;
 	}
 
 	static ref<array<J>> jni(const std::vector<T, A>& v)
 	{
-		auto a = array<J>::new_(v.size());
-		a->set_region(0, v.size(), v.data());
+		auto a = array<J>::new_(static_cast<jsize>(v.size()));
+		a->set_region(0, static_cast<jsize>(v.size()), reinterpret_cast<const J*>(v.data()));
 		return a;
 	}
 };
@@ -174,7 +174,7 @@ struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<!is_primitive_
 	{
 		std::vector<T, A> v(a->size());
 
-		for (jsize i = 0; i < (jsize)v.size(); ++i)
+		for (jsize i = 0; i < static_cast<jsize>(v.size()); ++i)
 			v[i] = convert_cpp<T>(a[i].get());
 
 		return v;
@@ -182,9 +182,9 @@ struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<!is_primitive_
 
 	static ref<array<J>> jni(const std::vector<T, A>& v)
 	{
-		auto a = array<J>::new_((jsize)v.size());
+		auto a = array<J>::new_(static_cast<jsize>(v.size()));
 
-		for (jsize i = 0; i < (jsize)v.size(); ++i)
+		for (jsize i = 0; i < static_cast<jsize>(v.size()); ++i)
 			a[i] = convert_jni<ref<J>>(v[i]);
 
 		return a;

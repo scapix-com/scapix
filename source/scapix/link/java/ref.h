@@ -232,7 +232,7 @@ public:
     template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref(const ref<Y, S>& r) : object(new_ref(r)) {}
 
-	ref(ref&& r) : object(r.release()) {}
+	ref(ref&& r) noexcept : object(r.release()) {}
 
     template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref(ref<Y, S>&& r) : object(nullptr)
@@ -370,7 +370,7 @@ public:
     template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref(const ref<Y, S>& r) : object(r.handle()), scp(scope::generic) {}
 
-	ref(ref&& r) : object(r.release()), scp(r.get_scope()) {}
+	ref(ref&& r) noexcept : object(r.release()), scp(r.get_scope()) {}
 
     template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
 	ref(ref<Y, S>&& r) : object(r.release()), scp(r.get_scope()) {}
