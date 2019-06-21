@@ -69,31 +69,30 @@ public:
 	{
 	public:
 
-        // We rely on C++17 guaranteed copy elision.
-        // The same could be done in C++11 with Copy-List-Initialization (return {handle, size}).
+		// We rely on C++17 guaranteed copy elision.
+		// The same could be done in C++11 with Copy-List-Initialization (return {handle, size}).
 
-        reference(const reference&) = delete;
-        reference(reference&&) = delete;
+		reference(const reference&) = delete;
+		reference(reference&&) = delete;
 
-        reference& operator = (const reference& other) = delete;
-        reference& operator = (reference&& other) { arr.set_element(pos, std::move(other).get()); return *this; }
+		reference& operator = (const reference& other) = delete;
+		reference& operator = (reference&& other) { arr.set_element(pos, std::move(other).get()); return *this; }
 
 		void operator&() = delete;
 
-		//template <typename Y>
-		//reference& operator=(ref<Y> value) && { arr.set_element(pos, value); return *this; }
-
 		template <typename Y>
-		reference& operator=(Y value) && { arr.set_element(pos, value); return *this; }
+		reference& operator=(ref<Y> value) { arr.set_element(pos, value); return *this; }
 
-		operator ref<T>() const && { return arr.get_element(pos); }
-        ref<T> get() const && { return arr.get_element(pos); }
+		operator ref<T>() const { return arr.get_element(pos); }
+		ref<T> get() const { return arr.get_element(pos); }
+		ref<T> operator ->() const { return get(); }
 
 	private:
 
 		friend array;
+		friend class iterator;
 
-        reference(typename array::handle_type arr, jsize pos) : arr(arr), pos(pos) {}
+		reference(typename array::handle_type arr, jsize pos) : arr(arr), pos(pos) {}
 
 		array arr;
 		jsize pos;
@@ -107,10 +106,15 @@ public:
 		iterator(const iterator&) = default;
 
 		iterator& operator ++() { pos++; return *this; }
-		reference operator *() { return reference(arr, pos); }
-		ref<T> operator ->() { return reference(arr, pos); }
+		reference operator *() { return reference(arr.handle(), pos); }
+		ref<T> operator ->() { return reference(arr.handle(), pos); }
+
+		bool operator == (const iterator& other) const { return pos == other.pos; }
+		bool operator != (const iterator& other) const { return pos != other.pos; }
 
 	private:
+
+		friend array;
 
 		iterator(typename array::handle_type arr, jsize pos) : arr(arr), pos(pos) {}
 
@@ -140,11 +144,11 @@ public:
 
 	bool empty() const { return this->size() == 0; }
 
-	iterator begin() { return iterator(this,  0); }
+	iterator begin() { return iterator(this->handle(),  0); }
 	//const_iterator begin() const { return data(); }
 	//const_iterator cbegin() const { return data(); }
 
-	iterator end() { return iterator(this,  this->size()); }
+	iterator end() { return iterator(this->handle(),  this->size()); }
 	//const_iterator end() const { return data() + size(); }
 	//const_iterator cend() const { return data() + size(); }
 
@@ -175,7 +179,7 @@ public:
 		return (*this)[pos];
 	}
 
-    static ref<array> new_(jsize len, ref<element_type> init = {}) { return detail::api::new_array<element_type>(len, init); }
+	static ref<array> new_(jsize len, ref<element_type> init = {}) { return detail::api::new_array<element_type>(len, init); }
 
 	// for consistency with primitive array
 
@@ -188,8 +192,8 @@ protected:
 
 private:
 
-    ref<T> get_element(jsize index) const { return detail::api::get_array_element<element_type>(ref<T[]>(this->handle()), index); }
-    void set_element(jsize index, ref<T> value) { detail::api::set_array_element<element_type>(ref<T[]>(this->handle()), index, value); }
+	ref<T> get_element(jsize index) const { return detail::api::get_array_element<element_type>(ref<T[]>(this->handle()), index); }
+	void set_element(jsize index, ref<T> value) { detail::api::set_array_element<element_type>(ref<T[]>(this->handle()), index, value); }
 
 };
 
@@ -297,14 +301,14 @@ private:
 
 	array_elements(handle_type array, jsize size) : array_(array), data_(detail::api::get_array_elements<T, Lock>(ref<T[]>(array_), &is_copy_)), size_(size) {}
 
-    // We rely on C++17 guaranteed copy elision.
-    // The same could be done in C++11 with Copy-List-Initialization (return {handle, size}).
+	// We rely on C++17 guaranteed copy elision.
+	// The same could be done in C++11 with Copy-List-Initialization (return {handle, size}).
 
-    array_elements(const array_elements&) = delete;
+	array_elements(const array_elements&) = delete;
 	array_elements& operator=(const array_elements&) = delete;
 
-    array_elements(array_elements&&) = delete;
-    array_elements& operator=(array_elements&&) = delete;
+	array_elements(array_elements&&) = delete;
+	array_elements& operator=(array_elements&&) = delete;
 
 private:
 
@@ -360,7 +364,7 @@ protected:
 template <char... Chars>
 class object<meta::string<'[', Chars...>> : public array<meta::string<Chars...>>
 {
-    using array<meta::string<Chars...>>::array;
+	using array<meta::string<Chars...>>::array;
 };
     
 } // namespace java
