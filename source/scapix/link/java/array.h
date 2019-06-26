@@ -109,7 +109,7 @@ public:
 		using difference_type = jsize;
 		using value_type = ref<T>;
 		using pointer = void;
-		using reference = reference;
+		using reference = array::reference;
 		using iterator_category = std::random_access_iterator_tag;
 
 		iterator() : pos(0) {}
@@ -196,7 +196,7 @@ public:
 		using difference_type = jsize;
 		using value_type = ref<T>;
 		using pointer = void;
-		using reference = const_reference;
+		using reference = array::const_reference;
 		using iterator_category = std::random_access_iterator_tag;
 
 		const_iterator() : pos(0) {}
