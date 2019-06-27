@@ -180,7 +180,7 @@ public:
 	private:
 
 		friend array;
-		friend class iterator;
+		friend class const_iterator;
 
 		const_reference(typename array::handle_type arr, jsize pos) : arr(arr), pos(pos) {}
 
