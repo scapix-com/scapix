@@ -1,3 +1,17 @@
+cmake_minimum_required(VERSION 3.14)
+
+include(FetchContent)
+
+FetchContent_Declare(
+    scapix-bin
+    SOURCE_DIR     ${SCAPIX_ROOT}/bin
+    GIT_REPOSITORY https://github.com/scapix-com/scapix-bin
+    GIT_TAG        1
+    GIT_SHALLOW    TRUE
+)
+
+FetchContent_MakeAvailable(scapix-bin)
+
 function(camel_case source target)
     set(up true)
     set(res "")
