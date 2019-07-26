@@ -47,9 +47,9 @@ set(bridges
     "java"
     "objc"
     "python"
+    "js"
 #   "cs"
 #   "swift"
-#   "js"
 )
 
 foreach(bridge ${bridges})

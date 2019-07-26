@@ -6,7 +6,7 @@ FetchContent_Declare(
     scapix-bin
     SOURCE_DIR     ${SCAPIX_ROOT}/bin
     GIT_REPOSITORY https://github.com/scapix-com/scapix-bin
-    GIT_TAG        2
+    GIT_TAG        3
     GIT_SHALLOW    TRUE
 )
 
@@ -154,6 +154,7 @@ foreach(bridge_header ${bridge_headers})
     set(output_files_java)
     set(output_files_objc)
     set(output_files_python)
+    set(output_files_js)
 
     list(APPEND output_files_java
             "${PROJECT_ROOT}/generated/bridge/java/${domain_path}/${bridge_header_name_camel}.java"
@@ -169,12 +170,17 @@ foreach(bridge_header ${bridge_headers})
             "${PROJECT_ROOT}/generated/bridge/python/${bridge_header_name}.cpp"
     )
 
+    list(APPEND output_files_js
+            "${PROJECT_ROOT}/generated/bridge/js/${bridge_header_name}.cpp"
+    )
+
     list(APPEND generated_sources_java ${output_files_java})
     list(APPEND generated_sources_objc ${output_files_objc})
     list(APPEND generated_sources_python ${output_files_python})
+    list(APPEND generated_sources_js ${output_files_js})
 
     add_custom_command(
-            OUTPUT ${output_files_java} ${output_files_objc} ${output_files_python}
+            OUTPUT ${output_files_java} ${output_files_objc} ${output_files_python} ${output_files_js}
             COMMAND ${SCAPIX_ROOT}/bin/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=c++17 -DFOLLY_USE_LIBCPP -DSCAPIX_BRIDGE=cpp -D_GLIBCXX_INCLUDE_NEXT_C_HEADERS "-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>" -I${SCAPIX_ROOT}/std/libcxxabi -I${SCAPIX_ROOT}/std/libcxx -I${SCAPIX_ROOT}/std/clang
             DEPENDS ${bridge_header}
             IMPLICIT_DEPENDS CXX ${bridge_header}
@@ -189,6 +195,7 @@ set(generated_sources
     ${generated_sources_java}
     ${generated_sources_objc}
     ${generated_sources_python}
+    ${generated_sources_js}
 )
 
 # GENERATED property implicitly set for OUTPUT arguments of add_custom_command()
