@@ -5,8 +5,10 @@ Bridge code automatically generated directly from C++ header files, no need to m
 
 ![Scapix Bridge Intro](https://www.scapix.com/img/scapix_intro.png)
 
-[Documentation](https://www.scapix.com/)
-[Bridge Example](https://github.com/scapix-com/example1)
+## Getting started
+
+[Documentation](https://www.scapix.com/)\
+[Bridge Example](https://github.com/scapix-com/example1)\
 [Java Link Example](https://github.com/scapix-com/example2)
 
 ## License
