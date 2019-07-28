@@ -20,6 +20,23 @@ namespace js {
 template <typename T>
 using param = emscripten::val;
 
+// Clang bug
+
+// template <typename Class, typename... Args>
+// std::shared_ptr<Class> constructor(param<Args>... args)
+// {
+// 	return std::make_shared<Class>(convert_cpp<Args>(args)...);
+// }
+
+template <typename Class, typename... Args>
+struct constructor
+{
+	static std::shared_ptr<Class> func(param<Args>... args)
+	{
+		return std::make_shared<Class>(convert_cpp<Args>(args)...);
+	}
+};
+
 template <typename Signature, Signature Function>
 struct function
 {

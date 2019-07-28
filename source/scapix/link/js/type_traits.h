@@ -26,6 +26,8 @@ template<> struct is_native<signed int> : std::true_type {};
 template<> struct is_native<unsigned int> : std::true_type {};
 template<> struct is_native<signed long> : std::true_type {};
 template<> struct is_native<unsigned long> : std::true_type {};
+template<> struct is_native<signed long long> : std::true_type {}; // doesn't work: emscripten doesn't support 64-bit integers
+template<> struct is_native<unsigned long long> : std::true_type {}; // doesn't work: emscripten doesn't support 64-bit integers
 template<> struct is_native<float> : std::true_type {};
 template<> struct is_native<double> : std::true_type {};
 
