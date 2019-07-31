@@ -78,6 +78,12 @@ inline decltype(auto) get_object(jobject thiz)
 // Another workaround would be to use native_method in place of JNINativeMethod to avoid cast completely,
 // and store std::tuple<Methods...> in native_methods instead of array (UB but would work).
 
+#ifdef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wmicrosoft-cast"
+#endif
+
 template <typename Source>
 constexpr inline void* void_cast(const Source& source)
 {
@@ -89,6 +95,10 @@ constexpr inline void* void_cast(const Source& source)
 	return __builtin_constant_p(reinterpret_cast<void*>(source)) ? (reinterpret_cast<void*>(source)) : (reinterpret_cast<void*>(source));
 #endif
 }
+
+#ifdef __clang__
+#pragma GCC diagnostic pop
+#endif
 
 //template <typename T>
 //inline std::remove_reference_t<T> initialized()
