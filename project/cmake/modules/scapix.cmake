@@ -181,7 +181,7 @@ foreach(bridge_header ${bridge_headers})
 
     add_custom_command(
             OUTPUT ${output_files_java} ${output_files_objc} ${output_files_python} ${output_files_js}
-            COMMAND ${SCAPIX_ROOT}/bin/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix -scapix-domain=${domain} ${bridge_header} -- -arch "$<IF:$<BOOL:${CMAKE_XCODE_ARCHS}>,${CMAKE_XCODE_ARCHS},${CMAKE_SYSTEM_PROCESSOR}>" -xc++ -std=c++17 -DFOLLY_USE_LIBCPP -DSCAPIX_BRIDGE=cpp -D_GLIBCXX_INCLUDE_NEXT_C_HEADERS "-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>" -I${SCAPIX_ROOT}/std/libcxxabi -I${SCAPIX_ROOT}/std/libcxx -I${SCAPIX_ROOT}/std/clang
+            COMMAND ${SCAPIX_ROOT}/bin/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix -scapix-domain=${domain} ${bridge_header} -- -arch "$<IF:$<BOOL:${CMAKE_XCODE_ARCHS}>,${CMAKE_XCODE_ARCHS},$<IF:$<BOOL:${EMSCRIPTEN}>,${CMAKE_HOST_SYSTEM_PROCESSOR},${CMAKE_SYSTEM_PROCESSOR}>>" -xc++ -std=c++17 -DFOLLY_USE_LIBCPP -DSCAPIX_BRIDGE=cpp -D_GLIBCXX_INCLUDE_NEXT_C_HEADERS "-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>" -I${SCAPIX_ROOT}/std/libcxxabi -I${SCAPIX_ROOT}/std/libcxx -I${SCAPIX_ROOT}/std/clang
             DEPENDS ${bridge_header}
             IMPLICIT_DEPENDS CXX ${bridge_header}
             WORKING_DIRECTORY ${PROJECT_ROOT}
