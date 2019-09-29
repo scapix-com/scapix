@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.14)
 include("modules/HunterGate.cmake")
 
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.171.tar.gz"
-    SHA1 "5d68bcca78eee347239ca5f4d34f4b6c12683154"
+    URL "https://github.com/ruslo/hunter/archive/v0.23.214.tar.gz"
+    SHA1 "e14bc153a7f16d6a5eeec845fb0283c8fad8c358"
 )
 
 project(scapix CXX)
