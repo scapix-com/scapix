@@ -179,9 +179,29 @@ foreach(bridge_header ${bridge_headers})
     list(APPEND generated_sources_python ${output_files_python})
     list(APPEND generated_sources_js ${output_files_js})
 
+    if(ANDROID)
+        if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+            set(scapix_clang_config -DANDROID -target armv7a-linux-androideabi)
+        elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
+            set(scapix_clang_config -DANDROID -target aarch64-linux-android)
+        elseif(${ANDROID_ABI} STREQUAL "x86")
+            set(scapix_clang_config -DANDROID -target i686-linux-android)
+        elseif(${ANDROID_ABI} STREQUAL "x86_64")
+            set(scapix_clang_config -DANDROID -target x86_64-linux-android)
+        else()
+            message(FATAL_ERROR "Unknown Android ABI")
+        endif()
+    elseif(IOS)
+        set(scapix_clang_config -arch arm64)
+    elseif(EMSCRIPTEN)
+        set(cscapix_clang_config -DFOLLY_USE_LIBCPP -D_GLIBCXX_INCLUDE_NEXT_C_HEADERS -I${SCAPIX_ROOT}/std/libcxxabi -I${SCAPIX_ROOT}/std/libcxx -I${SCAPIX_ROOT}/std/clang)
+    else()
+        set(scapix_clang_config)
+    endif()
+
     add_custom_command(
             OUTPUT ${output_files_java} ${output_files_objc} ${output_files_python} ${output_files_js}
-            COMMAND ${SCAPIX_ROOT}/bin/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix -scapix-domain=${domain} ${bridge_header} -- -arch "$<IF:$<BOOL:${CMAKE_XCODE_ARCHS}>,${CMAKE_XCODE_ARCHS},$<IF:$<BOOL:${EMSCRIPTEN}>,${CMAKE_HOST_SYSTEM_PROCESSOR},${CMAKE_SYSTEM_PROCESSOR}>>" -xc++ -std=c++17 -DFOLLY_USE_LIBCPP -DSCAPIX_BRIDGE=cpp -D_GLIBCXX_INCLUDE_NEXT_C_HEADERS "-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>" -I${SCAPIX_ROOT}/std/libcxxabi -I${SCAPIX_ROOT}/std/libcxx -I${SCAPIX_ROOT}/std/clang
+            COMMAND ${SCAPIX_ROOT}/bin/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=c++17 ${scapix_clang_config} "$<$<BOOL:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}>:-I$<JOIN:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES},;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>"
             DEPENDS ${bridge_header}
             IMPLICIT_DEPENDS CXX ${bridge_header}
             WORKING_DIRECTORY ${PROJECT_ROOT}
