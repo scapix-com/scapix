@@ -194,7 +194,16 @@ foreach(bridge_header ${bridge_headers})
     elseif(IOS)
         set(scapix_clang_config -arch arm64)
     elseif(EMSCRIPTEN)
-        set(scapix_clang_config -DFOLLY_USE_LIBCPP -D_GLIBCXX_INCLUDE_NEXT_C_HEADERS -I${SCAPIX_ROOT}/std/libcxxabi -I${SCAPIX_ROOT}/std/libcxx -I${SCAPIX_ROOT}/std/clang)
+        set(scapix_clang_config
+            -target wasm32-unknown-emscripten
+            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/include/libcxx
+            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/lib/libcxxabi/include
+            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/include/compat
+            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/include
+            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/include/libc
+            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/lib/libc/musl/arch/emscripten
+            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/local/include
+            )
     else()
         set(scapix_clang_config)
     endif()
