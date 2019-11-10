@@ -48,6 +48,7 @@ endif()
 #     target_compile_options(${target} PUBLIC "-fobjc-arc")
 # endif()
 
+add_subdirectory(${SCAPIX_ROOT}/project/cmake ${PROJECT_BINARY_DIR}/scapix)
 target_link_libraries(${target} PUBLIC scapix)
 
 # extract scapix_project_name from domain
