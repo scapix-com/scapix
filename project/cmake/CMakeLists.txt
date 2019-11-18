@@ -38,6 +38,9 @@ file(GLOB_RECURSE doc_sources CONFIGURE_DEPENDS
 
 add_library(scapix ${sources} ${java_api_sources} ${doc_sources})
 
+# https://github.com/ruslo/hunter/issues/542
+set_target_properties(scapix PROPERTIES DEBUG_POSTFIX "")
+
 source_group(TREE ${SCAPIX_ROOT}/source PREFIX "source" FILES ${sources})
 source_group(TREE ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API}/scapix/java_api PREFIX "java_api" FILES ${java_api_sources})
 source_group(TREE ${SCAPIX_ROOT}/doc PREFIX "doc" FILES ${doc_sources})
