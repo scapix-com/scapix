@@ -144,13 +144,13 @@ namespace java {
 template <>
 struct class_name<bridge::java::object_base>
 {
-    using type = SCAPIX_META_STRING("com/scapix/Bridge");
+	using type = SCAPIX_META_STRING("com/scapix/Bridge");
 };
 
 template <typename T>
 struct class_name<bridge::java::init<T>>
 {
-    using type = class_name_t<T>;
+	using type = class_name_t<T>;
 };
 
 // used to convert 'this'
@@ -158,10 +158,10 @@ struct class_name<bridge::java::init<T>>
 template <typename Jni, typename T>
 struct convert<Jni, bridge::java::init<T>>
 {
-    static bridge::java::init<T> cpp(ref<class_name_t<T>> v)
-    {
-        return bridge::java::init<T>(std::move(v));
-    }
+	static bridge::java::init<T> cpp(ref<class_name_t<T>> v)
+	{
+		return bridge::java::init<T>(std::move(v));
+	}
 };
 
 // used to convert 'this'
@@ -170,24 +170,24 @@ template <typename Jni, typename T>
 struct convert<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 {
 	static T& cpp(ref<class_name_t<T>> v)
-    {
-        return *reinterpret_cast<T*>(static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(std::move(v))->template get_field<SCAPIX_META_STRING("ptr"), jlong>());
-    }
+	{
+		return *static_cast<T*>(reinterpret_cast<bridge::java::object_base*>(static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(std::move(v))->template get_field<SCAPIX_META_STRING("ptr"), jlong>()));
+	}
 };
 
 template <typename Jni, typename T>
 struct convert_shared<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 {
 	static std::shared_ptr<T> cpp(ref<class_name_t<T>> v)
-    {
+	{
 		return static_pointer_cast<T>(reinterpret_cast<bridge::java::object_base*>(static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(std::move(v))->template get_field<SCAPIX_META_STRING("ptr"), jlong>())->scapix_shared());
-    }
+	}
 
 	static ref<class_name_t<T>> jni(std::shared_ptr<T> v)
-    {
+	{
 		auto p = v.get();
 		return static_pointer_cast<class_name_t<T>>(p->get_ref(std::move(v)));
-    }
+	}
 };
 
 } // namespace java
