@@ -20,6 +20,31 @@ namespace scapix {
 namespace bridge {
 namespace java {
 
+class object_base;
+
+namespace detail {
+
+class bridge : public link::java::object<SCAPIX_META_STRING("com/scapix/Bridge")>
+{
+public:
+
+	using nop = link::java::object<SCAPIX_META_STRING("com/scapix/Bridge$Nop")>;
+	using ptr = SCAPIX_META_STRING("ptr");
+
+	template <typename Wrapper>
+	static link::java::local_ref<bridge> create() { return link::java::static_pointer_cast<bridge>(link::java::object<Wrapper>::template new_object<void(link::java::ref<nop>)>(nullptr)); }
+
+	void set_ptr(object_base* p) { set_field<ptr>(reinterpret_cast<jlong>(p)); }
+	object_base* get_ptr() { return reinterpret_cast<object_base*>(get_field<ptr, jlong>()); }
+
+protected:
+
+	bridge(handle_type h) : object_type(h) {}
+
+};
+
+} // namespace detail
+
 class object_base
 {
 protected:
@@ -40,7 +65,7 @@ private:
 
 	friend jint on_load(JavaVM *vm, void *reserved);
 
-	void attach(link::java::ref<SCAPIX_META_STRING("com/scapix/Bridge")> obj, std::shared_ptr<object_base> shared_this)
+	void attach(link::java::ref<detail::bridge> obj, std::shared_ptr<object_base> shared_this)
 	{
 		assert(!wrapper);
 		assert(!self);
@@ -48,20 +73,20 @@ private:
 		wrapper = std::move(obj);
 		self = std::move(shared_this);
 
-		wrapper->set_field<SCAPIX_META_STRING("ptr")>(reinterpret_cast<jlong>(this));
+		wrapper->set_ptr(this);
 	}
 
 	// to do: with indirect inheritance support,
 	// wrappers should depend on actual object type.
 
 	template <typename T>
-	link::java::local_ref<SCAPIX_META_STRING("com/scapix/Bridge")> get_ref(std::shared_ptr<T> shared_this)
+	link::java::local_ref<detail::bridge> get_ref(std::shared_ptr<T> shared_this)
 	{
-		link::java::local_ref<SCAPIX_META_STRING("com/scapix/Bridge")> local(wrapper);
+		link::java::local_ref<detail::bridge> local(wrapper);
 
 		if (!local)
 		{
-			local = link::java::static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(link::java::object<link::java::class_name_t<T>>::template new_object<void(link::java::ref<SCAPIX_META_STRING("com/scapix/Bridge$Nop")>)>(nullptr));
+			local = detail::bridge::create<link::java::class_name_t<T>>();
 			attach(local, std::move(shared_this));
 		}
 
@@ -80,7 +105,7 @@ private:
 		self.reset(); // might destroy this object
 	}
 
-	link::java::weak_ref<SCAPIX_META_STRING("com/scapix/Bridge")> wrapper;
+	link::java::weak_ref<detail::bridge> wrapper;
 	std::shared_ptr<object_base> self;
 
 };
@@ -112,7 +137,7 @@ public:
 	{
 		std::shared_ptr<object_base> obj = std::make_shared<T>(std::forward<Args>(args)...);
 		object_base* ptr = obj.get();
-		ptr->attach(link::java::static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(std::move(wrapper)), std::move(obj));
+		ptr->attach(link::java::static_pointer_cast<detail::bridge>(std::move(wrapper)), std::move(obj));
 	}
 
 private:
@@ -127,7 +152,7 @@ inline jint on_load(JavaVM *vm, void *reserved)
 
 	link::java::native_methods
 	<
-		SCAPIX_META_STRING("com/scapix/Bridge"),
+		detail::bridge::class_name,
 		link::java::native_method<SCAPIX_META_STRING("_finalize"), void(), void(object_base::*)(), &object_base::finalize>
 	>
 	::register_();
@@ -144,7 +169,7 @@ namespace java {
 template <>
 struct class_name<bridge::java::object_base>
 {
-	using type = SCAPIX_META_STRING("com/scapix/Bridge");
+	using type = bridge::java::detail::bridge::class_name;
 };
 
 template <typename T>
@@ -171,7 +196,7 @@ struct convert<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 {
 	static T& cpp(ref<class_name_t<T>> v)
 	{
-		return *static_cast<T*>(reinterpret_cast<bridge::java::object_base*>(static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(std::move(v))->template get_field<SCAPIX_META_STRING("ptr"), jlong>()));
+		return *static_cast<T*>(static_pointer_cast<bridge::java::detail::bridge>(std::move(v))->get_ptr());
 	}
 };
 
@@ -180,7 +205,7 @@ struct convert_shared<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 {
 	static std::shared_ptr<T> cpp(ref<class_name_t<T>> v)
 	{
-		return static_pointer_cast<T>(reinterpret_cast<bridge::java::object_base*>(static_pointer_cast<SCAPIX_META_STRING("com/scapix/Bridge")>(std::move(v))->template get_field<SCAPIX_META_STRING("ptr"), jlong>())->scapix_shared());
+		return static_pointer_cast<T>(static_pointer_cast<bridge::java::detail::bridge>(std::move(v))->get_ptr()->scapix_shared());
 	}
 
 	static ref<class_name_t<T>> jni(std::shared_ptr<T> v)
