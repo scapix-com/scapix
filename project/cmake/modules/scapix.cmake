@@ -6,7 +6,7 @@ FetchContent_Declare(
     scapix-bin
     SOURCE_DIR     ${SCAPIX_ROOT}/bin
     GIT_REPOSITORY https://github.com/scapix-com/scapix-bin
-    GIT_TAG        6
+    GIT_TAG        7
     GIT_SHALLOW    TRUE
 )
 
