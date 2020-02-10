@@ -25,9 +25,9 @@ class befriend : public T
 	friend Friend;
 };
 
-// befriend doesn't work on MSC (as of 2017 15.9) in C++17 mode
+// befriend doesn't work on MSC (as of vs2019 16.4.4) in C++17 mode
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #define protected public
 #endif
 
