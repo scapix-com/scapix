@@ -197,13 +197,13 @@ foreach(bridge_header ${bridge_headers})
     elseif(EMSCRIPTEN)
         set(scapix_clang_config
             -target wasm32-unknown-emscripten
-            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/include/libcxx
-            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/lib/libcxxabi/include
-            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/include/compat
-            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/include
-            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/include/libc
-            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/lib/libc/musl/arch/emscripten
-            -isystem $ENV{EMSDK}/fastcomp/emscripten/system/local/include
+            -isystem $ENV{EMSDK}/upstream/emscripten/system/include/libcxx
+            -isystem $ENV{EMSDK}/upstream/emscripten/system/lib/libcxxabi/include
+            -isystem $ENV{EMSDK}/upstream/emscripten/system/include/compat
+            -isystem $ENV{EMSDK}/upstream/emscripten/system/include
+            -isystem $ENV{EMSDK}/upstream/emscripten/system/include/libc
+            -isystem $ENV{EMSDK}/upstream/emscripten/system/lib/libc/musl/arch/emscripten
+            -isystem $ENV{EMSDK}/upstream/emscripten/system/local/include
             )
     else()
         set(scapix_clang_config)
