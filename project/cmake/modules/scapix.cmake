@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 
+set(SCAPIX_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../..)
+get_filename_component(SCAPIX_ROOT ${SCAPIX_ROOT} ABSOLUTE)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -36,6 +39,14 @@ endfunction(camel_case)
 
 function(scapix_bridge_headers target domain)
 set(bridge_headers ${ARGN})
+
+set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python")
+#set(SCAPIX_PLATFORM "generic" CACHE STRING "subfolder of 'platform' folder: ios, android, macos, windows, linux, etc.")
+#set(SCAPIX_JAVA_API "android-28" CACHE STRING "subfolder of 'scapix/java_api' folder: jdk-11.0.2, android-28, etc.")
+
+if(NOT DEFINED SCAPIX_BRIDGE)
+    message(FATAL_ERROR "SCAPIX_BRIDGE not defined (cpp, java, objc, python)")
+endif()
 
 if(${SCAPIX_BRIDGE} STREQUAL python)
     hunter_add_package(pybind11)
