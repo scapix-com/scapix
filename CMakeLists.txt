@@ -1,7 +1,93 @@
 cmake_minimum_required(VERSION 3.14)
 
-set(SCAPIX_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../..)
-get_filename_component(SCAPIX_ROOT ${SCAPIX_ROOT} ABSOLUTE)
+project(scapix CXX)
+
+if(NOT SCAPIX_BRIDGE)
+    set(SCAPIX_BRIDGE cpp)
+endif()
+
+if(NOT SCAPIX_PLATFORM)
+    set(SCAPIX_PLATFORM generic)
+endif()
+
+if(NOT SCAPIX_JAVA_API)
+    set(SCAPIX_JAVA_API jdk-11.0.2)
+endif()
+
+set(SCAPIX_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "")
+
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS
+    ${SCAPIX_ROOT}/source/*.*
+)
+
+file(GLOB_RECURSE java_api_sources CONFIGURE_DEPENDS
+    ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API}/scapix/java_api/*.*
+)
+
+file(GLOB_RECURSE doc_sources CONFIGURE_DEPENDS
+    ${SCAPIX_ROOT}/doc/*.*
+)
+
+add_library(scapix ${sources} ${java_api_sources} ${doc_sources})
+
+source_group(TREE ${SCAPIX_ROOT}/source PREFIX "source" FILES ${sources})
+source_group(TREE ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API}/scapix/java_api PREFIX "java_api" FILES ${java_api_sources})
+source_group(TREE ${SCAPIX_ROOT}/doc PREFIX "doc" FILES ${doc_sources})
+
+set(bridges
+    "cpp"
+    "java"
+    "objc"
+    "python"
+    "js"
+#   "cs"
+#   "swift"
+)
+
+foreach(bridge ${bridges})
+    if(NOT ${SCAPIX_BRIDGE} STREQUAL ${bridge})
+        file(GLOB_RECURSE bridge_sources CONFIGURE_DEPENDS
+            ${SCAPIX_ROOT}/source/scapix/link/${bridge}/*.*
+            ${SCAPIX_ROOT}/source/scapix/bridge/${bridge}/*.*
+        )
+        set_source_files_properties(${bridge_sources} PROPERTIES HEADER_FILE_ONLY TRUE)
+    endif()
+endforeach()
+
+if(${SCAPIX_BRIDGE} STREQUAL objc)
+    target_compile_options(scapix PUBLIC "-fobjc-arc")
+    set_source_files_properties(${SCAPIX_ROOT}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_FLAGS -fno-objc-arc)
+endif()
+
+set_target_properties(scapix PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+)
+
+target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/source)
+target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
+target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
+
+find_package(Boost REQUIRED)
+target_link_libraries(scapix PUBLIC Boost::headers)
+
+if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
+    find_package(JNI REQUIRED)
+    target_include_directories(scapix PUBLIC ${JNI_INCLUDE_DIRS})
+    target_link_libraries(scapix PUBLIC ${JNI_LIBRARIES})
+endif()
+
+if(MSVC)
+    target_compile_options(scapix PUBLIC /MP /wd4584)
+
+    if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+        target_compile_options(scapix PUBLIC /permissive-)
+        #target_compile_definitions(scapix PUBLIC BOOST_USE_CONSTEXPR)
+    elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
+        #target_compile_definitions(scapix PUBLIC _HAS_VARIABLE_TEMPLATES=1)
+    endif()
+endif()
 
 include(FetchContent)
 
@@ -49,8 +135,7 @@ if(NOT DEFINED SCAPIX_BRIDGE)
 endif()
 
 if(${SCAPIX_BRIDGE} STREQUAL python)
-    hunter_add_package(pybind11)
-    find_package(pybind11 REQUIRED)
+    find_package(Pybind11 REQUIRED)
     target_link_libraries(${target} PRIVATE pybind11::module)
     set_target_properties(${target} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")
 endif()
@@ -59,7 +144,6 @@ endif()
 #     target_compile_options(${target} PUBLIC "-fobjc-arc")
 # endif()
 
-add_subdirectory(${SCAPIX_ROOT}/project/cmake ${PROJECT_BINARY_DIR}/scapix)
 target_link_libraries(${target} PUBLIC scapix)
 
 # extract scapix_project_name from domain
