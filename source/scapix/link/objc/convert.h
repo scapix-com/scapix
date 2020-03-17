@@ -47,18 +47,18 @@ using has_convert_objc_t = decltype(std::declval<ObjC>() = convert<remove_cvref_
 template<typename ObjC, typename Cpp>
 using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<remove_cvref_t<ObjC>, remove_cvref_t<Cpp>>::cpp(std::declval<ObjC>()));
 
-template <typename T>
-struct convert<T, T>
+template <typename ObjC, typename Cpp>
+struct convert<ObjC, Cpp, std::enable_if_t<std::is_arithmetic_v<ObjC> && std::is_arithmetic_v<Cpp> && sizeof(ObjC) == sizeof(Cpp)>>
 {
-    static T cpp(T value)
-    {
-        return value;
-    }
+	static Cpp cpp(ObjC v)
+	{
+		return v;
+	}
 
-    static T objc(T value)
-    {
-        return value;
-    }
+	static ObjC objc(Cpp v)
+	{
+		return v;
+	}
 };
 
 template <>
