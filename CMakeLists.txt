@@ -170,7 +170,7 @@ file(APPEND "${generated_java_cpp}" "#include <scapix/bridge/java/object.h>
 ")
 
 foreach(filename ${bridge_headers})
-    get_filename_component(name ${filename} NAME_WE)
+    get_filename_component(name ${filename} NAME_WLE)
     file(APPEND "${generated_java_cpp}" "void scapix_java_export_${name}();\n")
 endforeach(filename)
 
@@ -183,7 +183,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 
 ")
 foreach(filename ${bridge_headers})
-    get_filename_component(name ${filename} NAME_WE)
+    get_filename_component(name ${filename} NAME_WLE)
     file(APPEND "${generated_java_cpp}" "    scapix_java_export_${name}();\n")
 endforeach(filename)
 file(APPEND "${generated_java_cpp}" "
@@ -220,7 +220,7 @@ file(APPEND "${generated_python_cpp}"
 file(APPEND "${generated_python_cpp}" "#include <pybind11/pybind11.h>\n\n")
 
 foreach(filename ${bridge_headers})
-    get_filename_component(name ${filename} NAME_WE)
+    get_filename_component(name ${filename} NAME_WLE)
     file(APPEND "${generated_python_cpp}" "void scapix_python_export_${name}(pybind11::module& m);\n")
 endforeach(filename)
 file(APPEND "${generated_python_cpp}" "
@@ -229,7 +229,7 @@ PYBIND11_MODULE(${target}, m)
     m.doc() = \"${domain}\";
 ")
 foreach(filename ${bridge_headers})
-    get_filename_component(name ${filename} NAME_WE)
+    get_filename_component(name ${filename} NAME_WLE)
     file(APPEND "${generated_python_cpp}" "    scapix_python_export_${name}(m);\n")
 endforeach(filename)
 file(APPEND "${generated_python_cpp}" "}\n")
@@ -242,7 +242,7 @@ string(REPLACE "." "/" domain_path ${domain})
 
 foreach(bridge_header ${bridge_headers})
 
-    get_filename_component(bridge_header_name ${bridge_header} NAME_WE)
+    get_filename_component(bridge_header_name ${bridge_header} NAME_WLE)
     file(RELATIVE_PATH bridge_header_relative ${PROJECT_ROOT} ${bridge_header})
     camel_case(${bridge_header_name} bridge_header_name_camel)
 
