@@ -93,10 +93,9 @@ include(FetchContent)
 
 FetchContent_Declare(
     scapix-bin
-    SOURCE_DIR     ${SCAPIX_ROOT}/bin
-    GIT_REPOSITORY https://github.com/scapix-com/scapix-bin
-    GIT_TAG        8
-    GIT_SHALLOW    TRUE
+    SOURCE_DIR ${SCAPIX_ROOT}/bin
+    URL "https://github.com/scapix-com/scapix-bin/archive/8.tar.gz"
+    URL_HASH SHA256=fe432f328622e377dc61cfaa957b198661318efb3f55e4d895f6dedf2b4d9cc1
 )
 
 FetchContent_MakeAvailable(scapix-bin)
