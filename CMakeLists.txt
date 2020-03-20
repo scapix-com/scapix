@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.14)
 
 project(scapix CXX)
 
+find_package(ScapixBin REQUIRED)
+
 if(NOT SCAPIX_BRIDGE)
     set(SCAPIX_BRIDGE cpp)
 endif()
@@ -88,17 +90,6 @@ if(MSVC)
         #target_compile_definitions(scapix PUBLIC _HAS_VARIABLE_TEMPLATES=1)
     endif()
 endif()
-
-include(FetchContent)
-
-FetchContent_Declare(
-    scapix-bin
-    SOURCE_DIR ${SCAPIX_ROOT}/bin
-    URL "https://github.com/scapix-com/scapix-bin/archive/8.tar.gz"
-    URL_HASH SHA256=fe432f328622e377dc61cfaa957b198661318efb3f55e4d895f6dedf2b4d9cc1
-)
-
-FetchContent_MakeAvailable(scapix-bin)
 
 function(camel_case source target)
     set(up true)
@@ -305,7 +296,7 @@ foreach(bridge_header ${bridge_headers})
 
     add_custom_command(
             OUTPUT ${output_files_java} ${output_files_objc} ${output_files_python} ${output_files_js}
-            COMMAND ${SCAPIX_ROOT}/bin/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=c++17 ${scapix_clang_config} "$<$<BOOL:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}>:-I$<JOIN:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES},;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>"
+            COMMAND ${SCAPIX_EXE_DIR}/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=c++17 ${scapix_clang_config} "$<$<BOOL:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}>:-I$<JOIN:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES},;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>"
             DEPENDS ${bridge_header}
             IMPLICIT_DEPENDS CXX ${bridge_header}
             WORKING_DIRECTORY ${PROJECT_ROOT}
