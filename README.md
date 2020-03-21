@@ -27,8 +27,6 @@ scapix_bridge_headers(
 )
 ```
 
-## More info
-
 [Documentation](https://www.scapix.com/)\
 [Example](https://github.com/scapix-com/example1)
 
@@ -39,7 +37,7 @@ Modern C++17 wrapper for JNI:
 - automatic resource management
 - ZERO runtime overhead compared to manually written JNI code
 - automatic C++/Java type conversion for many standard types (std::string, std::vector, etc.)
-- automatic C++/Java exception handling tunneling
+- automatic C++/Java exception tunneling
 - comes with pre-generated C++ headers for all JDK and Android Java APIs
 - automatically generate C++ headers for any Java code, including your own
 
