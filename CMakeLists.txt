@@ -78,17 +78,6 @@ if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
     target_link_libraries(scapix PUBLIC ${JNI_LIBRARIES})
 endif()
 
-if(MSVC)
-    target_compile_options(scapix PUBLIC /MP /wd4584)
-
-    if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-        target_compile_options(scapix PUBLIC /permissive-)
-        #target_compile_definitions(scapix PUBLIC BOOST_USE_CONSTEXPR)
-    elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
-        #target_compile_definitions(scapix PUBLIC _HAS_VARIABLE_TEMPLATES=1)
-    endif()
-endif()
-
 function(camel_case source target)
     set(up true)
     set(res "")
@@ -114,6 +103,8 @@ endfunction(camel_case)
 function(scapix_bridge_headers target domain)
 set(bridge_headers ${ARGN})
 
+set(PROJECT_ROOT ${CMAKE_SOURCE_DIR})
+
 set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python")
 #set(SCAPIX_PLATFORM "generic" CACHE STRING "subfolder of 'platform' folder: ios, android, macos, windows, linux, etc.")
 #set(SCAPIX_JAVA_API "android-28" CACHE STRING "subfolder of 'scapix/java_api' folder: jdk-11.0.2, android-28, etc.")
@@ -127,10 +118,6 @@ if(${SCAPIX_BRIDGE} STREQUAL python)
     target_link_libraries(${target} PRIVATE pybind11::module)
     set_target_properties(${target} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")
 endif()
-
-# if(${SCAPIX_BRIDGE} STREQUAL objc)
-#     target_compile_options(${target} PUBLIC "-fobjc-arc")
-# endif()
 
 target_link_libraries(${target} PUBLIC scapix)
 
@@ -232,7 +219,11 @@ string(REPLACE "." "/" domain_path ${domain})
 foreach(bridge_header ${bridge_headers})
 
     get_filename_component(bridge_header_name ${bridge_header} NAME_WLE)
-    file(RELATIVE_PATH bridge_header_relative ${PROJECT_ROOT} ${bridge_header})
+    if(IS_ABSOLUTE bridge_header)
+        file(RELATIVE_PATH bridge_header_relative ${PROJECT_ROOT} ${bridge_header})
+    else()
+        set(bridge_header_relative ${bridge_header})
+    endif()
     camel_case(${bridge_header_name} bridge_header_name_camel)
 
     set(output_files_java)
