@@ -28,7 +28,8 @@ scapix_bridge_headers(
 ```
 
 [Documentation](https://www.scapix.com/)\
-[Example](https://github.com/scapix-com/example1)
+[Minimal Example](https://github.com/scapix-com/tiny_bridge)\
+[Extended Example](https://github.com/scapix-com/example1)
 
 ## Java Link
 
