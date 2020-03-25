@@ -69,8 +69,10 @@ target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/source)
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
 target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
 
-find_package(Boost REQUIRED)
-target_link_libraries(scapix PUBLIC Boost::headers)
+if(${SCAPIX_BRIDGE} STREQUAL java)
+    find_package(Boost REQUIRED)
+    target_link_libraries(scapix PUBLIC Boost::headers)
+endif()
 
 if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
     find_package(JNI REQUIRED)
@@ -120,6 +122,11 @@ if(${SCAPIX_BRIDGE} STREQUAL python)
 endif()
 
 target_link_libraries(${target} PUBLIC scapix)
+
+# JVM on macOS looks for native libs with .dylib extension
+if(APPLE AND ${SCAPIX_BRIDGE} STREQUAL java)
+    set_target_properties(${target} PROPERTIES SUFFIX ".dylib")
+endif()
 
 # extract scapix_project_name from domain
 
@@ -315,3 +322,19 @@ target_sources(${target} PUBLIC ${generated_sources})
 source_group(TREE ${PROJECT_ROOT}/generated PREFIX "generated" FILES ${generated_sources})
 
 endfunction(scapix_bridge_headers)
+
+function(scapix_add_target target domain)
+    set(bridge_headers ${ARGN})
+    if(EMSCRIPTEN)
+        add_executable(${target})
+        target_link_options(${target} PRIVATE --bind)
+    #   target_link_options(${target} PRIVATE --emrun)
+    else()
+        if(${SCAPIX_BRIDGE} STREQUAL java OR ${SCAPIX_BRIDGE} STREQUAL python)
+            set(LIBRARY_TYPE MODULE)
+            set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+        endif()
+        add_library(${target} ${LIBRARY_TYPE})
+    endif()
+    scapix_bridge_headers(${target} ${domain} ${bridge_headers})
+endfunction(scapix_add_target)
