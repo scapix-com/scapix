@@ -14,8 +14,8 @@ public class Bridge
 	protected Bridge(Nop nop) {}
 
 	protected void finalize() { _finalize(); ptr = 0; }
-    private native void _finalize();
+	private native void _finalize();
 	private long ptr;
 
-//  private java.lang.ref.SoftReference<Bridge> softSelf = new java.lang.ref.SoftReference<Bridge>(this);
+//	private java.lang.ref.SoftReference<Bridge> softSelf = new java.lang.ref.SoftReference<Bridge>(this);
 }
