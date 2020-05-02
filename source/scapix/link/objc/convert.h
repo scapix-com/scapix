@@ -48,17 +48,19 @@ template<typename ObjC, typename Cpp>
 using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<remove_cvref_t<ObjC>, remove_cvref_t<Cpp>>::cpp(std::declval<ObjC>()));
 
 template <typename ObjC, typename Cpp>
-struct convert<ObjC, Cpp, std::enable_if_t<std::is_arithmetic_v<ObjC> && std::is_arithmetic_v<Cpp> && sizeof(ObjC) == sizeof(Cpp)>>
+struct convert<ObjC, Cpp, std::enable_if_t<std::is_arithmetic_v<ObjC> && std::is_arithmetic_v<Cpp>>>
 {
-	static Cpp cpp(ObjC v)
-	{
-		return v;
-	}
+    static_assert((std::is_integral_v<ObjC>&& std::is_integral_v<Cpp> && sizeof(ObjC) == sizeof(Cpp)) || std::is_same_v<ObjC, Cpp>);
 
-	static ObjC objc(Cpp v)
-	{
-		return v;
-	}
+    static Cpp cpp(ObjC v)
+    {
+        return v;
+    }
+
+    static ObjC objc(Cpp v)
+    {
+        return v;
+    }
 };
 
 template <>
@@ -72,6 +74,22 @@ struct convert<BOOL, bool>
     static BOOL objc(bool value)
     {
         return value;
+    }
+};
+
+template <typename ObjC, typename Cpp>
+struct convert<ObjC, Cpp, std::enable_if_t<std::is_enum_v<Cpp>>>
+{
+    static_assert(std::is_integral_v<ObjC> && sizeof(ObjC) == sizeof(Cpp));
+
+    static Cpp cpp(ObjC v)
+    {
+        return static_cast<Cpp>(v);
+    }
+
+    static ObjC objc(Cpp v)
+    {
+        return static_cast<ObjC>(v);
     }
 };
 

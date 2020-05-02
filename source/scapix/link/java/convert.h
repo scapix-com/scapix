@@ -33,14 +33,32 @@ using has_convert_shared_t = decltype(convert_shared<Jni, Cpp>::jni(std::declval
 template <typename Jni, typename Cpp>
 struct convert<Jni, Cpp, std::enable_if_t<is_primitive_v<Jni> && std::is_arithmetic_v<Cpp>>>
 {
-	static Jni jni(Cpp v)
-	{
-		return v;
-	}
+	static_assert((std::is_integral_v<Jni> && std::is_integral_v<Cpp> && sizeof(Jni) == sizeof(Cpp)) || std::is_same_v<Jni, Cpp>);
 
 	static Cpp cpp(Jni v)
 	{
 		return v;
+	}
+
+	static Jni jni(Cpp v)
+	{
+		return v;
+	}
+};
+
+template <typename Jni, typename Cpp>
+struct convert<Jni, Cpp, std::enable_if_t<std::is_enum_v<Cpp>>>
+{
+	static_assert(std::is_integral_v<Jni> && sizeof(Jni) == sizeof(Cpp));
+
+	static Cpp cpp(Jni value)
+	{
+		return static_cast<Cpp>(value);
+	}
+
+	static Jni jni(Cpp value)
+	{
+		return static_cast<Jni>(value);
 	}
 };
 

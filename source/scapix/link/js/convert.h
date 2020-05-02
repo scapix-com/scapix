@@ -63,6 +63,20 @@ struct convert<emscripten::val, T, std::enable_if_t<is_native_v<T>>>
 };
 
 template <typename T>
+struct convert<emscripten::val, T, std::enable_if_t<std::is_enum_v<T>>>
+{
+	static T cpp(const emscripten::val& val)
+	{
+		return val.as<T>();
+	}
+
+	static emscripten::val js(const T& n)
+	{
+		return emscripten::val(n);
+	}
+};
+
+template <typename T>
 struct convert<emscripten::val, std::shared_ptr<T>>
 {
 	static std::shared_ptr<T> cpp(const emscripten::val& val)
