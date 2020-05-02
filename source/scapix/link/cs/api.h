@@ -7,6 +7,7 @@
 #ifndef SCAPIX_LINK_CS_API_H
 #define SCAPIX_LINK_CS_API_H
 
+#include <cstring>
 #include <string>
 #include <memory>
 #include <scapix/core/type_traits.h>
