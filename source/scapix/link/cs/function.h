@@ -10,6 +10,7 @@
 #include <scapix/core/cast.h>
 #include <scapix/link/cs/convert.h>
 #include <scapix/link/cs/exception.h>
+#include <scapix/bridge/cs/object.h>
 
 namespace scapix::link::cs {
 

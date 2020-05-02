@@ -134,7 +134,7 @@ struct convert_shared<api::handle_type, T, std::enable_if_t<bridge::is_object<T>
 	static api::handle_type cs(std::shared_ptr<T> v)
 	{
 		auto p = v.get();
-		return p->get_ref<T>(std::move(v)).release();
+		return p->template get_ref<T>(std::move(v)).release();
 	}
 };
 

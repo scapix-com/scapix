@@ -13,8 +13,19 @@
 #include <scapix/link/cs/ref_type.h>
 #include <scapix/link/cs/type_traits.h>
 
-#define SCAPIX_EXPORT __declspec(dllexport)
-#define SCAPIX_CALL __stdcall
+#ifdef __GNUC__
+#include <cxxabi.h>
+#endif
+
+#if defined _WIN32 || defined __CYGWIN__
+	#define SCAPIX_EXPORT __declspec(dllexport)
+#elif defined __GNUC__
+	#define SCAPIX_EXPORT __attribute__ ((visibility ("default")))
+#else
+	#define SCAPIX_EXPORT
+#endif
+
+#define SCAPIX_CALL //__stdcall
 
 namespace scapix::bridge::cs { class object_base; }
 
@@ -113,7 +124,7 @@ struct cpp_api
 		catch (...)
 		{
 			#ifdef __GNUC__
-			auto str = __cxa_current_exception_type().name();
+			auto str = __cxxabiv1::__cxa_current_exception_type()->name();
 			#else
 			auto str = "unknown";
 			#endif
