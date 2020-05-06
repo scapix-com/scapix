@@ -21,10 +21,10 @@ namespace scapix {
 namespace link {
 namespace java {
 
-#ifdef __cpp_concepts
+#if 0 // __cpp_concepts >= 201907L
 
 template <typename T>
-concept bool Object =
+concept Object =
 	CopyConstructible<T> &&
 	CopyAssignable<T> &&
 	Destructible<T> &&
@@ -38,7 +38,7 @@ concept bool Object =
 //static_assert(Object<T>);
 
 template <typename T>
-concept bool Ref =
+concept Ref =
 	CopyConstructible<T> &&
 	CopyAssignable<T> &&
 	Destructible<T> &&
