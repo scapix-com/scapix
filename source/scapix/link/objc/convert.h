@@ -15,16 +15,13 @@
 #include <unordered_set>
 #include <functional>
 #include <experimental/type_traits>
+#include <scapix/core/type_traits.h>
 
 #import <Foundation/Foundation.h>
 
 namespace scapix {
 namespace link {
 namespace objc {
-
-// C++20
-template <typename T>
-using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
 
 template <typename ObjC, typename Cpp, typename = void>
 struct convert;

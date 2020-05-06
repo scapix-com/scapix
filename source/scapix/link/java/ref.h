@@ -9,6 +9,7 @@
 
 #include <utility>
 #include <experimental/type_traits>
+#include <scapix/core/type_traits.h>
 #include <scapix/meta/string.h>
 #include <scapix/link/java/type_traits.h>
 #include <scapix/link/java/function.h>
@@ -155,10 +156,6 @@ struct element_type<detail::cast<T>>
 using scope = detail::api::scope;
 
 // convert
-
-// C++20
-template <typename T>
-using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
 
 template <typename Jni, typename Cpp, typename = void>
 struct convert;

@@ -17,15 +17,12 @@
 #include <functional>
 #include <experimental/type_traits>
 #include <emscripten/val.h>
+#include <scapix/core/type_traits.h>
 #include <scapix/link/js/type_traits.h>
 
 namespace scapix {
 namespace link {
 namespace js {
-
-// C++20
-template <typename T>
-using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
 
 template <typename Js, typename Cpp, typename = void>
 struct convert;

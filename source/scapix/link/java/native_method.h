@@ -7,6 +7,7 @@
 #ifndef SCAPIX_LINK_JAVA_NATIVE_METHOD_H
 #define SCAPIX_LINK_JAVA_NATIVE_METHOD_H
 
+#include <scapix/core/cast.h>
 #include <scapix/meta/string.h>
 #include <scapix/link/java/convert.h>
 #include <scapix/link/java/signature.h>
@@ -73,32 +74,6 @@ inline decltype(auto) get_object(jobject thiz)
 {
 	return param<ref<class_name_t<Class>>, Class&>::cpp(thiz);
 }
-
-// constexpr cast from pointer to function to void* (not allowed by standard).
-// Another workaround would be to use native_method in place of JNINativeMethod to avoid cast completely,
-// and store std::tuple<Methods...> in native_methods instead of array (UB but would work).
-
-#ifdef __clang__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wmicrosoft-cast"
-#endif
-
-template <typename Source>
-constexpr inline void* void_cast(const Source& source)
-{
-#ifdef _MSC_VER
-	// static_cast here is Microsoft extension, standard requires reinterpret_cast which ruins constexpr.
-	return source;
-#else
-	// gcc/clang extension
-	return __builtin_constant_p(reinterpret_cast<void*>(source)) ? (reinterpret_cast<void*>(source)) : (reinterpret_cast<void*>(source));
-#endif
-}
-
-#ifdef __clang__
-#pragma GCC diagnostic pop
-#endif
 
 //template <typename T>
 //inline std::remove_reference_t<T> initialized()
