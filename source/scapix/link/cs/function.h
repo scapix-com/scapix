@@ -70,11 +70,11 @@ private:
 	template <typename Class, typename R, typename ...Args>
 	struct select<R(Class::*)(Args...)>
 	{
-		static param_t<R> func(Class* thiz, param_t<Args>... args)
+		static param_t<R> func(bridge::cs::object_base* thiz, param_t<Args>... args)
 		{
 			try
 			{
-				return convert_cs<param_t<R>>((thiz->*Func)(convert_cpp<Args>(args)...));
+				return convert_cs<param_t<R>>((static_cast<Class*>(thiz)->*Func)(convert_cpp<Args>(args)...));
 			}
 			catch (cs::exception& e)
 			{
@@ -92,11 +92,11 @@ private:
 	template <typename Class, typename ...Args>
 	struct select<void(Class::*)(Args...)>
 	{
-		static void func(Class* thiz, param_t<Args>... args)
+		static void func(bridge::cs::object_base* thiz, param_t<Args>... args)
 		{
 			try
 			{
-				(thiz->*Func)(convert_cpp<Args>(args)...);
+				(static_cast<Class*>(thiz)->*Func)(convert_cpp<Args>(args)...);
 			}
 			catch (cs::exception& e)
 			{
@@ -112,11 +112,11 @@ private:
 	template <typename Class, typename R, typename ...Args>
 	struct select<R(Class::*)(Args...)const>
 	{
-		static param_t<R> func(Class* thiz, param_t<Args>... args)
+		static param_t<R> func(bridge::cs::object_base* thiz, param_t<Args>... args)
 		{
 			try
 			{
-				return convert_cs<param_t<R>>((thiz->*Func)(convert_cpp<Args>(args)...));
+				return convert_cs<param_t<R>>((static_cast<Class*>(thiz)->*Func)(convert_cpp<Args>(args)...));
 			}
 			catch (cs::exception& e)
 			{
@@ -134,11 +134,11 @@ private:
 	template <typename Class, typename ...Args>
 	struct select<void(Class::*)(Args...)const>
 	{
-		static void func(Class* thiz, param_t<Args>... args)
+		static void func(bridge::cs::object_base* thiz, param_t<Args>... args)
 		{
 			try
 			{
-				(thiz->*Func)(convert_cpp<Args>(args)...);
+				(static_cast<Class*>(thiz)->*Func)(convert_cpp<Args>(args)...);
 			}
 			catch (cs::exception& e)
 			{
