@@ -159,6 +159,11 @@ string(FIND ${domain} "." scapix_domain_pos REVERSE)
 math(EXPR scapix_domain_pos "${scapix_domain_pos}+1")
 string(SUBSTRING ${domain} ${scapix_domain_pos} -1 scapix_project_name)
 
+get_target_property(scapix_output_name ${target} OUTPUT_NAME)
+if(NOT scapix_output_name)
+  set(scapix_output_name ${target})
+endif()
+
 # generated_java_cpp
 
 set(generated_java_cpp
@@ -224,7 +229,7 @@ foreach(filename ${bridge_headers})
     file(APPEND "${generated_python_cpp}" "void scapix_python_export_${name}(pybind11::module& m);\n")
 endforeach(filename)
 file(APPEND "${generated_python_cpp}" "
-PYBIND11_MODULE(${target}, m)
+PYBIND11_MODULE(${scapix_output_name}, m)
 {
     m.doc() = \"${domain}\";
 ")
@@ -265,11 +270,6 @@ file(APPEND "${generated_cs_cpp}" "}\n")
 set(generated_sources_cs_private ${generated_cs_cpp})
 
 # generated_cs_cs
-
-get_target_property(scapix_output_name ${target} OUTPUT_NAME)
-if(NOT scapix_output_name)
-  set(scapix_output_name ${target})
-endif()
 
 camel_case(${scapix_project_name} scapix_project_name_camel)
 
