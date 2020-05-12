@@ -266,6 +266,11 @@ set(generated_sources_cs_private ${generated_cs_cpp})
 
 # generated_cs_cs
 
+get_target_property(scapix_output_name ${target} OUTPUT_NAME)
+if(NOT scapix_output_name)
+  set(scapix_output_name ${target})
+endif()
+
 camel_case(${scapix_project_name} scapix_project_name_camel)
 
 set(generated_cs_cs
@@ -280,7 +285,7 @@ namespace Scapix {
 
 	public static class Native
 	{
-		public const string Dll = \"${scapix_project_name}lib\";
+		public const string Dll = \"${scapix_output_name}\";
 	}
 
 }
