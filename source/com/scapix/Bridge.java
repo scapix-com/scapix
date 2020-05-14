@@ -17,5 +17,7 @@ public class Bridge
 	private native void _finalize();
 	private long ptr;
 
+	static { System.loadLibrary(Config.libraryName); }
+
 //	private java.lang.ref.SoftReference<Bridge> softSelf = new java.lang.ref.SoftReference<Bridge>(this);
 }
