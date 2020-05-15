@@ -22,7 +22,7 @@ find_package(Scapix REQUIRED)
 
 scapix_bridge_headers(
     chatlib
-    "com.scapix.chat"
+    "com.example.chat"
     "source/chat/contact.h"
     "source/chat/session.h"
     "source/chat/model.h"
