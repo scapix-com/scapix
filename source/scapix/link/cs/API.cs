@@ -300,8 +300,6 @@ namespace Scapix.Link
             cppApi.SetString(FromNative<Exception>(e).Message, data);
         }
 
-        // Need to hold delegate objects, otherwise they are released after MarshalAs(UnmanagedType.FunctionPtr).
-
         [StructLayout(LayoutKind.Sequential)]
         public class ClassCsApi
         {
@@ -395,16 +393,12 @@ namespace Scapix.Link
             public readonly SetExceptionDelegate SetException;
         };
 
-        public readonly static CppApi cppApi;// = ScapixInit(csApi);
+        public readonly static CppApi cppApi = Marshal.PtrToStructure<CppApi>(ScapixInit(csApi));
 
         [DllImport(Scapix.Native.Dll)]
         static extern IntPtr ScapixInit(CsApi funcTable);
 
-        static API()
-        {
-            cppApi = Marshal.PtrToStructure<CppApi>(ScapixInit(csApi));
-        }
-
+        static API() {}
         public static void Init() {}
     }
 }

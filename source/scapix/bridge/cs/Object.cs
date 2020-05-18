@@ -13,7 +13,7 @@ namespace Scapix.Bridge
     {
         internal protected /*protected*/ IntPtr cpp;
 
-        static Object()
+        protected static void ScapixInit()
         {
             Link.API.Init();
         }
@@ -52,13 +52,13 @@ namespace Scapix.Bridge
             catch (Link.CppException e)
             {
                 Link.API.cppApi.SetException(e.Release(), true);
-                return default;
             }
             catch (Exception e)
             {
                 Link.API.cppApi.SetException(ScapixCpp(e), false);
-                return default;
             }
+
+            return default;
         }
 
         protected static void ScapixCallback(Action func)
