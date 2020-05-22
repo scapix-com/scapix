@@ -187,6 +187,62 @@ struct convert<NSNumber*, std::int64_t>
 };
 
 template <>
+struct convert<NSNumber*, std::uint8_t>
+{
+    static std::uint8_t cpp(NSNumber* value)
+    {
+        return [value unsignedCharValue];
+    }
+
+    static NSNumber* objc(std::uint8_t value)
+    {
+        return [NSNumber numberWithUnsignedChar:value];
+    }
+};
+
+template <>
+struct convert<NSNumber*, std::uint16_t>
+{
+    static std::uint16_t cpp(NSNumber* value)
+    {
+        return [value unsignedShortValue];
+    }
+
+    static NSNumber* objc(std::uint16_t value)
+    {
+        return [NSNumber numberWithUnsignedShort:value];
+    }
+};
+
+template <>
+struct convert<NSNumber*, std::uint32_t>
+{
+    static std::uint32_t cpp(NSNumber* value)
+    {
+        return [value unsignedIntValue];
+    }
+
+    static NSNumber* objc(std::uint32_t value)
+    {
+        return [NSNumber numberWithUnsignedInt:value];
+    }
+};
+
+template <>
+struct convert<NSNumber*, std::uint64_t>
+{
+    static std::uint64_t cpp(NSNumber* value)
+    {
+        return [value unsignedLongValue];
+    }
+
+    static NSNumber* objc(std::uint64_t value)
+    {
+        return [NSNumber numberWithUnsignedLong:value];
+    }
+};
+
+template <>
 struct convert<NSNumber*, float>
 {
     static float cpp(NSNumber* value)
