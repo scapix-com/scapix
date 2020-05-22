@@ -177,12 +177,12 @@ struct convert<NSNumber*, std::int64_t>
 {
     static std::int64_t cpp(NSNumber* value)
     {
-        return [value longValue];
+        return [value longLongValue];
     }
 
     static NSNumber* objc(std::int64_t value)
     {
-        return [NSNumber numberWithLong:value];
+        return [NSNumber numberWithLongLong:value];
     }
 };
 
@@ -233,12 +233,12 @@ struct convert<NSNumber*, std::uint64_t>
 {
     static std::uint64_t cpp(NSNumber* value)
     {
-        return [value unsignedLongValue];
+        return [value unsignedLongLongValue];
     }
 
     static NSNumber* objc(std::uint64_t value)
     {
-        return [NSNumber numberWithUnsignedLong:value];
+        return [NSNumber numberWithUnsignedLongLong:value];
     }
 };
 
