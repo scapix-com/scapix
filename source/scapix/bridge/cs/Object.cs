@@ -20,7 +20,7 @@ namespace Scapix.Bridge
 
         ~Object()
         {
-            if (!Link.API.cppApi.Finalize(cpp))
+            if (!Link.API.Finalize(cpp))
                 GC.ReRegisterForFinalize(this);
         }
 
@@ -51,11 +51,11 @@ namespace Scapix.Bridge
             }
             catch (Link.CppException e)
             {
-                Link.API.cppApi.SetException(e.Release(), true);
+                Link.API.CppSetException(e.Release(), true);
             }
             catch (Exception e)
             {
-                Link.API.cppApi.SetException(ScapixCpp(e), false);
+                Link.API.CppSetException(ScapixCpp(e), false);
             }
 
             return default;
@@ -69,11 +69,11 @@ namespace Scapix.Bridge
             }
             catch (Link.CppException e)
             {
-                Link.API.cppApi.SetException(e.Release(), true);
+                Link.API.CppSetException(e.Release(), true);
             }
             catch (Exception e)
             {
-                Link.API.cppApi.SetException(ScapixCpp(e), false);
+                Link.API.CppSetException(ScapixCpp(e), false);
             }
         }
     }

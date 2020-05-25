@@ -7,7 +7,7 @@ namespace Scapix.Link
     public class CppException : System.Exception, IDisposable
     {
         public CppException(IntPtr cpp) { this.cpp = cpp; }
-        public override String Message { get { return API.FromNative<string>(API.cppApi.GetExceptionMessage(cpp)); } }
+        public override String Message { get { return API.GetExceptionMessage(cpp); } }
 
         ~CppException()
         {
@@ -18,7 +18,7 @@ namespace Scapix.Link
         {
             if (cpp != IntPtr.Zero)
             {
-                API.cppApi.DeleteException(cpp);
+                API.DeleteException(cpp);
                 cpp = IntPtr.Zero;
             }
         }
@@ -372,7 +372,7 @@ namespace Scapix.Link
             readonly GetExceptionMessageDelegate getExceptionMessage = new GetExceptionMessageDelegate(GetExceptionMessage);
         };
 
-        readonly static CsApi csApi = new CsApi();
+        static readonly CsApi csApi = new CsApi();
 
         [StructLayout(LayoutKind.Sequential)]
         public struct CppApi
@@ -393,12 +393,18 @@ namespace Scapix.Link
             public readonly SetExceptionDelegate SetException;
         };
 
-        public readonly static CppApi cppApi = Marshal.PtrToStructure<CppApi>(ScapixInit(csApi));
+        static readonly CppApi cppApi = Marshal.PtrToStructure<CppApi>(ScapixInit(csApi));
 
         [DllImport(Scapix.Native.Dll)]
         static extern IntPtr ScapixInit(CsApi funcTable);
 
         static API() {}
         public static void Init() {}
+
+        public static void SetString(string str, IntPtr data) { cppApi.SetString(str, data); }
+        public static bool Finalize(IntPtr obj) { return cppApi.Finalize(obj); }
+        public static string GetExceptionMessage(IntPtr exception) { return FromNative<string>(cppApi.GetExceptionMessage(exception)); }
+        public static void DeleteException(IntPtr exception) { cppApi.DeleteException(exception); }
+        public static void CppSetException(IntPtr exception, bool cpp) { cppApi.SetException(exception, cpp); }
     }
 }
