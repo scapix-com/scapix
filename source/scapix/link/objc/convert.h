@@ -459,13 +459,13 @@ struct convert<ObjcR(^)(ObjcArgs...), std::function<R(Args...)>>
         return [value = std::move(value)](Args... args)
         {
             if constexpr (std::is_void_v<R>)
-                return value(convert_objc<ObjcArgs>(args)...);
+                return value(convert_objc<ObjcArgs>(std::forward<Args>(args))...);
             else
-                return convert_cpp<R>(value(convert_objc<ObjcArgs>(args)...));
+                return convert_cpp<R>(value(convert_objc<ObjcArgs>(std::forward<Args>(args))...));
         };
     }
 
-    static block_type objc(std::function<R(Args...)>&& value)
+    static block_type objc(std::function<R(Args...)> value)
     {
         return [value = std::move(value)](ObjcArgs... args)
         {
