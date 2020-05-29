@@ -35,7 +35,7 @@ private:
 	friend struct link::cs::api::cpp_api;
 
 	template <typename T, typename ...Args>
-	friend T* init(link::cs::api::handle_type weak_wrapper, Args&&... args);
+	friend object_base* init(link::cs::api::handle_type weak_wrapper, Args&&... args);
 		
 	template <typename Cs, typename Cpp, typename>
 	friend struct link::cs::convert_shared;
@@ -108,7 +108,7 @@ protected:
 };
 
 template <typename T, typename ...Args>
-T* init(link::cs::api::handle_type weak_wrapper, Args&&... args)
+object_base* init(link::cs::api::handle_type weak_wrapper, Args&&... args)
 {
 	auto obj = std::make_shared<T>(std::forward<Args>(args)...);
 	auto ptr = obj.get();
