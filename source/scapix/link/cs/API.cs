@@ -344,26 +344,19 @@ namespace Scapix.Link
             delegate IntPtr AddrOfPinnedObjectDelegate(IntPtr obj);
             readonly AddrOfPinnedObjectDelegate addrOfPinnedObject = new AddrOfPinnedObjectDelegate(AddrOfPinnedObject);
 
-            delegate IntPtr CreateBoolArrayDelegate(int size);
-            readonly CreateBoolArrayDelegate createBoolArray = new CreateBoolArrayDelegate(CreateStructArray<bool>);
+            delegate IntPtr CreateStructArrayDelegate(int size);
 
-            delegate IntPtr CreateSbyteArrayDelegate(int size);
-            readonly CreateSbyteArrayDelegate createSbyteArray = new CreateSbyteArrayDelegate(CreateStructArray<sbyte>);
-
-            delegate IntPtr CreateShortArrayDelegate(int size);
-            readonly CreateShortArrayDelegate createShortArray = new CreateShortArrayDelegate(CreateStructArray<short>);
-
-            delegate IntPtr CreateIntArrayDelegate(int size);
-            readonly CreateIntArrayDelegate createIntArray = new CreateIntArrayDelegate(CreateStructArray<int>);
-
-            delegate IntPtr CreateLongArrayDelegate(int size);
-            readonly CreateLongArrayDelegate createLongArray = new CreateLongArrayDelegate(CreateStructArray<long>);
-
-            delegate IntPtr CreateFloatArrayDelegate(int size);
-            readonly CreateFloatArrayDelegate createFloatArray = new CreateFloatArrayDelegate(CreateStructArray<float>);
-
-            delegate IntPtr CreateDoubleArrayDelegate(int size);
-            readonly CreateDoubleArrayDelegate createDoubleArray = new CreateDoubleArrayDelegate(CreateStructArray<double>);
+            readonly CreateStructArrayDelegate createBoolArray = new CreateStructArrayDelegate(CreateStructArray<bool>);
+            readonly CreateStructArrayDelegate createSbyteArray = new CreateStructArrayDelegate(CreateStructArray<sbyte>);
+            readonly CreateStructArrayDelegate createShortArray = new CreateStructArrayDelegate(CreateStructArray<short>);
+            readonly CreateStructArrayDelegate createIntArray = new CreateStructArrayDelegate(CreateStructArray<int>);
+            readonly CreateStructArrayDelegate createLongArray = new CreateStructArrayDelegate(CreateStructArray<long>);
+            readonly CreateStructArrayDelegate createByteArray = new CreateStructArrayDelegate(CreateStructArray<byte>);
+            readonly CreateStructArrayDelegate createUshortArray = new CreateStructArrayDelegate(CreateStructArray<ushort>);
+            readonly CreateStructArrayDelegate createUintArray = new CreateStructArrayDelegate(CreateStructArray<uint>);
+            readonly CreateStructArrayDelegate createUlongArray = new CreateStructArrayDelegate(CreateStructArray<ulong>);
+            readonly CreateStructArrayDelegate createFloatArray = new CreateStructArrayDelegate(CreateStructArray<float>);
+            readonly CreateStructArrayDelegate createDoubleArray = new CreateStructArrayDelegate(CreateStructArray<double>);
 
             delegate void SetExceptionDelegate(IntPtr exception, bool cpp);
             readonly SetExceptionDelegate setException = new SetExceptionDelegate(SetException);

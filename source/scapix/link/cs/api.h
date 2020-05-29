@@ -87,6 +87,10 @@ struct cs_api
 	handle_type(SCAPIX_CALL* create_short_array)(size_type size);
 	handle_type(SCAPIX_CALL* create_int_array)(size_type size);
 	handle_type(SCAPIX_CALL* create_long_array)(size_type size);
+	handle_type(SCAPIX_CALL* create_byte_array)(size_type size);
+	handle_type(SCAPIX_CALL* create_ushort_array)(size_type size);
+	handle_type(SCAPIX_CALL* create_uint_array)(size_type size);
+	handle_type(SCAPIX_CALL* create_ulong_array)(size_type size);
 	handle_type(SCAPIX_CALL* create_float_array)(size_type size);
 	handle_type(SCAPIX_CALL* create_double_array)(size_type size);
 
@@ -188,13 +192,17 @@ void register_class(const char* class_name)
 template <typename T>
 handle_type create_struct_array(size_type size);
 
-template <> inline handle_type create_struct_array<bool>        (size_type size) { return api::funcs.create_bool_array(size); }
-template <> inline handle_type create_struct_array<std::int8_t> (size_type size) { return api::funcs.create_sbyte_array(size); }
-template <> inline handle_type create_struct_array<std::int16_t>(size_type size) { return api::funcs.create_short_array(size); }
-template <> inline handle_type create_struct_array<std::int32_t>(size_type size) { return api::funcs.create_int_array(size); }
-template <> inline handle_type create_struct_array<std::int64_t>(size_type size) { return api::funcs.create_long_array(size); }
-template <> inline handle_type create_struct_array<float>       (size_type size) { return api::funcs.create_float_array(size); }
-template <> inline handle_type create_struct_array<double>      (size_type size) { return api::funcs.create_double_array(size); }
+template <> inline handle_type create_struct_array<bool>         (size_type size) { return api::funcs.create_bool_array(size); }
+template <> inline handle_type create_struct_array<std::int8_t>  (size_type size) { return api::funcs.create_sbyte_array(size); }
+template <> inline handle_type create_struct_array<std::int16_t> (size_type size) { return api::funcs.create_short_array(size); }
+template <> inline handle_type create_struct_array<std::int32_t> (size_type size) { return api::funcs.create_int_array(size); }
+template <> inline handle_type create_struct_array<std::int64_t> (size_type size) { return api::funcs.create_long_array(size); }
+template <> inline handle_type create_struct_array<std::uint8_t> (size_type size) { return api::funcs.create_byte_array(size); }
+template <> inline handle_type create_struct_array<std::uint16_t>(size_type size) { return api::funcs.create_ushort_array(size); }
+template <> inline handle_type create_struct_array<std::uint32_t>(size_type size) { return api::funcs.create_uint_array(size); }
+template <> inline handle_type create_struct_array<std::uint64_t>(size_type size) { return api::funcs.create_ulong_array(size); }
+template <> inline handle_type create_struct_array<float>        (size_type size) { return api::funcs.create_float_array(size); }
+template <> inline handle_type create_struct_array<double>       (size_type size) { return api::funcs.create_double_array(size); }
 
 // https://developercommunity.visualstudio.com/content/problem/973593/c-class-with-inline-static-member-of-the-same-type.html
 
