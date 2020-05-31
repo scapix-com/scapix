@@ -8,7 +8,7 @@
 #define SCAPIX_LINK_CS_REF_H
 
 #include <scapix/link/cs/ref_type.h>
-#include <scapix/link/cs/api.h>
+#include <scapix/link/cs/api_base.h>
 
 namespace scapix {
 namespace link {

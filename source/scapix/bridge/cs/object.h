@@ -36,7 +36,7 @@ private:
 
 	template <typename T, typename ...Args>
 	friend object_base* init(link::cs::api::handle_type weak_wrapper, Args&&... args);
-		
+
 	template <typename Cs, typename Cpp, typename>
 	friend struct link::cs::convert_shared;
 
@@ -123,18 +123,17 @@ namespace link {
 namespace cs {
 
 template <typename T>
-struct convert_shared<api::handle_type, T, std::enable_if_t<bridge::is_object<T>>>
+struct convert_shared<ref<>, T, std::enable_if_t<bridge::is_object<T>>>
 {
-	static std::shared_ptr<T> cpp(api::handle_type v)
+	static std::shared_ptr<T> cpp(ref<> v)
 	{
-		ref<> r(v);
-		return std::static_pointer_cast<T>(static_cast<const bridge::cs::object_base*>(link::cs::api::funcs.get_cpp(v))->scapix_shared());
+		return std::static_pointer_cast<T>(link::cs::api::get_cpp(v)->scapix_shared());
 	}
 
-	static api::handle_type cs(std::shared_ptr<T> v)
+	static ref<> cs(std::shared_ptr<T> v)
 	{
 		auto p = v.get();
-		return p->template get_ref<T>(std::move(v)).release();
+		return p->template get_ref<T>(std::move(v));
 	}
 };
 

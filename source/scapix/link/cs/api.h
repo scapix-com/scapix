@@ -11,8 +11,9 @@
 #include <string>
 #include <memory>
 #include <scapix/core/type_traits.h>
-#include <scapix/link/cs/ref_type.h>
 #include <scapix/link/cs/type_traits.h>
+#include <scapix/link/cs/api_base.h>
+#include <scapix/link/cs/ref.h>
 
 #ifdef __GNUC__
 #include <cxxabi.h>
@@ -26,8 +27,6 @@
 	#define SCAPIX_EXPORT
 #endif
 
-#define SCAPIX_CALL //__stdcall
-
 namespace scapix::bridge::cs { class object_base; }
 
 // generated function
@@ -38,67 +37,83 @@ namespace link {
 namespace cs {
 namespace api {
 
-using handle_type = const void*;
-using size_type = std::int32_t;
-using func_ptr_type = void(*)();
-
 template <typename T, typename = void>
 struct param
 {
 	using type = api::handle_type;
+	using type_internal = ref<>;
+
+	static type cs(ref<> v)
+	{
+		return v.release();
+	}
+
+	static ref<> cpp(type v)
+	{
+		return ref<>(v);
+	}
+};
+
+template <>
+struct param<void>
+{
+	using type = void;
 };
 
 template <typename T>
-struct param<T, std::enable_if_t<std::is_void_v<T> || is_simple_v<T>>>
+struct param<T, std::enable_if_t<std::is_arithmetic_v<T>>>
 {
 	using type = T;
+	using type_internal = T;
+
+	static type cs(T v)
+	{
+		return v;
+	}
+
+	static T cpp(type v)
+	{
+		return v;
+	}
 };
 
 template <typename T>
 struct param<T, std::enable_if_t<std::is_enum_v<T>>>
 {
-	using type = typename param<std::underlying_type_t<T>>::type;
+	using type = std::underlying_type_t<T>;
+	using type_internal = T;
+
+	static type cs(T v)
+	{
+		return static_cast<type>(v);
+	}
+
+	static T cpp(type v)
+	{
+		return static_cast<T>(v);
+	}
 };
 
-template <typename T, typename = void>
+template <typename T>
 using param_t = typename param<remove_cvref_t<T>>::type;
 
-struct class_cs_api
+template <typename T>
+using param_internal_t = typename param<remove_cvref_t<T>>::type_internal;
+
+inline const bridge::cs::object_base* get_cpp(ref<> r)
 {
-	handle_type(SCAPIX_CALL* create)(handle_type);
-};
+	return static_cast<const bridge::cs::object_base*>(funcs.get_cpp(r.get()));
+}
 
-struct cs_api
+inline ref<> create_string(const char* data, size_type size)
 {
-	handle_type  (SCAPIX_CALL* copy_ref)(handle_type r, ref_type type);
-	void         (SCAPIX_CALL* release_ref)(handle_type r);
-	handle_type  (SCAPIX_CALL* create_string)(const char* data, size_type size);
-	void         (SCAPIX_CALL* set_string)(handle_type r, std::string * str);
-	func_ptr_type(SCAPIX_CALL* get_func)(handle_type d);
-	size_type    (SCAPIX_CALL* get_array_size)(handle_type a);
-	handle_type  (SCAPIX_CALL* get_object_array_element)(handle_type arr, size_type index);
-	void         (SCAPIX_CALL* set_object_array_element)(handle_type arr, size_type index, handle_type value);
-	class_cs_api*(SCAPIX_CALL* register_class)(const char* class_name, const void* class_cpp_api);
-	handle_type  (SCAPIX_CALL* get_cpp)(handle_type obj);
-	void*        (SCAPIX_CALL* addr_of_pinned_object)(handle_type obj);
+	return ref<>(funcs.create_string(data, size));
+}
 
-	handle_type(SCAPIX_CALL* create_bool_array)(size_type size);
-	handle_type(SCAPIX_CALL* create_sbyte_array)(size_type size);
-	handle_type(SCAPIX_CALL* create_short_array)(size_type size);
-	handle_type(SCAPIX_CALL* create_int_array)(size_type size);
-	handle_type(SCAPIX_CALL* create_long_array)(size_type size);
-	handle_type(SCAPIX_CALL* create_byte_array)(size_type size);
-	handle_type(SCAPIX_CALL* create_ushort_array)(size_type size);
-	handle_type(SCAPIX_CALL* create_uint_array)(size_type size);
-	handle_type(SCAPIX_CALL* create_ulong_array)(size_type size);
-	handle_type(SCAPIX_CALL* create_float_array)(size_type size);
-	handle_type(SCAPIX_CALL* create_double_array)(size_type size);
-
-	void(SCAPIX_CALL* set_exception)(handle_type exception, bool cpp);
-	void(SCAPIX_CALL* get_exception_message)(handle_type exception, std::string* str);
-};
-
-inline cs_api funcs;
+inline void set_string(ref<> r, std::string* str)
+{
+	funcs.set_string(r.get(), str);
+}
 
 struct cpp_api
 {
@@ -190,19 +205,19 @@ void register_class(const char* class_name)
 }
 
 template <typename T>
-handle_type create_struct_array(size_type size);
+ref<> create_struct_array(size_type size);
 
-template <> inline handle_type create_struct_array<bool>         (size_type size) { return api::funcs.create_bool_array(size); }
-template <> inline handle_type create_struct_array<std::int8_t>  (size_type size) { return api::funcs.create_sbyte_array(size); }
-template <> inline handle_type create_struct_array<std::int16_t> (size_type size) { return api::funcs.create_short_array(size); }
-template <> inline handle_type create_struct_array<std::int32_t> (size_type size) { return api::funcs.create_int_array(size); }
-template <> inline handle_type create_struct_array<std::int64_t> (size_type size) { return api::funcs.create_long_array(size); }
-template <> inline handle_type create_struct_array<std::uint8_t> (size_type size) { return api::funcs.create_byte_array(size); }
-template <> inline handle_type create_struct_array<std::uint16_t>(size_type size) { return api::funcs.create_ushort_array(size); }
-template <> inline handle_type create_struct_array<std::uint32_t>(size_type size) { return api::funcs.create_uint_array(size); }
-template <> inline handle_type create_struct_array<std::uint64_t>(size_type size) { return api::funcs.create_ulong_array(size); }
-template <> inline handle_type create_struct_array<float>        (size_type size) { return api::funcs.create_float_array(size); }
-template <> inline handle_type create_struct_array<double>       (size_type size) { return api::funcs.create_double_array(size); }
+template <> inline ref<> create_struct_array<bool>         (size_type size) { return ref<>(api::funcs.create_bool_array(size)); }
+template <> inline ref<> create_struct_array<std::int8_t>  (size_type size) { return ref<>(api::funcs.create_sbyte_array(size)); }
+template <> inline ref<> create_struct_array<std::int16_t> (size_type size) { return ref<>(api::funcs.create_short_array(size)); }
+template <> inline ref<> create_struct_array<std::int32_t> (size_type size) { return ref<>(api::funcs.create_int_array(size)); }
+template <> inline ref<> create_struct_array<std::int64_t> (size_type size) { return ref<>(api::funcs.create_long_array(size)); }
+template <> inline ref<> create_struct_array<std::uint8_t> (size_type size) { return ref<>(api::funcs.create_byte_array(size)); }
+template <> inline ref<> create_struct_array<std::uint16_t>(size_type size) { return ref<>(api::funcs.create_ushort_array(size)); }
+template <> inline ref<> create_struct_array<std::uint32_t>(size_type size) { return ref<>(api::funcs.create_uint_array(size)); }
+template <> inline ref<> create_struct_array<std::uint64_t>(size_type size) { return ref<>(api::funcs.create_ulong_array(size)); }
+template <> inline ref<> create_struct_array<float>        (size_type size) { return ref<>(api::funcs.create_float_array(size)); }
+template <> inline ref<> create_struct_array<double>       (size_type size) { return ref<>(api::funcs.create_double_array(size)); }
 
 // https://developercommunity.visualstudio.com/content/problem/973593/c-class-with-inline-static-member-of-the-same-type.html
 

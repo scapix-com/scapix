@@ -16,20 +16,14 @@ namespace cs {
 
 // is_simple
 
-template<class T>
+template<typename T, typename = void>
 struct is_simple : std::false_type {};
 
-template<> struct is_simple<bool> : std::true_type {};
-template<> struct is_simple<std::int8_t> : std::true_type {};
-template<> struct is_simple<std::int16_t> : std::true_type {};
-template<> struct is_simple<std::int32_t> : std::true_type {};
-template<> struct is_simple<std::int64_t> : std::true_type {};
-template<> struct is_simple<std::uint8_t> : std::true_type {};
-template<> struct is_simple<std::uint16_t> : std::true_type {};
-template<> struct is_simple<std::uint32_t> : std::true_type {};
-template<> struct is_simple<std::uint64_t> : std::true_type {};
-template<> struct is_simple<float> : std::true_type {};
-template<> struct is_simple<double> : std::true_type {};
+template<typename T>
+struct is_simple<T, std::enable_if_t<std::is_arithmetic_v<T>>> : std::true_type {};
+
+template<typename T>
+struct is_simple<T, std::enable_if_t<std::is_enum_v<T>>> : std::true_type {};
 
 template<typename T>
 constexpr bool is_simple_v = is_simple<T>::value;

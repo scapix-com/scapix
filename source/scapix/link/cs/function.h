@@ -10,6 +10,7 @@
 #include <scapix/core/cast.h>
 #include <scapix/link/cs/convert.h>
 #include <scapix/link/cs/exception.h>
+#include <scapix/link/cs/ref.h>
 #include <scapix/bridge/cs/object.h>
 
 namespace scapix::link::cs {
@@ -34,7 +35,7 @@ private:
 
 	static api::handle_type func(api::handle_type weak_wrapper, param_t<Args>... args)
 	{
-		return bridge::cs::init<T>(weak_wrapper, convert_cpp<Args>(args)...);
+		return bridge::cs::init<T>(weak_wrapper, param_cpp<Args>(args)...);
 	}
 
 };
@@ -74,7 +75,7 @@ private:
 		{
 			try
 			{
-				return convert_cs<param_t<R>>((static_cast<Class*>(thiz)->*Func)(convert_cpp<Args>(args)...));
+				return param_cs<R>((static_cast<Class*>(thiz)->*Func)(param_cpp<Args>(args)...));
 			}
 			catch (cs::exception& e)
 			{
@@ -96,7 +97,7 @@ private:
 		{
 			try
 			{
-				(static_cast<Class*>(thiz)->*Func)(convert_cpp<Args>(args)...);
+				(static_cast<Class*>(thiz)->*Func)(param_cpp<Args>(args)...);
 			}
 			catch (cs::exception& e)
 			{
@@ -116,7 +117,7 @@ private:
 		{
 			try
 			{
-				return convert_cs<param_t<R>>((static_cast<Class*>(thiz)->*Func)(convert_cpp<Args>(args)...));
+				return param_cs<R>((static_cast<Class*>(thiz)->*Func)(param_cpp<Args>(args)...));
 			}
 			catch (cs::exception& e)
 			{
@@ -138,7 +139,7 @@ private:
 		{
 			try
 			{
-				(static_cast<Class*>(thiz)->*Func)(convert_cpp<Args>(args)...);
+				(static_cast<Class*>(thiz)->*Func)(param_cpp<Args>(args)...);
 			}
 			catch (cs::exception& e)
 			{
@@ -158,7 +159,7 @@ private:
 		{
 			try
 			{
-				return convert_cs<param_t<R>>(Func(convert_cpp<Args>(args)...));
+				return param_cs<R>(Func(param_cpp<Args>(args)...));
 			}
 			catch (cs::exception& e)
 			{
@@ -180,7 +181,7 @@ private:
 		{
 			try
 			{
-				Func(convert_cpp<Args>(args)...);
+				Func(param_cpp<Args>(args)...);
 			}
 			catch (cs::exception& e)
 			{

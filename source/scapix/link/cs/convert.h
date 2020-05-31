@@ -16,14 +16,17 @@
 #include <functional>
 #include <experimental/type_traits>
 #include <scapix/link/cs/type_traits.h>
+#include <scapix/link/cs/api.h>
 #include <scapix/link/cs/ref.h>
 
 namespace scapix {
 namespace link {
 namespace cs {
 
+using api::param;
 using api::param_t;
-	
+using api::param_internal_t;
+
 template <typename Cs, typename Cpp, typename = void>
 struct convert;
 
@@ -39,11 +42,17 @@ decltype(auto) convert_cpp(Cs&& cs)
 	return convert<remove_cvref_t<Cs>, remove_cvref_t<Cpp>>::cpp(std::forward<Cs>(cs));
 }
 
-template<typename Cs, typename Cpp>
-using has_convert_cs_t = decltype(std::declval<Cs>() = convert<remove_cvref_t<Cs>, remove_cvref_t<Cpp>>::cs(std::declval<Cpp>()));
+template <typename Cpp>
+decltype(auto) param_cs(Cpp&& cpp)
+{
+	return param<remove_cvref_t<Cpp>>::cs(convert_cs<param_internal_t<Cpp>>(std::forward<Cpp>(cpp)));
+}
 
-template<typename Cs, typename Cpp>
-using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<remove_cvref_t<Cs>, remove_cvref_t<Cpp>>::cpp(std::declval<Cs>()));
+template <typename Cpp>
+decltype(auto) param_cpp(param_t<Cpp> cs)
+{
+	return convert_cpp<Cpp>(param<remove_cvref_t<Cpp>>::cpp(cs));
+}
 
 template <typename T>
 struct convert<T, T>
@@ -59,110 +68,94 @@ struct convert<T, T>
 	}
 };
 
-template <typename Cs, typename Cpp>
-struct convert<Cs, Cpp, std::enable_if_t<std::is_enum_v<Cpp>>>
-{
-	static_assert(std::is_integral_v<Cs> && sizeof(Cs) == sizeof(Cpp));
-
-	static Cpp cpp(Cs value)
-	{
-		return static_cast<Cpp>(value);
-	}
-
-	static Cs cs(Cpp value)
-	{
-		return static_cast<Cs>(value);
-	}
-};
-
 template <typename Cs, typename Cpp, typename = void>
 struct convert_shared;
 
-template<typename Cs, typename Cpp>
-using has_convert_shared_t = decltype(convert_shared<Cs, Cpp>::cs(std::declval<std::shared_ptr<Cpp>>()));
+template <typename Cpp>
+using has_convert_shared_t = decltype(convert_shared<ref<>, Cpp>::cs(std::declval<std::shared_ptr<Cpp>>()));
 
-template <typename Cs, typename T>
-struct convert<Cs, std::shared_ptr<T>>
+template <typename T>
+struct convert<ref<>, std::shared_ptr<T>>
 {
-	static std::shared_ptr<T> cpp(Cs value)
+	static std::shared_ptr<T> cpp(ref<>&& value)
 	{
-		if constexpr (std::experimental::is_detected_v<has_convert_shared_t, Cs, T>)
-			return convert_shared<Cs, T>::cpp(value);
+		if constexpr (std::experimental::is_detected_v<has_convert_shared_t, T>)
+			return convert_shared<ref<>, T>::cpp(value);
 		else
 			return std::make_shared<T>(convert_cpp<T>(value));
 	}
 
-	static Cs cs(std::shared_ptr<T> value)
+	static ref<> cs(std::shared_ptr<T> value)
 	{
-		if constexpr (std::experimental::is_detected_v<has_convert_shared_t, Cs, T>)
-			return convert_shared<Cs, T>::cs(value);
+		if constexpr (std::experimental::is_detected_v<has_convert_shared_t, T>)
+			return convert_shared<ref<>, T>::cs(value);
 		else
-			return convert_cs<Cs>(*value);
+			return convert_cs<ref<>>(*value);
 	}
 };
 
 template <>
-struct convert<api::handle_type, std::string>
+struct convert<ref<>, std::string>
 {
-	static std::string cpp(api::handle_type value)
+	static std::string cpp(ref<>&& value)
 	{
 		std::string str;
-		api::funcs.set_string(value, &str);
+		api::set_string(value, &str);
 		return str;
 	}
 
-	static api::handle_type cs(std::string_view value)
+	static ref<> cs(std::string_view value)
 	{
-		return api::funcs.create_string(value.data(), static_cast<api::size_type>(value.size()));
+		return api::create_string(value.data(), static_cast<api::size_type>(value.size()));
 	}
 };
 
 template <typename T, typename A>
-struct convert<api::handle_type, std::vector<T, A>, std::enable_if_t<is_simple_v<T>>>
+struct convert<ref<>, std::vector<T, A>, std::enable_if_t<is_simple_v<T>>>
 {
-	static std::vector<T, A> cpp(api::handle_type value)
+	static std::vector<T, A> cpp(ref<>&& value)
 	{
-		auto data = static_cast<const T*>(api::funcs.addr_of_pinned_object(value));
-		return std::vector<T, A>(data, data + api::funcs.get_array_size(value));
+		auto data = static_cast<const T*>(api::funcs.addr_of_pinned_object(value.get()));
+		return std::vector<T, A>(data, data + api::funcs.get_array_size(value.get()));
 	}
 
-	static api::handle_type cs(const std::vector<T, A>& value)
+	static ref<> cs(const std::vector<T, A>& value)
 	{
-		auto a = api::create_struct_array<T>(static_cast<api::size_type>(value.size()));
-		auto data = static_cast<T*>(api::funcs.addr_of_pinned_object(a));
+		auto a = api::create_struct_array<param_t<T>>(static_cast<api::size_type>(value.size()));
+		auto data = static_cast<T*>(api::funcs.addr_of_pinned_object(a.get()));
 		std::copy(value.data(), value.data() + value.size(), data);
 		return a;
 	}
 };
 
 template <typename T, typename A>
-struct convert<api::handle_type, std::vector<T, A>, std::enable_if_t<!is_simple_v<T>>>
+struct convert<ref<>, std::vector<T, A>, std::enable_if_t<!is_simple_v<T>>>
 {
 	using cs_value = param_t<T>;
 
-	static std::vector<T, A> cpp(api::handle_type value)
+	static std::vector<T, A> cpp(ref<>&& value)
 	{
-		auto size = api::funcs.get_array_size(value);
+		auto size = api::funcs.get_array_size(value.get());
 
 		std::vector<T, A> vec;
 		vec.reserve(size);
 
 		for (auto i = 0; i < size; ++i)
 		{
-			vec.push_back(convert_cpp<T>(api::funcs.get_object_array_element(value, i)));
+			vec.push_back(param_cpp<T>(api::funcs.get_object_array_element(value.get(), i)));
 		}
 
 		return vec;
 	}
 
-	static api::handle_type cs(const std::vector<T, A>& value)
+	static ref<> cs(const std::vector<T, A>& value)
 	{
 		auto size = value.size();
-		auto arr = api::array<T>::global.create(static_cast<api::size_type>(size));
+		auto arr = ref<>(api::array<T>::global.create(static_cast<api::size_type>(size)));
 
 		for (auto i = 0; i < size; ++i)
 		{
-			api::funcs.set_object_array_element(arr, i, convert_cs<cs_value>(value[i]));
+			api::funcs.set_object_array_element(arr.get(), i, param_cs(value[i]));
 		}
 
 		return arr;
@@ -170,145 +163,147 @@ struct convert<api::handle_type, std::vector<T, A>, std::enable_if_t<!is_simple_
 };
 
 template <typename K, typename T, typename C, typename A>
-struct convert<api::handle_type, std::map<K, T, C, A>>
+struct convert<ref<>, std::map<K, T, C, A>>
 {
 	using cs_key = param_t<K>;
 	using cs_value = param_t<T>;
 
-	static std::map<K, T, C, A> cpp(api::handle_type value)
+	static std::map<K, T, C, A> cpp(ref<>&& value)
 	{
 		std::map<K, T, C, A> map;
 
-		api::sorted_dictionary<K, T>::global.iterate(value, &map, [](cs_key key, cs_value value, api::handle_type data)
+		api::sorted_dictionary<K, T>::global.iterate(value.get(), &map, [](cs_key key, cs_value value, api::handle_type data)
 		{
 			auto& map = *(std::map<K, T, C, A>*)data;
-			map.emplace(convert_cpp<K>(key), convert_cpp<T>(value));
+			map.emplace(param_cpp<K>(key), param_cpp<T>(value));
 		});
 
 		return map;
 	}
 
-	static api::handle_type cs(const std::map<K, T, C, A>& value)
+	static ref<> cs(const std::map<K, T, C, A>& value)
 	{
-		auto dict = api::sorted_dictionary<K, T>::global.create();
+		auto dict = ref<>(api::sorted_dictionary<K, T>::global.create());
 
 		for (const auto& element : value)
-			api::sorted_dictionary<K, T>::global.add(dict, convert_cs<cs_key>(element.first), convert_cs<cs_value>(element.second));
+			api::sorted_dictionary<K, T>::global.add(dict.get(), param_cs(element.first), param_cs(element.second));
 
 		return dict;
 	}
 };
 
 template <typename K, typename C, typename A>
-struct convert<api::handle_type, std::set<K, C, A>>
+struct convert<ref<>, std::set<K, C, A>>
 {
 	using cs_key = param_t<K>;
 
-	static std::set<K, C, A> cpp(api::handle_type value)
+	static std::set<K, C, A> cpp(ref<>&& value)
 	{
 		std::set<K, C, A> set;
 
-		api::sorted_set<K>::global.iterate(value, &set, [](cs_key key, api::handle_type data)
+		api::sorted_set<K>::global.iterate(value.get(), &set, [](cs_key key, api::handle_type data)
 		{
 			auto& set = *(std::set<K, C, A>*)data;
-			set.emplace(convert_cpp<K>(key));
+			set.emplace(param_cpp<K>(key));
 		});
 
 		return set;
 	}
 
-	static api::handle_type cs(const std::set<K, C, A>& value)
+	static ref<> cs(const std::set<K, C, A>& value)
 	{
-		auto set = api::sorted_set<K>::global.create();
+		auto set = ref<>(api::sorted_set<K>::global.create());
 
 		for (const auto& element : value)
-			api::sorted_set<K>::global.add(set, convert_cs<cs_key>(element));
+			api::sorted_set<K>::global.add(set.get(), param_cs(element));
 
 		return set;
 	}
 };
 
 template <typename K, typename V, typename H, typename P, typename A>
-struct convert<api::handle_type, std::unordered_map<K, V, H, P, A>>
+struct convert<ref<>, std::unordered_map<K, V, H, P, A>>
 {
 	using cs_key = param_t<K>;
 	using cs_value = param_t<V>;
 
-	static std::unordered_map<K, V, H, P, A> cpp(api::handle_type value)
+	static std::unordered_map<K, V, H, P, A> cpp(ref<>&& value)
 	{
 		std::unordered_map<K, V, H, P, A> map;
 
-		api::dictionary<K, V>::global.iterate(value, &map, [](cs_key key, cs_value value, api::handle_type data)
+		api::dictionary<K, V>::global.iterate(value.get(), &map, [](cs_key key, cs_value value, api::handle_type data)
 		{
 			auto& map = *(std::unordered_map<K, V, H, P, A>*)data;
-			map.emplace(convert_cpp<K>(key), convert_cpp<V>(value));
+			map.emplace(param_cpp<K>(key), param_cpp<V>(value));
 		});
 
 		return map;
 	}
 
-	static api::handle_type cs(const std::unordered_map<K, V, H, P, A>& value)
+	static ref<> cs(const std::unordered_map<K, V, H, P, A>& value)
 	{
-		auto dict = api::dictionary<K, V>::global.create();
+		auto dict = ref<>(api::dictionary<K, V>::global.create());
 
 		for (const auto& element : value)
-			api::dictionary<K, V>::global.add(dict, convert_cs<cs_key>(element.first), convert_cs<cs_value>(element.second));
+			api::dictionary<K, V>::global.add(dict.get(), param_cs(element.first), param_cs(element.second));
 
 		return dict;
 	}
 };
 
 template <typename V, typename H, typename P, typename A>
-struct convert<api::handle_type, std::unordered_set<V, H, P, A>>
+struct convert<ref<>, std::unordered_set<V, H, P, A>>
 {
 	using cs_value = param_t<V>;
 
-	static std::unordered_set<V, H, P, A> cpp(api::handle_type value)
+	static std::unordered_set<V, H, P, A> cpp(ref<>&& value)
 	{
 		std::unordered_set<V, H, P, A> set;
 
-		api::hash_set<V>::global.iterate(value, &set, [](cs_value key, api::handle_type data)
+		api::hash_set<V>::global.iterate(value.get(), &set, [](cs_value key, api::handle_type data)
 		{
 			auto& set = *(std::unordered_set<V, H, P, A>*)data;
-			set.emplace(convert_cpp<V>(key));
+			set.emplace(param_cpp<V>(key));
 		});
 
 		return set;
 	}
 
-	static api::handle_type cs(const std::unordered_set<V, H, P, A>& value)
+	static ref<> cs(const std::unordered_set<V, H, P, A>& value)
 	{
-		auto set = api::hash_set<V>::global.create();
+		auto set = ref<>(api::hash_set<V>::global.create());
 
 		for (const auto& element : value)
-			api::hash_set<V>::global.add(set, convert_cs<cs_value>(element));
+			api::hash_set<V>::global.add(set.get(), param_cs(element));
 
 		return set;
 	}
 };
 
 template <typename R, typename ...Args>
-struct convert<api::handle_type, std::function<R(Args...)>>
+struct convert<ref<>, std::function<R(Args...)>>
 {
-	static std::function<R(Args...)> cpp(api::handle_type delegate)
+	static std::function<R(Args...)> cpp(ref<>&& delegate)
 	{
-		return [delegate = ref(delegate), func = reinterpret_cast<R(*)(param_t<Args>...)>(api::funcs.get_func(delegate))](Args... args)
+		auto func = reinterpret_cast<param_t<R>(*)(param_t<Args>...)>(api::funcs.get_func(delegate.get()));
+
+		return [delegate = std::move(delegate), func = std::move(func)](Args... args)
 		{
 			if constexpr (std::is_void_v<R>)
 			{
-				func(convert_cs<param_t<Args>>(args)...);
+				func(param_cs(std::forward<Args>(args))...);
 				api::check_exception();
 			}
 			else
 			{
-				auto ret = func(convert_cs<param_t<Args>>(args)...);
+				auto ret = func(param_cs(std::forward<Args>(args))...);
 				api::check_exception();
-				return convert_cpp<R>(ret);
+				return param_cpp<R>(std::move(ret));
 			}
 		};
 	}
 
-	//static api::handle_type cs(std::function<R(Args...)>&& value)
+	//static ref<> cs(std::function<R(Args...)>&& value)
 	//{
 	//}
 };
