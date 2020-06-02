@@ -116,6 +116,22 @@ struct convert<ObjC, std::shared_ptr<T>>
 	}
 };
 
+template <typename Cpp>
+struct convert<NSNumber*, Cpp, std::enable_if_t<std::is_enum_v<Cpp>>>
+{
+	using underlying = std::underlying_type_t<Cpp>;
+
+	static Cpp cpp(NSNumber* value)
+    {
+        return static_cast<Cpp>(convert<NSNumber*, underlying>::cpp(value));
+    }
+    
+    static NSNumber* objc(Cpp value)
+    {
+        return convert<NSNumber*, underlying>::objc(static_cast<underlying>(value));
+    }
+};
+
 template <>
 struct convert<NSNumber*, bool>
 {
