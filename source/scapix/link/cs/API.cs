@@ -216,6 +216,9 @@ namespace Scapix.Link
             return obj;
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CopyRefDelegate))]
+#endif
         static IntPtr CopyRef(IntPtr p, GCHandleType t)
         {
             var obj = GCHandle.FromIntPtr(p).Target;
@@ -226,11 +229,17 @@ namespace Scapix.Link
             return GCHandle.ToIntPtr(GCHandle.Alloc(obj, t));
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.ReleaseRefDelegate))]
+#endif
         static void ReleaseRef(IntPtr r)
         {
             GCHandle.FromIntPtr(r).Free();
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStringDelegate))]
+#endif
         static IntPtr CreateString(IntPtr data, int size)
         {
             // Marshal.PtrToStringUTF8() not in .NET Framework 4.7.2
@@ -241,52 +250,162 @@ namespace Scapix.Link
             return ToNative(System.Text.UTF8Encoding.UTF8.GetString(buff));
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.SetStringDelegate))]
+#endif
         static void SetString(IntPtr str, IntPtr data)
         {
             cppApi.SetString((string)GCHandle.FromIntPtr(str).Target, data);
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.GetFuncDelegate))]
+#endif
         static IntPtr GetFunc(IntPtr d)
         {
             return Marshal.GetFunctionPointerForDelegate((Delegate)GCHandle.FromIntPtr(d).Target);
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.GetArraySizeDelegate))]
+#endif
         static int GetArraySize(IntPtr arr)
         {
             return ((Array)GCHandle.FromIntPtr(arr).Target).Length;
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.GetObjectArrayElementDelegate))]
+#endif
         static IntPtr GetObjectArrayElement(IntPtr arr, int index)
         {
             return ToNative(((object[])GCHandle.FromIntPtr(arr).Target)[index]);
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.SetObjectArrayElementDelegate))]
+#endif
         static void SetObjectArrayElement(IntPtr arr, int index, IntPtr value)
         {
             ((object[])GCHandle.FromIntPtr(arr).Target)[index] = GCHandle.FromIntPtr(value).Target;
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.RegisterClassDelegate))]
+#endif
         static ClassCsApi RegisterClass(string className, IntPtr classCppApi)
         {
             MethodInfo method = Type.GetType(className).GetMethod("ScapixRegister", BindingFlags.NonPublic | BindingFlags.Static);
             return (ClassCsApi)method.Invoke(null, new object[] { classCppApi });
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.GetCppDelegate))]
+#endif
         static IntPtr GetCpp(IntPtr obj)
         {
             return ((Bridge.Object)GCHandle.FromIntPtr(obj).Target).cpp;
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.AddrOfPinnedObjectDelegate))]
+#endif
         static IntPtr AddrOfPinnedObject(IntPtr obj)
         {
             return GCHandle.FromIntPtr(obj).AddrOfPinnedObject();
         }
 
-        static IntPtr CreateStructArray<T>(int size) where T : struct
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArrayBool(int size)
         {
-            return ToNative(new T[size], GCHandleType.Pinned);
+            return ToNative(new bool[size], GCHandleType.Pinned);
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArraySbyte(int size)
+        {
+            return ToNative(new sbyte[size], GCHandleType.Pinned);
+        }
+
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArrayShort(int size)
+        {
+            return ToNative(new short[size], GCHandleType.Pinned);
+        }
+
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArrayInt(int size)
+        {
+            return ToNative(new int[size], GCHandleType.Pinned);
+        }
+
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArrayLong(int size)
+        {
+            return ToNative(new long[size], GCHandleType.Pinned);
+        }
+
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArrayByte(int size)
+        {
+            return ToNative(new byte[size], GCHandleType.Pinned);
+        }
+
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArrayUshort(int size)
+        {
+            return ToNative(new ushort[size], GCHandleType.Pinned);
+        }
+
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArrayUint(int size)
+        {
+            return ToNative(new uint[size], GCHandleType.Pinned);
+        }
+
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArrayUlong(int size)
+        {
+            return ToNative(new ulong[size], GCHandleType.Pinned);
+        }
+
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArrayFloat(int size)
+        {
+            return ToNative(new float[size], GCHandleType.Pinned);
+        }
+
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.CreateStructArrayDelegate))]
+#endif
+        static IntPtr CreateStructArrayDouble(int size)
+        {
+            return ToNative(new double[size], GCHandleType.Pinned);
+        }
+
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.SetExceptionDelegate))]
+#endif
         static void SetException(IntPtr e, bool cpp)
         {
             if (cpp)
@@ -295,6 +414,9 @@ namespace Scapix.Link
                 exception = FromNative<Exception>(e);
         }
 
+#if ENABLE_IL2CPP
+        [AOT.MonoPInvokeCallback(typeof(CsApi.GetExceptionMessageDelegate))]
+#endif
         static void GetExceptionMessage(IntPtr e, IntPtr data)
         {
             cppApi.SetString(FromNative<Exception>(e).Message, data);
@@ -311,57 +433,57 @@ namespace Scapix.Link
         [StructLayout(LayoutKind.Sequential)]
         class CsApi
         {
-            delegate IntPtr CopyRefDelegate(IntPtr r, GCHandleType t);
+            public delegate IntPtr CopyRefDelegate(IntPtr r, GCHandleType t);
             readonly CopyRefDelegate copyRef = new CopyRefDelegate(CopyRef);
 
-            delegate void ReleaseRefDelegate(IntPtr r);
+            public delegate void ReleaseRefDelegate(IntPtr r);
             readonly ReleaseRefDelegate releaseRef = new ReleaseRefDelegate(ReleaseRef);
 
-            delegate IntPtr CreateStringDelegate(IntPtr data, int size);
+            public delegate IntPtr CreateStringDelegate(IntPtr data, int size);
             readonly CreateStringDelegate createString = new CreateStringDelegate(CreateString);
 
-            delegate void SetStringDelegate(IntPtr str, IntPtr data);
+            public delegate void SetStringDelegate(IntPtr str, IntPtr data);
             readonly SetStringDelegate setString = new SetStringDelegate(SetString);
 
-            delegate IntPtr GetFuncDelegate(IntPtr d);
+            public delegate IntPtr GetFuncDelegate(IntPtr d);
             readonly GetFuncDelegate getFunc = new GetFuncDelegate(GetFunc);
 
-            delegate int GetArraySizeDelegate(IntPtr a);
+            public delegate int GetArraySizeDelegate(IntPtr a);
             readonly GetArraySizeDelegate getArraySize = new GetArraySizeDelegate(GetArraySize);
 
-            delegate IntPtr GetObjectArrayElementDelegate(IntPtr arr, int index);
+            public delegate IntPtr GetObjectArrayElementDelegate(IntPtr arr, int index);
             readonly GetObjectArrayElementDelegate getObjectArrayElement = new GetObjectArrayElementDelegate(GetObjectArrayElement);
 
-            delegate void SetObjectArrayElementDelegate(IntPtr arr, int index, IntPtr value);
+            public delegate void SetObjectArrayElementDelegate(IntPtr arr, int index, IntPtr value);
             readonly SetObjectArrayElementDelegate setObjectArrayElement = new SetObjectArrayElementDelegate(SetObjectArrayElement);
 
-            delegate ClassCsApi RegisterClassDelegate(string className, IntPtr classCppApi);
+            public delegate ClassCsApi RegisterClassDelegate(string className, IntPtr classCppApi);
             readonly RegisterClassDelegate registerClass = new RegisterClassDelegate(RegisterClass);
 
-            delegate IntPtr GetCppDelegate(IntPtr obj);
+            public delegate IntPtr GetCppDelegate(IntPtr obj);
             readonly GetCppDelegate getCpp = new GetCppDelegate(GetCpp);
 
-            delegate IntPtr AddrOfPinnedObjectDelegate(IntPtr obj);
+            public delegate IntPtr AddrOfPinnedObjectDelegate(IntPtr obj);
             readonly AddrOfPinnedObjectDelegate addrOfPinnedObject = new AddrOfPinnedObjectDelegate(AddrOfPinnedObject);
 
-            delegate IntPtr CreateStructArrayDelegate(int size);
+            public delegate IntPtr CreateStructArrayDelegate(int size);
 
-            readonly CreateStructArrayDelegate createBoolArray = new CreateStructArrayDelegate(CreateStructArray<bool>);
-            readonly CreateStructArrayDelegate createSbyteArray = new CreateStructArrayDelegate(CreateStructArray<sbyte>);
-            readonly CreateStructArrayDelegate createShortArray = new CreateStructArrayDelegate(CreateStructArray<short>);
-            readonly CreateStructArrayDelegate createIntArray = new CreateStructArrayDelegate(CreateStructArray<int>);
-            readonly CreateStructArrayDelegate createLongArray = new CreateStructArrayDelegate(CreateStructArray<long>);
-            readonly CreateStructArrayDelegate createByteArray = new CreateStructArrayDelegate(CreateStructArray<byte>);
-            readonly CreateStructArrayDelegate createUshortArray = new CreateStructArrayDelegate(CreateStructArray<ushort>);
-            readonly CreateStructArrayDelegate createUintArray = new CreateStructArrayDelegate(CreateStructArray<uint>);
-            readonly CreateStructArrayDelegate createUlongArray = new CreateStructArrayDelegate(CreateStructArray<ulong>);
-            readonly CreateStructArrayDelegate createFloatArray = new CreateStructArrayDelegate(CreateStructArray<float>);
-            readonly CreateStructArrayDelegate createDoubleArray = new CreateStructArrayDelegate(CreateStructArray<double>);
+            readonly CreateStructArrayDelegate createBoolArray = new CreateStructArrayDelegate(CreateStructArrayBool);
+            readonly CreateStructArrayDelegate createSbyteArray = new CreateStructArrayDelegate(CreateStructArraySbyte);
+            readonly CreateStructArrayDelegate createShortArray = new CreateStructArrayDelegate(CreateStructArrayShort);
+            readonly CreateStructArrayDelegate createIntArray = new CreateStructArrayDelegate(CreateStructArrayInt);
+            readonly CreateStructArrayDelegate createLongArray = new CreateStructArrayDelegate(CreateStructArrayLong);
+            readonly CreateStructArrayDelegate createByteArray = new CreateStructArrayDelegate(CreateStructArrayByte);
+            readonly CreateStructArrayDelegate createUshortArray = new CreateStructArrayDelegate(CreateStructArrayUshort);
+            readonly CreateStructArrayDelegate createUintArray = new CreateStructArrayDelegate(CreateStructArrayUint);
+            readonly CreateStructArrayDelegate createUlongArray = new CreateStructArrayDelegate(CreateStructArrayUlong);
+            readonly CreateStructArrayDelegate createFloatArray = new CreateStructArrayDelegate(CreateStructArrayFloat);
+            readonly CreateStructArrayDelegate createDoubleArray = new CreateStructArrayDelegate(CreateStructArrayDouble);
 
-            delegate void SetExceptionDelegate(IntPtr exception, bool cpp);
+            public delegate void SetExceptionDelegate(IntPtr exception, bool cpp);
             readonly SetExceptionDelegate setException = new SetExceptionDelegate(SetException);
 
-            delegate void GetExceptionMessageDelegate(IntPtr exception, IntPtr data);
+            public delegate void GetExceptionMessageDelegate(IntPtr exception, IntPtr data);
             readonly GetExceptionMessageDelegate getExceptionMessage = new GetExceptionMessageDelegate(GetExceptionMessage);
         };
 

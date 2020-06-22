@@ -13,6 +13,10 @@
 #include <scapix/link/cs/convert.h>
 #include <scapix/bridge/type_traits.h>
 
+#ifdef ENABLE_IL2CPP
+#define SCAPIX_NO_RESURRECTION
+#endif
+
 namespace scapix {
 namespace bridge {
 namespace cs {
@@ -59,7 +63,11 @@ private:
 		if (!strong)
 		{
 			strong = ref<>(link::cs::api::class_info<T>::cs_api.create(this));
+#ifdef SCAPIX_NO_RESURRECTION
+			attach(ref<>(strong, ref_type::weak), shared);
+#else
 			attach(ref<>(strong, ref_type::weak_track_resurrection), shared);
+#endif
 		}
 
 		return strong;
@@ -75,6 +83,10 @@ private:
 
 	bool finalize()
 	{
+#ifdef SCAPIX_NO_RESURRECTION
+		wrapper.reset();
+		self.reset(); // might destroy this object
+#else
 		std::weak_ptr<object_base> weak_self(self);
 		self.reset(); // might destroy this object
 
@@ -83,7 +95,7 @@ private:
 			self = std::move(shared_self);
 			return false;
 		}
-
+#endif
 		return true;
 	}
 

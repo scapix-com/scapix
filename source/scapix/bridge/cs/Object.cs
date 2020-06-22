@@ -4,6 +4,10 @@
 	Copyright (c) 2020 Boris Rasin (boris@scapix.com)
 */
 
+#if ENABLE_IL2CPP
+#define SCAPIX_NO_RESURRECTION
+#endif
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -18,17 +22,28 @@ namespace Scapix.Bridge
             Link.API.Init();
         }
 
+#if SCAPIX_NO_RESURRECTION
+        ~Object()
+        {
+            Link.API.Finalize(cpp);
+        }
+
+        const GCHandleType weakType = GCHandleType.Weak;
+#else
         ~Object()
         {
             if (!Link.API.Finalize(cpp))
                 GC.ReRegisterForFinalize(this);
         }
 
+        const GCHandleType weakType = GCHandleType.WeakTrackResurrection;
+#endif
+
         protected struct Nop {}
         protected static readonly Nop nop;
         protected Object(Nop nop) {}
 
-        protected IntPtr ScapixWeak() { return Link.API.ToNative(this, GCHandleType.WeakTrackResurrection); }
+        protected IntPtr ScapixWeak() { return Link.API.ToNative(this, weakType); }
         protected void ScapixInit(IntPtr cpp) { this.cpp = cpp; }
         protected void ScapixInitCheck(IntPtr cpp) { ScapixCheck(); this.cpp = cpp; }
 
