@@ -431,7 +431,7 @@ namespace Scapix.Link
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        class CsApi
+        public class CsApi
         {
             public delegate IntPtr CopyRefDelegate(IntPtr r, GCHandleType t);
             readonly CopyRefDelegate copyRef = new CopyRefDelegate(CopyRef);
@@ -508,13 +508,11 @@ namespace Scapix.Link
             public readonly SetExceptionDelegate SetException;
         };
 
-        static readonly CppApi cppApi = Marshal.PtrToStructure<CppApi>(ScapixInit(csApi));
-
-        [DllImport(Scapix.Native.Dll)]
-        static extern IntPtr ScapixInit(CsApi funcTable);
+        static CppApi cppApi;
 
         static API() {}
-        public static void Init() {}
+        public delegate System.IntPtr ScapixInitDelegate(Scapix.Link.API.CsApi funcTable);
+        public static void Init(ScapixInitDelegate init) { cppApi = Marshal.PtrToStructure<CppApi>(init(csApi)); }
 
         public static void SetString(string str, IntPtr data) { cppApi.SetString(str, data); }
         public static bool Finalize(IntPtr obj) { return cppApi.Finalize(obj); }

@@ -17,11 +17,6 @@ namespace Scapix.Bridge
     {
         internal protected /*protected*/ IntPtr cpp;
 
-        protected static void ScapixInit()
-        {
-            Link.API.Init();
-        }
-
 #if SCAPIX_NO_RESURRECTION
         ~Object()
         {

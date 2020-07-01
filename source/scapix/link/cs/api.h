@@ -29,9 +29,6 @@
 
 namespace scapix::bridge::cs { class object_base; }
 
-// generated function
-void scapix_cs_export();
-
 namespace scapix {
 namespace link {
 namespace cs {
@@ -178,11 +175,9 @@ inline void check_exception()
 
 inline constexpr cpp_api cpp_funcs;
 
-extern "C" SCAPIX_EXPORT
-inline const cpp_api* SCAPIX_CALL ScapixInit(const cs_api* funcs)
+inline const cpp_api* init(const cs_api* funcs)
 {
 	api::funcs = *funcs;
-	scapix_cs_export();
 	return &cpp_funcs;
 }
 
