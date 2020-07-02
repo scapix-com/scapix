@@ -103,8 +103,20 @@ function(camel_case source target)
 endfunction(camel_case)
 
 function(scapix_bridge_headers target domain)
-set(bridge_headers ${ARGN})
+    scapix_bridge(TARGET ${target} DOMAIN ${domain} HEADERS ${ARGN})
+endfunction()
 
+function(scapix_bridge)
+cmake_parse_arguments(SCAPIX "" "TARGET;DOMAIN" "HEADERS;IMPORT_TARGETS" ${ARGN})
+set(target ${SCAPIX_TARGET})
+set(domain ${SCAPIX_DOMAIN})
+set(bridge_headers ${SCAPIX_HEADERS})
+
+foreach(import_target ${SCAPIX_IMPORT_TARGETS})
+    scapix_fix_sources(${import_target})
+    get_property(headers TARGET ${import_target} PROPERTY SCAPIX_BRIDGE_HEADERS)
+    list(APPEND import_bridge_headers ${headers})
+endforeach()
 set(PROJECT_ROOT ${CMAKE_SOURCE_DIR})
 
 set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python, js, cs")
@@ -125,6 +137,8 @@ set(bridges
     "cs"
 #   "swift"
 )
+
+set_target_properties(${target} PROPERTIES SCAPIX_BRIDGE_HEADERS "${bridge_headers}")
 
 if(XCODE)
     # to do: generate all scapix related xcode settings: include path to generated sources, objc-swift bridge header, product bundle identifier, etc.
@@ -275,6 +289,10 @@ file(APPEND "${generated_cs_cpp}"
 
 ")
 
+foreach(filename ${import_bridge_headers})
+    get_filename_component(name ${filename} NAME_WLE)
+    file(APPEND "${generated_cs_cpp}" "void scapix_cs_export_${name}();\n")
+endforeach(filename)
 foreach(filename ${bridge_headers})
     get_filename_component(name ${filename} NAME_WLE)
     file(APPEND "${generated_cs_cpp}" "void scapix_cs_export_${name}();\n")
@@ -286,6 +304,10 @@ const scapix::link::cs::api::cpp_api* SCAPIX_CALL ScapixInit(const scapix::link:
     auto ret = scapix::link::cs::api::init(funcs);
 
 ")
+foreach(filename ${import_bridge_headers})
+    get_filename_component(name ${filename} NAME_WLE)
+    file(APPEND "${generated_cs_cpp}" "    scapix_cs_export_${name}();\n")
+endforeach(filename)
 foreach(filename ${bridge_headers})
     get_filename_component(name ${filename} NAME_WLE)
     file(APPEND "${generated_cs_cpp}" "    scapix_cs_export_${name}();\n")
@@ -351,6 +373,39 @@ target_sources(${target} INTERFACE ${generated_sources_${SCAPIX_BRIDGE}_interfac
 source_group(TREE ${PROJECT_ROOT}/generated PREFIX "generated" FILES ${generated_sources})
 
 string(REPLACE "." "/" domain_path ${domain})
+
+foreach(bridge_header ${import_bridge_headers})
+
+    get_filename_component(bridge_header_name ${bridge_header} NAME_WLE)
+    if(IS_ABSOLUTE bridge_header)
+        file(RELATIVE_PATH bridge_header_relative ${PROJECT_ROOT} ${bridge_header})
+        set(bridge_header_absolute ${bridge_header})
+    else()
+        set(bridge_header_relative ${bridge_header})
+        get_filename_component(bridge_header_absolute ${bridge_header} ABSOLUTE BASE_DIR ${PROJECT_ROOT})
+    endif()
+    camel_case(${bridge_header_name} bridge_header_name_camel)
+
+    set(generated_sources_cs_private   "${PROJECT_ROOT}/generated/bridge/cs/${bridge_header_name}.cpp")
+    set(generated_sources_cs_interface "${PROJECT_ROOT}/generated/bridge/cs/${bridge_header_name_camel}.cs")
+
+    set(generated_sources_private)
+    set(generated_sources_interface)
+
+    foreach(bridge ${bridges})
+        list(APPEND generated_sources_private ${generated_sources_${bridge}_private})
+        list(APPEND generated_sources_interface ${generated_sources_${bridge}_interface})
+        set(generated_sources_${bridge} ${generated_sources_${bridge}_private} ${generated_sources_${bridge}_interface})
+    endforeach()
+
+    set(generated_sources ${generated_sources_private} ${generated_sources_interface})
+    set_source_files_properties(${generated_sources} PROPERTIES GENERATED TRUE)
+
+    target_sources(${target} PRIVATE ${generated_sources_${SCAPIX_BRIDGE}_private})
+    target_sources(${target} INTERFACE ${generated_sources_${SCAPIX_BRIDGE}_interface})
+    source_group(TREE ${PROJECT_ROOT}/generated PREFIX "generated" FILES ${generated_sources})
+
+endforeach(bridge_header)
 
 foreach(bridge_header ${bridge_headers})
 
@@ -460,7 +515,7 @@ foreach(bridge_header ${bridge_headers})
     )
 
 endforeach(bridge_header)
-endfunction(scapix_bridge_headers)
+endfunction(scapix_bridge)
 
 function(scapix_add_target target domain)
     set(bridge_headers ${ARGN})
