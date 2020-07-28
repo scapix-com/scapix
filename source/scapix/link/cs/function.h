@@ -7,7 +7,7 @@
 #ifndef SCAPIX_LINK_CS_FUNCTION_H
 #define SCAPIX_LINK_CS_FUNCTION_H
 
-#include <scapix/core/cast.h>
+#include <scapix/core/tuple.h>
 #include <scapix/link/cs/convert.h>
 #include <scapix/link/cs/exception.h>
 #include <scapix/link/cs/ref.h>
@@ -18,25 +18,22 @@ namespace scapix::link::cs {
 template <typename ...Functions>
 struct function_table
 {
-	const void* functions[sizeof...(Functions)] = { Functions()... };
+	const tuple<decltype(Functions::value)...> functions = { Functions::value... };
 };
 
 template <typename T, typename ...Args>
 class constructor
 {
-public:
-
-	constexpr operator void* ()
-	{
-		return void_cast(func);
-	}
-
 private:
 
 	static api::handle_type func(api::handle_type weak_wrapper, param_t<Args>... args)
 	{
 		return bridge::cs::init<T>(weak_wrapper, param_cpp<Args>(args)...);
 	}
+
+public:
+
+	inline static constexpr auto value = &func;
 
 };
 
@@ -46,13 +43,6 @@ private:
 template <typename Type, std::decay_t<Type> Func>
 class function
 {
-public:
-
-	constexpr operator void* ()
-	{
-		return void_cast(select<Type>::func);
-	}
-
 private:
 
 	static void set_exception()
@@ -193,6 +183,10 @@ private:
 			}
 		}
 	};
+
+public:
+
+	inline static constexpr auto value = &select<Type>::func;
 
 };
 

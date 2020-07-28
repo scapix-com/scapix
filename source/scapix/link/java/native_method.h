@@ -7,7 +7,7 @@
 #ifndef SCAPIX_LINK_JAVA_NATIVE_METHOD_H
 #define SCAPIX_LINK_JAVA_NATIVE_METHOD_H
 
-#include <scapix/core/cast.h>
+#include <scapix/core/tuple.h>
 #include <scapix/meta/string.h>
 #include <scapix/link/java/convert.h>
 #include <scapix/link/java/signature.h>
@@ -86,6 +86,22 @@ inline decltype(auto) get_object(jobject thiz)
 //{
 //}
 
+template <typename Func>
+struct jni_native_method
+{
+	char* name;
+	char* signature;
+	Func* fnPtr;
+
+private:
+
+	static void compile_check()
+	{
+		static_assert(sizeof(JNINativeMethod) == sizeof(jni_native_method), "jni_native_method should be ABI compatable with JNINativeMethod");
+	}
+
+};
+
 template <typename ClassName, typename ...Methods>
 class native_methods
 {
@@ -98,19 +114,16 @@ public:
 			std::cout << "native_method: " << m.name << " - " << m.signature << "\n";
 #endif
 
-		class_::find_class(meta::c_str_v<ClassName>)->register_natives(methods);
+		class_::find_class(meta::c_str_v<ClassName>)->register_natives(reinterpret_cast<const JNINativeMethod*>(&methods), sizeof...(Methods));
 	}
 
 private:
 
 	native_methods() = delete;
 
-	constexpr static JNINativeMethod methods[sizeof...(Methods)] = { Methods()... };
+	inline constexpr static tuple<jni_native_method<typename Methods::func_type>...> methods = { Methods::get()... };
 
 };
-
-template <typename ClassName, typename ...Methods>
-constexpr JNINativeMethod native_methods<ClassName, Methods...>::methods[];
 
 // std::decay is a workaround for GCC:
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=82773
@@ -118,18 +131,6 @@ constexpr JNINativeMethod native_methods<ClassName, Methods...>::methods[];
 template <typename Name, typename JniType, typename Type, std::decay_t<Type> Method>
 class native_method
 {
-public:
-
-	constexpr operator JNINativeMethod()
-	{
-		return
-		{
-			const_cast<char*>(meta::c_str_v<Name>),
-			const_cast<char*>(meta::c_str_v<signature_t<JniType>>),
-			void_cast(type<JniType, Type>::thunk)
-		};
-	}
-
 private:
 
 	template <typename JniType_, typename Type_>
@@ -272,6 +273,20 @@ private:
 			}
 		}
 	};
+
+public:
+
+	using func_type = decltype(type<JniType, Type>::thunk);
+
+	static constexpr jni_native_method<func_type> get()
+	{
+		return
+		{
+			const_cast<char*>(meta::c_str_v<Name>),
+			const_cast<char*>(meta::c_str_v<signature_t<JniType>>),
+			&type<JniType, Type>::thunk
+		};
+	}
 
 };
 
