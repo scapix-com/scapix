@@ -59,11 +59,7 @@ if(${SCAPIX_BRIDGE} STREQUAL objc)
     set_source_files_properties(${SCAPIX_ROOT}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_FLAGS -fno-objc-arc)
 endif()
 
-set_target_properties(scapix PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
-)
+target_compile_features(scapix PUBLIC cxx_std_17)
 
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/source)
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
