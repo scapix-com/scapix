@@ -1,5 +1,5 @@
 /*
-	scapix/code/tuple.h
+	scapix/core/tuple.h
 
 	Copyright (c) 2020 Boris Rasin (boris@scapix.com)
 */
