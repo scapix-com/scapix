@@ -26,12 +26,14 @@ if(${SCAPIX_BRIDGE} STREQUAL java)
     source_group(TREE ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API}/scapix/java_api PREFIX "java_api" FILES ${java_api_sources})
 endif()
 
-file(GLOB_RECURSE doc_sources CONFIGURE_DEPENDS ${SCAPIX_ROOT}/doc/*)
-source_group(TREE ${SCAPIX_ROOT}/doc PREFIX "doc" FILES ${doc_sources})
+add_library(scapix ${sources} ${java_api_sources})
 
-add_library(scapix ${sources} ${java_api_sources} ${doc_sources})
+if(${SCAPIX_BRIDGE} STREQUAL java)
+    file(GLOB_RECURSE interface_sources CONFIGURE_DEPENDS ${SCAPIX_ROOT}/source/*/*.java)
+elseif(${SCAPIX_BRIDGE} STREQUAL cs)
+    file(GLOB_RECURSE interface_sources CONFIGURE_DEPENDS ${SCAPIX_ROOT}/source/*/*.cs)
+endif()
 
-file(GLOB_RECURSE interface_sources CONFIGURE_DEPENDS ${SCAPIX_ROOT}/source/*/*.${SCAPIX_BRIDGE})
 target_sources(scapix INTERFACE ${interface_sources})
 
 set(bridges
