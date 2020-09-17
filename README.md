@@ -29,9 +29,13 @@ scapix_bridge_headers(
 )
 ```
 
-[Documentation](https://www.scapix.com/)\
-[Minimal Example](https://github.com/scapix-com/tiny_bridge)\
-[Extended Example](https://github.com/scapix-com/example1)
+[Documentation](https://www.scapix.com/)
+
+Examples:
+
+- [tiny_bridge](https://github.com/scapix-com/tiny_bridge) - minimal example
+- [scapix_example_objc](https://github.com/scapix-com/scapix_example_objc) - minimal example, ObjC/Swift, XCode integration
+- [example1](https://github.com/scapix-com/example1) - extended example, all languages
 
 ## Java Link
 
