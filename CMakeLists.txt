@@ -58,7 +58,7 @@ endforeach()
 
 if(${SCAPIX_BRIDGE} STREQUAL objc)
     target_compile_options(scapix PUBLIC "-fobjc-arc")
-    set_source_files_properties(${SCAPIX_ROOT}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_FLAGS -fno-objc-arc)
+    set_source_files_properties(${SCAPIX_ROOT}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_OPTIONS "-fno-objc-arc")
 endif()
 
 target_compile_features(scapix PUBLIC cxx_std_17)
@@ -417,6 +417,8 @@ foreach(bridge_header ${bridge_headers})
         "${PROJECT_ROOT}/generated/bridge/objc/${scapix_project_name}/bridge/${bridge_header_name_camel}.h"
         "${PROJECT_ROOT}/generated/bridge/objc/${scapix_project_name}/bridge/${bridge_header_name_camel}.mm"
     )
+
+    set_source_files_properties("${PROJECT_ROOT}/generated/bridge/objc/${scapix_project_name}/bridge/${bridge_header_name_camel}.mm" PROPERTIES COMPILE_OPTIONS "-Wno-objc-designated-initializers")
 
     set(generated_sources_python_private
         "${PROJECT_ROOT}/generated/bridge/python/${bridge_header_name}.cpp"
