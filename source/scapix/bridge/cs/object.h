@@ -139,11 +139,17 @@ struct convert_shared<ref<>, T, std::enable_if_t<bridge::is_object<T>>>
 {
 	static std::shared_ptr<T> cpp(ref<> v)
 	{
+		if (!v)
+			return nullptr;
+		
 		return std::static_pointer_cast<T>(link::cs::api::get_cpp(v)->scapix_shared());
 	}
 
 	static ref<> cs(std::shared_ptr<T> v)
 	{
+		if (!v)
+			return nullptr;
+
 		auto p = v.get();
 		return p->template get_ref<T>(std::move(v));
 	}

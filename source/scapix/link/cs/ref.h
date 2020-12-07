@@ -23,7 +23,7 @@ public:
 
 	using handle_type = api::handle_type;
 
-	ref() : handle(nullptr) {}
+	ref(std::nullptr_t = nullptr) : handle(nullptr) {}
 	explicit ref(handle_type h) : handle(h) {}
 	ref(const ref& r, ref_type t = ref_type::normal) : handle(r ? api::funcs.copy_ref(r.get(), t) : nullptr) {}
 	ref(ref&& r) noexcept : handle(r.release()) {}
