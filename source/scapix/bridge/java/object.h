@@ -205,11 +205,17 @@ struct convert_shared<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 {
 	static std::shared_ptr<T> cpp(ref<class_name_t<T>> v)
 	{
+		if (!v)
+			return nullptr;
+
 		return static_pointer_cast<T>(static_pointer_cast<bridge::java::detail::bridge>(std::move(v))->get_ptr()->scapix_shared());
 	}
 
 	static ref<class_name_t<T>> jni(std::shared_ptr<T> v)
 	{
+		if (!v)
+			return nullptr;
+
 		auto p = v.get();
 		return static_pointer_cast<class_name_t<T>>(p->get_ref(std::move(v)));
 	}
