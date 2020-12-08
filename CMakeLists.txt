@@ -464,22 +464,36 @@ foreach(bridge_header ${bridge_headers})
     target_sources(${target} INTERFACE ${generated_sources_${SCAPIX_BRIDGE}_interface})
     source_group(TREE ${PROJECT_ROOT}/generated PREFIX "generated" FILES ${generated_sources})
 
+    set(scapix_clang_config)
+
+    # MSVC C++ stdlib (starting from vs 16.8) when using clang, requires <intrin.h> from clang builtin headers.
+    # In other cases, our clang builtin headers may interfere with system clang builtin headers.
+    # Additionally, there is a bug with vs-clang using wrong builtin headers path (double x64),
+    # so we use our clang builtin headers also in this case.
+
+#   if((NOT MSVC) OR (MSVC AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"))
+    if(NOT MSVC)
+        set(scapix_clang_config ${scapix_clang_config} -nobuiltininc)
+    endif()
+
     if(ANDROID)
+        set(scapix_clang_config ${scapix_clang_config} -DANDROID)
+
         if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
-            set(scapix_clang_config -DANDROID -target armv7a-linux-androideabi)
+            set(scapix_clang_config ${scapix_clang_config} -target armv7a-linux-androideabi)
         elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
-            set(scapix_clang_config -DANDROID -target aarch64-linux-android)
+            set(scapix_clang_config ${scapix_clang_config} -target aarch64-linux-android)
         elseif(${ANDROID_ABI} STREQUAL "x86")
-            set(scapix_clang_config -DANDROID -target i686-linux-android)
+            set(scapix_clang_config ${scapix_clang_config} -target i686-linux-android)
         elseif(${ANDROID_ABI} STREQUAL "x86_64")
-            set(scapix_clang_config -DANDROID -target x86_64-linux-android)
+            set(scapix_clang_config ${scapix_clang_config} -target x86_64-linux-android)
         else()
-            message(FATAL_ERROR "Unknown Android ABI")
+            message(FATAL_ERROR "Unknown Android ABI: ${ANDROID_ABI}")
         endif()
     elseif(IOS)
-        set(scapix_clang_config -arch arm64)
+        set(scapix_clang_config ${scapix_clang_config} -arch arm64)
     elseif(EMSCRIPTEN)
-        set(scapix_clang_config
+        set(scapix_clang_config ${scapix_clang_config}
             -target wasm32-unknown-emscripten
             -isystem $ENV{EMSDK}/upstream/emscripten/system/include/libcxx
             -isystem $ENV{EMSDK}/upstream/emscripten/system/lib/libcxxabi/include
@@ -489,8 +503,6 @@ foreach(bridge_header ${bridge_headers})
             -isystem $ENV{EMSDK}/upstream/emscripten/system/lib/libc/musl/arch/emscripten
             -isystem $ENV{EMSDK}/upstream/emscripten/system/local/include
             )
-    else()
-        set(scapix_clang_config)
     endif()
 
     add_custom_command(
