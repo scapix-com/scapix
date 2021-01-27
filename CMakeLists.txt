@@ -477,21 +477,11 @@ foreach(bridge_header ${bridge_headers})
     endif()
 
     if(ANDROID)
-        set(scapix_clang_config ${scapix_clang_config} -DANDROID)
-
-        if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
-            set(scapix_clang_config ${scapix_clang_config} -target armv7a-linux-androideabi)
-        elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
-            set(scapix_clang_config ${scapix_clang_config} -target aarch64-linux-android)
-        elseif(${ANDROID_ABI} STREQUAL "x86")
-            set(scapix_clang_config ${scapix_clang_config} -target i686-linux-android)
-        elseif(${ANDROID_ABI} STREQUAL "x86_64")
-            set(scapix_clang_config ${scapix_clang_config} -target x86_64-linux-android)
-        else()
-            message(FATAL_ERROR "Unknown Android ABI: ${ANDROID_ABI}")
+        set(scapix_clang_config ${scapix_clang_config} -DANDROID -target ${ANDROID_LLVM_TRIPLE})
+    elseif(APPLE)
+        if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+            set(scapix_clang_config ${scapix_clang_config} -arch arm64)
         endif()
-    elseif(IOS)
-        set(scapix_clang_config ${scapix_clang_config} -arch arm64)
     elseif(EMSCRIPTEN)
         set(scapix_clang_config ${scapix_clang_config}
             -target wasm32-unknown-emscripten
@@ -503,6 +493,8 @@ foreach(bridge_header ${bridge_headers})
             -isystem $ENV{EMSDK}/upstream/emscripten/system/lib/libc/musl/arch/emscripten
             -isystem $ENV{EMSDK}/upstream/emscripten/system/local/include
             )
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_TARGET)
+        set(scapix_clang_config ${scapix_clang_config} -target ${CMAKE_CXX_COMPILER_TARGET})
     endif()
 
     add_custom_command(
