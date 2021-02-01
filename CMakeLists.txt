@@ -483,16 +483,7 @@ foreach(bridge_header ${bridge_headers})
             set(scapix_clang_config ${scapix_clang_config} -arch arm64)
         endif()
     elseif(EMSCRIPTEN)
-        set(scapix_clang_config ${scapix_clang_config}
-            -target wasm32-unknown-emscripten
-            -isystem $ENV{EMSDK}/upstream/emscripten/system/include/libcxx
-            -isystem $ENV{EMSDK}/upstream/emscripten/system/lib/libcxxabi/include
-            -isystem $ENV{EMSDK}/upstream/emscripten/system/include/compat
-            -isystem $ENV{EMSDK}/upstream/emscripten/system/include
-            -isystem $ENV{EMSDK}/upstream/emscripten/system/include/libc
-            -isystem $ENV{EMSDK}/upstream/emscripten/system/lib/libc/musl/arch/emscripten
-            -isystem $ENV{EMSDK}/upstream/emscripten/system/local/include
-            )
+        set(scapix_clang_config ${scapix_clang_config} -target wasm32-unknown-emscripten --sysroot $ENV{EMSDK}/upstream/emscripten/cache/sysroot -iwithsysroot /include/compat)
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_TARGET)
         set(scapix_clang_config ${scapix_clang_config} -target ${CMAKE_CXX_COMPILER_TARGET})
     endif()
