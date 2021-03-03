@@ -466,13 +466,7 @@ foreach(bridge_header ${bridge_headers})
 
     set(scapix_clang_config)
 
-    # MSVC C++ stdlib (starting from vs 16.8) when using clang, requires <intrin.h> from clang builtin headers.
-    # In other cases, our clang builtin headers may interfere with system clang builtin headers.
-    # Additionally, there is a bug with vs-clang using wrong builtin headers path (double x64),
-    # so we use our clang builtin headers also in this case.
-
-#   if((NOT MSVC) OR (MSVC AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"))
-    if(NOT MSVC)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         set(scapix_clang_config ${scapix_clang_config} -nobuiltininc)
     endif()
 
