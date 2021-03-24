@@ -482,9 +482,15 @@ foreach(bridge_header ${bridge_headers})
         set(scapix_clang_config ${scapix_clang_config} -target ${CMAKE_CXX_COMPILER_TARGET})
     endif()
 
+    set(scapix_clang_env)
+
+    if(APPLE AND NOT XCODE)
+        set(scapix_clang_env ${scapix_clang_env} SDKROOT=${CMAKE_OSX_SYSROOT})
+    endif()
+
     add_custom_command(
             OUTPUT ${generated_sources}
-            COMMAND ${SCAPIX_EXE_DIR}/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=c++17 ${scapix_clang_config} "$<$<BOOL:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}>:-I$<JOIN:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES},;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>"
+            COMMAND ${CMAKE_COMMAND} -E env ${scapix_clang_env} ${SCAPIX_EXE_DIR}/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=c++17 ${scapix_clang_config} "$<$<BOOL:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}>:-I$<JOIN:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES},;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>"
             DEPENDS ${bridge_header_absolute}
             IMPLICIT_DEPENDS CXX ${bridge_header_absolute}
             WORKING_DIRECTORY ${PROJECT_ROOT}
