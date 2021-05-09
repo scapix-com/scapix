@@ -16,6 +16,9 @@
 #include <functional>
 #include <experimental/type_traits>
 #include <scapix/core/type_traits.h>
+#include <scapix/meta/for_each.h>
+#include <scapix/meta/iota.h>
+#include <scapix/link/objc/struct.h>
 
 #import <Foundation/Foundation.h>
 
@@ -491,6 +494,39 @@ struct convert<ObjcR(^)(ObjcArgs...), std::function<R(Args...)>>
                 return convert_objc<ObjcR>(value(convert_cpp<Args>(args)...));
         };
     }
+};
+
+template <typename ObjcStruct, typename Struct>
+struct convert<ObjcStruct, Struct, std::enable_if_t<is_struct_v<Struct>>>
+{
+	using fields = typename struct_<Struct>::fields;
+	using objc_fields = typename struct_<Struct>::objc_fields;
+
+	static ObjcStruct objc(const Struct& value)
+	{
+		ObjcStruct obj;
+
+		meta::for_each<meta::iota_c<tuple_size_v<typename fields::type>>>([&](auto index)
+		{
+			using objc_type = decltype(obj.*get<index>(objc_fields::values));
+			obj.*get<index>(objc_fields::values) = convert_objc<objc_type>(value.*get<index>(fields::values));
+		});
+
+		return obj;
+	}
+
+	static Struct cpp(ObjcStruct&& value)
+	{
+		Struct obj;
+
+		meta::for_each<meta::iota_c<tuple_size_v<typename fields::type>>>([&](auto index)
+		{
+			using cpp_type = decltype(obj.*get<index>(fields::values));
+			obj.*get<index>(fields::values) = convert_cpp<cpp_type>(std::move(value).*get<index>(objc_fields::values));
+		});
+
+		return obj;
+	}
 };
 
 } // namespace objc

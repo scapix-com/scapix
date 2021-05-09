@@ -18,7 +18,10 @@
 #include <experimental/type_traits>
 #include <emscripten/val.h>
 #include <scapix/core/type_traits.h>
+#include <scapix/meta/for_each.h>
+#include <scapix/meta/string.h>
 #include <scapix/link/js/type_traits.h>
+#include <scapix/link/js/struct.h>
 
 namespace scapix {
 namespace link {
@@ -324,6 +327,39 @@ struct convert<emscripten::val, std::function<R(Args...)>>
 	// static emscripten::val js(const std::function<R(Args...)>& func)
 	// {
 	// }
+};
+
+template <typename Struct>
+struct convert<emscripten::val, Struct, std::enable_if_t<is_struct_v<Struct>>>
+{
+	using fields = typename struct_<Struct>::fields;
+
+	static emscripten::val js(const Struct& value)
+	{
+		auto obj = emscripten::val::object();
+
+		meta::for_each<fields>([&](auto f)
+		{
+			using field = decltype(f);
+			obj.set(meta::c_str_v<typename field::name>, convert_js<emscripten::val>(value.*field::ptr));
+		});
+
+		return obj;
+	}
+
+	static Struct cpp(const emscripten::val& value)
+	{
+		Struct obj;
+
+		meta::for_each<fields>([&](auto f)
+		{
+			using field = decltype(f);
+			obj.*field::ptr = convert_cpp<decltype(obj.*field::ptr)>(value[meta::c_str_v<typename field::name>]);
+		});
+
+		return obj;
+	}
+
 };
 
 } // namespace js

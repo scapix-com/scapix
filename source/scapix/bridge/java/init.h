@@ -8,6 +8,7 @@
 #define SCAPIX_BRIDGE_JAVA_INIT_H
 
 #include <scapix/link/java/native_method.h>
+#include <scapix/link/java/struct.h>
 #include <scapix/link/java/array.h>
 #include <scapix/link/java/ref.h>
 

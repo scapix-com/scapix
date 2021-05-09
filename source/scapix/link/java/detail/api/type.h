@@ -22,8 +22,8 @@ struct type;
 template <typename T>
 struct type<java::ref<T>>
 {
-    static local_ref<T> get_field(jobject obj, jfieldID id) noexcept { return make_local_ref(env()->GetObjectField(obj, id)); }
-	static void set_field(jobject obj, jfieldID id, java::ref<T> value) noexcept { env()->SetObjectField(obj, id, value); }
+	static local_ref<T> get_field(jobject obj, jfieldID id) noexcept { return make_local_ref(env()->GetObjectField(obj, id)); }
+	static void set_field(jobject obj, jfieldID id, java::ref<T> value) noexcept { env()->SetObjectField(obj, id, value.handle()); }
 	static local_ref<T> get_static_field(jclass cls, jfieldID id) noexcept { return make_local_ref(env()->GetStaticObjectField(cls, id)); }
 	static void set_static_field(jclass cls, jfieldID id, java::ref<T> value) noexcept { env()->SetStaticObjectField(cls, id, value); }
 
@@ -32,7 +32,7 @@ struct type<java::ref<T>>
 	template <typename ...Args> static local_ref<T> call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return make_local_ref(env()->CallStaticObjectMethod(cls, id, args...)); }
 
 	template <typename ...Args> static local_ref<T> new_object(jclass cls, jmethodID id, Args... args) noexcept { return make_local_ref(env()->NewObject(cls, id, args...)); }
-    static local_ref<java::array<T>> new_array(jsize len, java::ref<T> init) noexcept { return local_ref<java::array<T>>(env()->NewObjectArray(len, T::class_object().handle(), init.handle())); }
+	static local_ref<java::array<T>> new_array(jsize len, java::ref<T> init) noexcept { return local_ref<java::array<T>>(env()->NewObjectArray(len, T::class_object().handle(), init.handle())); }
 	static local_ref<T> get_array_element(java::ref<java::array<T>> array, jsize index) noexcept { return make_local_ref(env()->GetObjectArrayElement(array.handle(), index)); }
 	static void set_array_element(java::ref<java::array<T>> array, jsize index, java::ref<T> value) noexcept { env()->SetObjectArrayElement(array.handle(), index, value.handle()); }
 

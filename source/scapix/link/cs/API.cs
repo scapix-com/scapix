@@ -55,7 +55,7 @@ namespace Scapix.Link
         private IntPtr ptr;
     }
 
-    static class API
+    /* static */ abstract class API
     {
         [ThreadStatic]
         static Exception exception;
@@ -68,6 +68,49 @@ namespace Scapix.Link
             {
                 exception = null;
                 throw e;
+            }
+        }
+
+        // duplicated in Bridge.Object
+
+        protected static T ScapixCpp<T>(T v) where T : struct { return v; }
+        protected static IntPtr ScapixCpp(object v) { return ToNative(v); }
+        protected static IntPtr ScapixCpp<T>(T[] v) where T : struct { return ToNative(v, GCHandleType.Pinned); }
+
+        protected static T ScapixCs<T>(T v) where T : struct { return v; }
+        protected static T ScapixCs<T>(IntPtr v) where T : class { return FromNative<T>(v); }
+
+        protected static T ScapixCallback<T>(Func<T> func)
+        {
+            try
+            {
+                return func();
+            }
+            catch (Link.CppException e)
+            {
+                Link.API.CppSetException(e.Release(), true);
+            }
+            catch (Exception e)
+            {
+                Link.API.CppSetException(ScapixCpp(e), false);
+            }
+
+            return default;
+        }
+
+        protected static void ScapixCallback(Action func)
+        {
+            try
+            {
+                func();
+            }
+            catch (Link.CppException e)
+            {
+                Link.API.CppSetException(e.Release(), true);
+            }
+            catch (Exception e)
+            {
+                Link.API.CppSetException(ScapixCpp(e), false);
             }
         }
 
@@ -87,6 +130,39 @@ namespace Scapix.Link
             System.Diagnostics.Debug.Assert(false);
 
             return default;
+        }
+
+        public sealed class ObjectMarshaler : ICustomMarshaler
+        {
+            static readonly ObjectMarshaler instance = new ObjectMarshaler();
+
+            public static ICustomMarshaler GetInstance(string cookie)
+            {
+                return instance;
+            }
+
+            public IntPtr MarshalManagedToNative(object obj)
+            {
+                return ToNative(obj);
+            }
+
+            public object MarshalNativeToManaged(IntPtr ptr)
+            {
+                return FromNative<object>(ptr);
+            }
+
+            public void CleanUpNativeData(IntPtr ptr)
+            {
+            }
+
+            public void CleanUpManagedData(object obj)
+            {
+            }
+
+            public int GetNativeDataSize()
+            {
+                return -1;
+            }
         }
 
         delegate IntPtr ArrayCreateDelegate(int size);

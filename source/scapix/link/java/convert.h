@@ -16,9 +16,11 @@
 #include <unordered_set>
 #include <functional>
 #include <experimental/type_traits>
+#include <scapix/meta/for_each.h>
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/string.h>
 #include <scapix/link/java/array.h>
+#include <scapix/link/java/struct.h>
 
 namespace scapix {
 namespace link {
@@ -434,6 +436,39 @@ struct convert<ref<function<ClassName, JniR(JniArgs...), Name>>, std::function<R
 //        auto c = std::make_shared<callback<J, R, Args...>>(f);
 //        return c.get_ref();
 //    }
+};
+
+template <typename Jni, typename Struct>
+struct convert<Jni, Struct, std::enable_if_t<is_struct_v<Struct>>>
+{
+	using class_name = typename struct_<Struct>::class_name;
+	using fields = typename struct_<Struct>::fields;
+
+	static ref<class_name> jni(const Struct& value)
+	{
+		auto obj = object<class_name>::template new_object<void()>();
+
+		meta::for_each<fields>([&](auto f)
+		{
+			using field = decltype(f);
+			obj->template set_field<typename field::name, typename field::type>(convert_jni<typename field::type>(value.*field::ptr));
+		});
+
+		return obj;
+	}
+
+	static Struct cpp(ref<class_name> value)
+	{
+		Struct obj;
+
+		meta::for_each<fields>([&](auto f)
+		{
+			using field = decltype(f);
+			obj.*field::ptr = convert_cpp<decltype(obj.*field::ptr)>(value->template get_field<typename field::name, typename field::type>());
+		});
+
+		return obj;
+	}
 };
 
 } // namespace java

@@ -10,10 +10,14 @@
 #include <cstring>
 #include <string>
 #include <memory>
+#include <scapix/meta/for_each.h>
+#include <scapix/meta/transform.h>
+#include <scapix/meta/iota.h>
 #include <scapix/core/type_traits.h>
 #include <scapix/link/cs/type_traits.h>
 #include <scapix/link/cs/api_base.h>
 #include <scapix/link/cs/ref.h>
+#include <scapix/link/cs/struct.h>
 
 #ifdef __GNUC__
 #include <cxxabi.h>
@@ -34,11 +38,37 @@ namespace link {
 namespace cs {
 namespace api {
 
+template <typename Cpp, typename = void>
+struct cs_type
+{
+	using type = ref<>;
+};
+
+template <typename Cpp>
+using cs_type_t = typename cs_type<remove_cvref_t<Cpp>>::type;
+
+template <typename Cpp>
+using cpp_struct_t = meta::transform<member_pointer_type, typename struct_<Cpp>::fields::type>;
+
+template <typename Cpp>
+using cs_struct_t = meta::transform<cs_type_t, cpp_struct_t<Cpp>>;
+
+template <typename Cpp>
+struct cs_type<Cpp, std::enable_if_t<is_simple_v<Cpp> || std::is_void_v<Cpp>>>
+{
+	using type = Cpp;
+};
+
+template <typename Cpp>
+struct cs_type<Cpp, std::enable_if_t<is_struct_v<Cpp>>>
+{
+	using type = cs_struct_t<Cpp>;
+};
+
 template <typename T, typename = void>
 struct param
 {
 	using type = api::handle_type;
-	using type_internal = ref<>;
 
 	static type cs(ref<> v)
 	{
@@ -51,6 +81,12 @@ struct param
 	}
 };
 
+template <typename T>
+using param_t = typename param<remove_cvref_t<T>>::type;
+
+template <typename Cpp>
+using wire_struct_t = meta::transform<param_t, cpp_struct_t<Cpp>>;
+
 template <>
 struct param<void>
 {
@@ -61,7 +97,6 @@ template <typename T>
 struct param<T, std::enable_if_t<std::is_arithmetic_v<T>>>
 {
 	using type = T;
-	using type_internal = T;
 
 	static type cs(T v)
 	{
@@ -78,7 +113,6 @@ template <typename T>
 struct param<T, std::enable_if_t<std::is_enum_v<T>>>
 {
 	using type = std::underlying_type_t<T>;
-	using type_internal = T;
 
 	static type cs(T v)
 	{
@@ -92,10 +126,37 @@ struct param<T, std::enable_if_t<std::is_enum_v<T>>>
 };
 
 template <typename T>
-using param_t = typename param<remove_cvref_t<T>>::type;
+struct param<T, std::enable_if_t<is_struct_v<T>>>
+{
+	using type = wire_struct_t<T>;
+	using cs_type = cs_struct_t<T>;
 
-template <typename T>
-using param_internal_t = typename param<remove_cvref_t<T>>::type_internal;
+	static type cs(const cs_type& value)
+	{
+		type obj;
+
+		meta::for_each<meta::iota_c<tuple_size_v<type>>>([&](auto index)
+		{
+			using cpp_type = tuple_element_t<index, cpp_struct_t<T>>;
+			get<index>(obj) = param<cpp_type>::cs(get<index>(value));
+		});
+
+		return obj;
+	}
+
+	static cs_type cpp(const type& value)
+	{
+		cs_type obj;
+
+		meta::for_each<meta::iota_c<tuple_size_v<type>>>([&](auto index)
+		{
+			using cpp_type = tuple_element_t<index, cpp_struct_t<T>>;
+			get<index>(obj) = param<cpp_type>::cpp(get<index>(value));
+		});
+
+		return obj;
+	}
+};
 
 inline const bridge::cs::object_base* get_cpp(ref<> r)
 {

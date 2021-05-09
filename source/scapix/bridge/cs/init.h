@@ -8,5 +8,7 @@
 #define SCAPIX_BRIDGE_CS_INIT_H
 
 #include <scapix/link/cs/function.h>
+#include <scapix/link/cs/struct.h>
+#include <scapix/core/value_list.h>
 
 #endif // SCAPIX_BRIDGE_CS_INIT_H

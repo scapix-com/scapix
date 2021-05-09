@@ -15,6 +15,9 @@
 #include <unordered_set>
 #include <functional>
 #include <experimental/type_traits>
+#include <scapix/core/tuple.h>
+#include <scapix/meta/for_each.h>
+#include <scapix/meta/transform.h>
 #include <scapix/link/cs/type_traits.h>
 #include <scapix/link/cs/api.h>
 #include <scapix/link/cs/ref.h>
@@ -25,7 +28,7 @@ namespace cs {
 
 using api::param;
 using api::param_t;
-using api::param_internal_t;
+using api::cs_type_t;
 
 template <typename Cs, typename Cpp, typename = void>
 struct convert;
@@ -45,7 +48,7 @@ decltype(auto) convert_cpp(Cs&& cs)
 template <typename Cpp>
 decltype(auto) param_cs(Cpp&& cpp)
 {
-	return param<remove_cvref_t<Cpp>>::cs(convert_cs<param_internal_t<Cpp>>(std::forward<Cpp>(cpp)));
+	return param<remove_cvref_t<Cpp>>::cs(convert_cs<cs_type_t<Cpp>>(std::forward<Cpp>(cpp)));
 }
 
 template <typename Cpp>
@@ -306,6 +309,38 @@ struct convert<ref<>, std::function<R(Args...)>>
 	//static ref<> cs(std::function<R(Args...)>&& value)
 	//{
 	//}
+};
+
+template <typename Cs, typename Struct>
+struct convert<Cs, Struct, std::enable_if_t<is_struct_v<Struct>>>
+{
+	using fields = typename struct_<Struct>::fields;
+
+	static Cs cs(const Struct& value)
+	{
+		Cs obj;
+
+		meta::for_each<meta::iota_c<tuple_size_v<Cs>>>([&](auto index)
+		{
+			using cs_type = decltype(get<index>(obj));
+			get<index>(obj) = convert_cs<cs_type>(value.*get<index>(fields::values));
+		});
+
+		return obj;
+	}
+
+	static Struct cpp(Cs&& value)
+	{
+		Struct obj;
+
+		meta::for_each<meta::iota_c<tuple_size_v<Cs>>>([&](auto index)
+		{
+			using cpp_type = decltype(obj.*get<index>(fields::values));
+			obj.*get<index>(fields::values) = convert_cpp<cpp_type>(get<index>(std::move(value)));
+		});
+
+		return obj;
+	}
 };
 
 } // namespace cs

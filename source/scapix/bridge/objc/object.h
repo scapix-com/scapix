@@ -7,6 +7,7 @@
 #define SCAPIX_BRIDGE_OBJC_OBJECT_H
 
 #include <memory>
+#include <utility>
 #include <cassert>
 #include <scapix/bridge/type_traits.h>
 #include <CoreFoundation/CFBase.h>
@@ -132,7 +133,7 @@ struct init_impl<void(Args...)>
     template <typename T, typename Wrapper, typename ...ObjcArgs>
     static void init(Wrapper* wrapper, ObjcArgs... args)
     {
-        attach(std::make_shared<T>(link::objc::convert_cpp<Args>(args)...), CFBridgingRetain(wrapper));
+        attach(std::make_shared<T>(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...), CFBridgingRetain(wrapper));
     }
 };
 
@@ -152,7 +153,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
     static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
     {
-        return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(args)...));
+        return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
     }
 };
 
@@ -162,7 +163,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
     static void call(Wrapper* wrapper, ObjcArgs... args)
     {
-        (link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(args)...);
+        (link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
     }
 };
 
@@ -172,7 +173,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
     static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
     {
-        return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(args)...));
+        return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
     }
 };
 
@@ -182,7 +183,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
     static void call(Wrapper* wrapper, ObjcArgs... args)
     {
-        (link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(args)...);
+        (link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
     }
 };
 
@@ -192,7 +193,7 @@ struct call_impl<Func>
     template <typename ObjcRet, typename ...ObjcArgs>
     static ObjcRet call(ObjcArgs... args)
     {
-        return link::objc::convert_objc<ObjcRet>((*Func)(link::objc::convert_cpp<Args>(args)...));
+        return link::objc::convert_objc<ObjcRet>((*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
     }
 };
 
@@ -202,14 +203,14 @@ struct call_impl<Func>
     template <typename ObjcRet, typename ...ObjcArgs>
     static void call(ObjcArgs... args)
     {
-        (*Func)(link::objc::convert_cpp<Args>(args)...);
+        (*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
     }
 };
 
 template <typename F, F Func, typename ObjcRet, typename ...ObjcArgs>
 inline auto call(ObjcArgs... args)
 {
-    return call_impl<Func>::template call<ObjcRet>(args...);
+    return call_impl<Func>::template call<ObjcRet>(std::forward<ObjcArgs>(args)...);
 }
 
 } // namespace objc
