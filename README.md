@@ -13,8 +13,8 @@ Bridge code automatically generated directly from C++ header files, no need to m
 include(FetchContent)
 FetchContent_Declare(
   cmodule
-  URL "https://github.com/scapix-com/cmodule/archive/v1.0.28.tar.gz"
-  URL_HASH SHA256=5b8ae3f16de1b6e16d7802333beff618ebfe19e667d8244aa646d9d1c445fd6b
+  URL "https://github.com/scapix-com/cmodule/archive/v1.0.29.tar.gz"
+  URL_HASH SHA256=b49019b355423aebacd927e99541b146c900ef416ae1da6a8343a2a274dd4876
 )
 FetchContent_MakeAvailable(cmodule)
 
