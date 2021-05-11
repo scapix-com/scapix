@@ -69,7 +69,7 @@ void test()
 }
 ```
 
-[Java Link Documentation](https://www.scapix.com/documentation/java_link)\
+[Java Link Documentation](https://www.scapix.com/java_link)\
 [Java Link Example](https://github.com/scapix-com/example2)
 
 ## License
