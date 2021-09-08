@@ -97,7 +97,7 @@ private:
 
 	static void compile_check()
 	{
-		static_assert(sizeof(JNINativeMethod) == sizeof(jni_native_method), "jni_native_method should be ABI compatable with JNINativeMethod");
+		static_assert(sizeof(JNINativeMethod) == sizeof(jni_native_method), "jni_native_method should be ABI compatible with JNINativeMethod");
 	}
 
 };
@@ -183,50 +183,25 @@ private:
 	};
 
 	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
-	struct type<JniR(JniArgs...), R(Class::*)(Args...)const>
-	{
-		static param_type<JniR> thunk(JNIEnv* env, jobject thiz, param_type<JniArgs>... args)
-		{
-			detail::env() = env;
+	struct type<JniR(JniArgs...), R(Class::*)(Args...)const> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
 
-			try
-			{
-				return param<JniR, R>::jni((get_object<Class>(thiz).*Method)(param<JniArgs, Args>::cpp(args)...));
-			}
-			catch (const vm_exception& e)
-			{
-				e.get()->throw_();
-			}
-			catch (...)
-			{
-				detail::native_exception::new_object()->throw_();
-			}
+	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
+	struct type<JniR(JniArgs...), R(Class::*)(Args...)volatile> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
 
-			return {};
-		}
-	};
+	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
+	struct type<JniR(JniArgs...), R(Class::*)(Args...)const volatile> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
 
-	template <typename ...JniArgs, typename Class, typename ...Args>
-	struct type<void(JniArgs...), void(Class::*)(Args...)const>
-	{
-		static void thunk(JNIEnv* env, jobject thiz, param_type<JniArgs>... args)
-		{
-			detail::env() = env;
+	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
+	struct type<JniR(JniArgs...), R(Class::*)(Args...)&> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
 
-			try
-			{
-				(get_object<Class>(thiz).*Method)(param<JniArgs, Args>::cpp(args)...);
-			}
-			catch (const vm_exception& e)
-			{
-				e.get()->throw_();
-			}
-			catch (...)
-			{
-				detail::native_exception::new_object()->throw_();
-			}
-		}
-	};
+	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
+	struct type<JniR(JniArgs...), R(Class::*)(Args...)const&> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
+
+	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
+	struct type<JniR(JniArgs...), R(Class::*)(Args...)volatile&> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
+
+	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
+	struct type<JniR(JniArgs...), R(Class::*)(Args...)const volatile&> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
 
 	template <typename JniR, typename ...JniArgs, typename R, typename ...Args>
 	struct type<JniR(JniArgs...), R(Args...)>
