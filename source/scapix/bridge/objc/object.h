@@ -28,18 +28,18 @@ namespace objc {
 class object_base
 {
 protected:
-    
+
 	object_base() = default;
 	object_base(const object_base&) {}
 	object_base(object_base&& other) : wrapper(other.wrapper) { other.wrapper = nullptr; }
 	object_base& operator =(const object_base&) { return *this; }
 	object_base& operator =(object_base&& other) { object_base(std::move(other)).swap(*this); return *this; }
 
-    ~object_base()
-    {
-        if (wrapper)
-            CFRelease(wrapper);
-    }
+	~object_base()
+	{
+		if (wrapper)
+			CFRelease(wrapper);
+	}
 
 private:
 
@@ -51,11 +51,11 @@ private:
 
 	template <typename T>
 	friend void attach(const std::shared_ptr<T>& cpp, CFTypeRef objc)
-    {
-        cpp->attach(objc, cpp);
-    }
-    
-    void attach(CFTypeRef obj, std::shared_ptr<object_base> shared_this);
+	{
+		cpp->attach(objc, cpp);
+	}
+
+	void attach(CFTypeRef obj, std::shared_ptr<object_base> shared_this);
 
 	template <typename ObjC, typename Cpp, typename>
 	friend struct link::objc::convert_shared;
@@ -63,8 +63,8 @@ private:
 	template <typename Wrapper>
 	Wrapper get_wrapper(std::shared_ptr<object_base> shared_this);
 
-    // @class BridgeObject
-    CFTypeRef wrapper = nullptr;
+	// @class BridgeObject
+	CFTypeRef wrapper = nullptr;
 
 };
 
@@ -98,11 +98,11 @@ namespace objc {
 
 inline void object_base::attach(CFTypeRef obj, std::shared_ptr<object_base> shared_this)
 {
-    assert(obj);
-    assert(!wrapper);
-    wrapper = obj;
-    
-    [(__bridge BridgeObject*)obj attachObject:shared_this];
+	assert(obj);
+	assert(!wrapper);
+	wrapper = obj;
+
+	[(__bridge BridgeObject*)obj attachObject:shared_this];
 }
 
 // to do: with indirect inheritance support,
@@ -111,14 +111,14 @@ inline void object_base::attach(CFTypeRef obj, std::shared_ptr<object_base> shar
 template <typename Wrapper>
 inline Wrapper object_base::get_wrapper(std::shared_ptr<object_base> shared_this)
 {
-    if (!wrapper)
-    {
-        Wrapper w = [std::remove_pointer_t<Wrapper> alloc];
-        attach(CFBridgingRetain(w), shared_this);
-        return w;
-    }
+	if (!wrapper)
+	{
+		Wrapper w = [std::remove_pointer_t<Wrapper> alloc];
+		attach(CFBridgingRetain(w), shared_this);
+		return w;
+	}
 
-    return (__bridge Wrapper)wrapper;
+	return (__bridge Wrapper)wrapper;
 }
 
 template <typename T>
@@ -130,18 +130,18 @@ struct init_impl;
 template <typename ...Args>
 struct init_impl<void(Args...)>
 {
-    template <typename T, typename Wrapper, typename ...ObjcArgs>
-    static void init(Wrapper* wrapper, ObjcArgs... args)
-    {
-        attach(std::make_shared<T>(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...), CFBridgingRetain(wrapper));
-    }
+	template <typename T, typename Wrapper, typename ...ObjcArgs>
+	static void init(Wrapper* wrapper, ObjcArgs... args)
+	{
+		attach(std::make_shared<T>(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...), CFBridgingRetain(wrapper));
+	}
 };
 
 template <typename T, typename F, typename Wrapper, typename ...ObjcArgs>
 inline Wrapper* init(Wrapper* wrapper, ObjcArgs... args)
 {
-    init_impl<F>::template init<T>(wrapper, args...);
-    return wrapper;
+	init_impl<F>::template init<T>(wrapper, args...);
+	return wrapper;
 }
 
 template <auto Func>
@@ -150,67 +150,67 @@ struct call_impl;
 template <typename Class, typename R, typename ...Args, R(Class::*Func)(Args...)>
 struct call_impl<Func>
 {
-    template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
-    static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
-    {
-        return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
-    }
+	template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
+	static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
+	{
+		return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
+	}
 };
 
 template <typename Class, typename ...Args, void(Class::*Func)(Args...)>
 struct call_impl<Func>
 {
-    template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
-    static void call(Wrapper* wrapper, ObjcArgs... args)
-    {
-        (link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
-    }
+	template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
+	static void call(Wrapper* wrapper, ObjcArgs... args)
+	{
+		(link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
+	}
 };
 
 template <typename Class, typename R, typename ...Args, R(Class::*Func)(Args...)const>
 struct call_impl<Func>
 {
-    template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
-    static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
-    {
-        return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
-    }
+	template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
+	static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
+	{
+		return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
+	}
 };
 
 template <typename Class, typename ...Args, void(Class::*Func)(Args...)const>
 struct call_impl<Func>
 {
-    template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
-    static void call(Wrapper* wrapper, ObjcArgs... args)
-    {
-        (link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
-    }
+	template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
+	static void call(Wrapper* wrapper, ObjcArgs... args)
+	{
+		(link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
+	}
 };
 
 template <typename R, typename ...Args, R(*Func)(Args...)>
 struct call_impl<Func>
 {
-    template <typename ObjcRet, typename ...ObjcArgs>
-    static ObjcRet call(ObjcArgs... args)
-    {
-        return link::objc::convert_objc<ObjcRet>((*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
-    }
+	template <typename ObjcRet, typename ...ObjcArgs>
+	static ObjcRet call(ObjcArgs... args)
+	{
+		return link::objc::convert_objc<ObjcRet>((*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
+	}
 };
 
 template <typename ...Args, void(*Func)(Args...)>
 struct call_impl<Func>
 {
-    template <typename ObjcRet, typename ...ObjcArgs>
-    static void call(ObjcArgs... args)
-    {
-        (*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
-    }
+	template <typename ObjcRet, typename ...ObjcArgs>
+	static void call(ObjcArgs... args)
+	{
+		(*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
+	}
 };
 
 template <typename F, F Func, typename ObjcRet, typename ...ObjcArgs>
 inline auto call(ObjcArgs... args)
 {
-    return call_impl<Func>::template call<ObjcRet>(std::forward<ObjcArgs>(args)...);
+	return call_impl<Func>::template call<ObjcRet>(std::forward<ObjcArgs>(args)...);
 }
 
 } // namespace objc
@@ -224,34 +224,34 @@ namespace objc {
 template <typename Wrapper, typename Bridge>
 struct convert<Wrapper, Bridge, std::enable_if_t<bridge::is_object<Bridge>>>
 {
-    static_assert(bridge::objc::is_wrapper<Wrapper>);
-    
-    static Bridge& cpp(Wrapper value)
-    {
-        return *static_cast<Bridge*>(value->shared.get());
-    }
+	static_assert(bridge::objc::is_wrapper<Wrapper>);
+
+	static Bridge& cpp(Wrapper value)
+	{
+		return *static_cast<Bridge*>(value->shared.get());
+	}
 };
 
 template <typename Wrapper, typename Bridge>
 struct convert_shared<Wrapper, Bridge, std::enable_if_t<bridge::is_object<Bridge>>>
 {
-    static_assert(bridge::objc::is_wrapper<Wrapper>);
-    
-    static std::shared_ptr<Bridge> cpp(Wrapper value)
-    {
-        if (!value)
-            return nullptr;
-        
-        return std::static_pointer_cast<Bridge>(value->shared);
-    }
+	static_assert(bridge::objc::is_wrapper<Wrapper>);
 
-    static Wrapper objc(std::shared_ptr<Bridge> value)
-    {
-        if (!value)
-            return nil;
-        
-        return value->template get_wrapper<Wrapper>(value);
-    }
+	static std::shared_ptr<Bridge> cpp(Wrapper value)
+	{
+		if (!value)
+			return nullptr;
+
+		return std::static_pointer_cast<Bridge>(value->shared);
+	}
+
+	static Wrapper objc(std::shared_ptr<Bridge> value)
+	{
+		if (!value)
+			return nil;
+
+		return value->template get_wrapper<Wrapper>(value);
+	}
 };
 
 } // namespace objc

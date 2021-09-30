@@ -7,80 +7,80 @@
 
 -(void)attachObject:(std::shared_ptr<scapix::bridge::objc::object_base>)ptr
 {
-    weak = ptr;
-    shared = ptr;
+	weak = ptr;
+	shared = ptr;
 }
 
 -(BOOL)retainWeakReference
 {
-    // from NSObject.mm:
-    // _objc_rootTryRetain() is called exclusively by _objc_loadWeak(),
-    // which already acquired the lock on our behalf.
+	// from NSObject.mm:
+	// _objc_rootTryRetain() is called exclusively by _objc_loadWeak(),
+	// which already acquired the lock on our behalf.
 
-    std::lock_guard<std::recursive_mutex> lock(mutex);
-    
-    if (!shared)
-    {
-        shared = weak.lock();
+	std::lock_guard<std::recursive_mutex> lock(mutex);
 
-        if (!shared)
-            return NO;
-    }
-    
-    // We know this will always return YES since at this point
-    // we are holding strong reference to scapix::bridge::objc::object_base,
-    // which is holding strong reference to us.
+	if (!shared)
+	{
+		shared = weak.lock();
 
-    return [super retainWeakReference];
+		if (!shared)
+			return NO;
+	}
+
+	// We know this will always return YES since at this point
+	// we are holding strong reference to scapix::bridge::objc::object_base,
+	// which is holding strong reference to us.
+
+	return [super retainWeakReference];
 }
 
 -(instancetype)retain
 {
-    {
-        std::lock_guard<std::recursive_mutex> lock(mutex);
+	{
+		std::lock_guard<std::recursive_mutex> lock(mutex);
 
-        if (!shared)
-            // This can only happen from object<T>::get_wrapper()
-            // and we know weak.lock() will succeed.
-            shared = weak.lock();
-    }
+		if (!shared)
+			// This can only happen from object<T>::get_wrapper()
+			// and we know weak.lock() will succeed.
+			shared = weak.lock();
+	}
 
-    return [super retain];
+	return [super retain];
 }
 
 -(oneway void)release
 {
-    // Since retainWeakReference already holds some lock that [super release] will try to acquire,
-    // we cannot call [super release] while holding our mutex.
-    
-    {
-        std::unique_lock<std::recursive_mutex> lock(mutex);
+	// Since retainWeakReference already holds some lock that [super release] will try to acquire,
+	// we cannot call [super release] while holding our mutex.
 
-        if ([super retainCount] == 2)
-        {
-            if (!shared)
-            {
-                // We have entered release recursively.
-                // Can't call [super release] here because frame above also holds the mutex.
-                // Set the flag for frame above to call [super release] twice.
+	{
+		std::unique_lock<std::recursive_mutex> lock(mutex);
 
-                second_release_call = true;
-                return;
-            }
+		if ([super retainCount] == 2)
+		{
+			if (!shared)
+			{
+				// We have entered release recursively.
+				// Can't call [super release] here because frame above also holds the mutex.
+				// Set the flag for frame above to call [super release] twice.
 
-            // This may lead to recursive release.
+				second_release_call = true;
+				return;
+			}
 
-            shared.reset();
-            
-            if (second_release_call)
-            {
-                lock.unlock();
-                [super release];
-            }
-        }
-    }
-    
-    [super release];
+			// This may lead to recursive release.
+
+			shared.reset();
+
+			if (second_release_call)
+			{
+				lock.unlock();
+				[super release];
+			}
+		}
+	}
+
+	[super release];
 }
 
 @end
