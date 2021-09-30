@@ -477,10 +477,13 @@ struct convert<ObjcR(^)(ObjcArgs...), std::function<R(Args...)>>
 	{
 		return [value = std::move(value)](Args... args)
 		{
-			if constexpr (std::is_void_v<R>)
-				return value(convert_objc<ObjcArgs>(std::forward<Args>(args))...);
-			else
-				return convert_cpp<R>(value(convert_objc<ObjcArgs>(std::forward<Args>(args))...));
+			@autoreleasepool
+			{
+				if constexpr (std::is_void_v<R>)
+					return value(convert_objc<ObjcArgs>(std::forward<Args>(args))...);
+				else
+					return convert_cpp<R>(value(convert_objc<ObjcArgs>(std::forward<Args>(args))...));
+			}
 		};
 	}
 
