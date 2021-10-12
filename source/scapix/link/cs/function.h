@@ -101,46 +101,25 @@ private:
 	};
 
 	template <typename Class, typename R, typename ...Args>
-	struct select<R(Class::*)(Args...)const>
-	{
-		static param_t<R> func(bridge::cs::object_base* thiz, param_t<Args>... args)
-		{
-			try
-			{
-				return param_cs<R>((static_cast<Class*>(thiz)->*Func)(param_cpp<Args>(args)...));
-			}
-			catch (cs::exception& e)
-			{
-				set_exception(e.release());
-			}
-			catch (...)
-			{
-				set_exception();
-			}
+	struct select<R(Class::*)(Args...)const> : select<R(Class::*)(Args...)> {};
 
-			return {};
-		}
-	};
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)volatile> : select<R(Class::*)(Args...)> {};
 
-	template <typename Class, typename ...Args>
-	struct select<void(Class::*)(Args...)const>
-	{
-		static void func(bridge::cs::object_base* thiz, param_t<Args>... args)
-		{
-			try
-			{
-				(static_cast<Class*>(thiz)->*Func)(param_cpp<Args>(args)...);
-			}
-			catch (cs::exception& e)
-			{
-				set_exception(e.release());
-			}
-			catch (...)
-			{
-				set_exception();
-			}
-		}
-	};
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)const volatile> : select<R(Class::*)(Args...)> {};
+
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)&> : select<R(Class::*)(Args...)> {};
+
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)const&> : select<R(Class::*)(Args...)> {};
+
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)volatile&> : select<R(Class::*)(Args...)> {};
+
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)const volatile&> : select<R(Class::*)(Args...)> {};
 
 	template <typename R, typename ...Args>
 	struct select<R(Args...)>
