@@ -79,23 +79,27 @@ struct function
 		}
 	};
 
-	template <typename R, typename Class, typename... Args>
-	struct select<R(Class::*)(Args...)const>
-	{
-		static param<R> func(const Class& thiz, param<Args>... args)
-		{
-			return convert_js<param<R>>((thiz.*Function)(convert_cpp<Args>(args)...));
-		}
-	};
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)const> : select<R(Class::*)(Args...)> {};
 
-	template <typename Class, typename... Args>
-	struct select<void(Class::*)(Args...)const>
-	{
-		static void func(const Class& thiz, param<Args>... args)
-		{
-			(thiz.*Function)(convert_cpp<Args>(args)...);
-		}
-	};
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)volatile> : select<R(Class::*)(Args...)> {};
+
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)const volatile> : select<R(Class::*)(Args...)> {};
+
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)&> : select<R(Class::*)(Args...)> {};
+
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)const&> : select<R(Class::*)(Args...)> {};
+
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)volatile&> : select<R(Class::*)(Args...)> {};
+
+	template <typename Class, typename R, typename ...Args>
+	struct select<R(Class::*)(Args...)const volatile&> : select<R(Class::*)(Args...)> {};
+
 };
 
 } // namespace js
