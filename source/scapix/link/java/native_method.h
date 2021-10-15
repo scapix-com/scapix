@@ -75,17 +75,6 @@ inline decltype(auto) get_object(jobject thiz)
 	return param<ref<class_name_t<Class>>, Class&>::cpp(thiz);
 }
 
-//template <typename T>
-//inline std::remove_reference_t<T> initialized()
-//{
-//	return {};
-//}
-//
-//template<>
-//inline void initialized<void>()
-//{
-//}
-
 template <typename Func>
 struct jni_native_method
 {
@@ -125,8 +114,8 @@ private:
 
 };
 
-// std::decay is a workaround for GCC:
-// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=82773
+// std::decay is a workaround for GCC bug (fixed in GCC 12):
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61355
 
 template <typename Name, typename JniType, typename Type, std::decay_t<Type> Method>
 class native_method

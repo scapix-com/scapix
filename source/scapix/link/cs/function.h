@@ -37,8 +37,8 @@ public:
 
 };
 
-// std::decay is a workaround for GCC:
-// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=82773
+// std::decay is a workaround for GCC bug (fixed in GCC 12):
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61355
 
 template <typename Type, std::decay_t<Type> Func>
 class function
