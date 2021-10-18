@@ -76,9 +76,11 @@ namespace Scapix.Link
         protected static T ScapixCpp<T>(T v) where T : struct { return v; }
         protected static IntPtr ScapixCpp(object v) { return ToNative(v); }
         protected static IntPtr ScapixCpp<T>(T[] v) where T : struct { return ToNative(v, GCHandleType.Pinned); }
+        protected static byte ScapixCpp(bool v) { return v ? (byte)1 : (byte)0; }
 
         protected static T ScapixCs<T>(T v) where T : struct { return v; }
         protected static T ScapixCs<T>(IntPtr v) where T : class { return FromNative<T>(v); }
+        protected static bool ScapixCs<T>(byte v) { return v != 0 ; }
 
         protected static T ScapixCallback<T>(Func<T> func)
         {
