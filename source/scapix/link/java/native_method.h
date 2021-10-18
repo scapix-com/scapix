@@ -80,7 +80,7 @@ struct jni_native_method
 {
 	char* name;
 	char* signature;
-	Func* fnPtr;
+	Func fnPtr;
 
 private:
 
@@ -98,11 +98,6 @@ public:
 
 	static void register_()
 	{
-#ifdef SCAPIX_DEBUG
-		for (auto& m : methods)
-			std::cout << "native_method: " << m.name << " - " << m.signature << "\n";
-#endif
-
 		class_::find_class(meta::c_str_v<ClassName>)->register_natives(reinterpret_cast<const JNINativeMethod*>(&methods), sizeof...(Methods));
 	}
 
@@ -110,7 +105,7 @@ private:
 
 	native_methods() = delete;
 
-	inline constexpr static tuple<jni_native_method<typename Methods::func_type>...> methods = { Methods::get()... };
+	inline constexpr static tuple<decltype(Methods::get())...> methods = { Methods::get()... };
 
 };
 
@@ -122,19 +117,28 @@ class native_method
 {
 private:
 
-	template <typename JniType_, typename Type_>
+	template <bool IsMember, typename JniType_, typename Type_>
 	struct type;
 
-	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
-	struct type<JniR(JniArgs...), R(Class::*)(Args...)>
+	template <typename JniR, typename ...JniArgs, typename R, typename ...Args>
+	struct type<true, JniR(JniArgs...), R(Args...)>
 	{
-		static param_type<JniR> thunk(JNIEnv* env, jobject thiz, param_type<JniArgs>... args)
+		static param_type<JniR> func(JNIEnv* env, jobject thiz, param_type<JniArgs>... args)
 		{
 			detail::env() = env;
 
 			try
 			{
-				return param<JniR, R>::jni((get_object<Class>(thiz).*Method)(param<JniArgs, Args>::cpp(args)...));
+				using class_type = member_pointer_class_t<Type>;
+
+				if constexpr (std::is_void_v<R>)
+				{
+					return (get_object<class_type>(thiz).*Method)(param<JniArgs, Args>::cpp(args)...);
+				}
+				else
+				{
+					return param<JniR, R>::jni((get_object<class_type>(thiz).*Method)(param<JniArgs, Args>::cpp(args)...));
+				}
 			}
 			catch (const vm_exception& e)
 			{
@@ -145,63 +149,28 @@ private:
 				detail::native_exception::new_object()->throw_();
 			}
 
-			return {};
+			if constexpr (!std::is_void_v<R>)
+				return {};
 		}
 	};
-
-	template <typename ...JniArgs, typename Class, typename ...Args>
-	struct type<void(JniArgs...), void(Class::*)(Args...)>
-	{
-		static void thunk(JNIEnv* env, jobject thiz, param_type<JniArgs>... args)
-		{
-			detail::env() = env;
-
-			try
-			{
-				(get_object<Class>(thiz).*Method)(param<JniArgs, Args>::cpp(args)...);
-			}
-			catch (const vm_exception& e)
-			{
-				e.get()->throw_();
-			}
-			catch (...)
-			{
-				detail::native_exception::new_object()->throw_();
-			}
-		}
-	};
-
-	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
-	struct type<JniR(JniArgs...), R(Class::*)(Args...)const> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
-
-	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
-	struct type<JniR(JniArgs...), R(Class::*)(Args...)volatile> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
-
-	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
-	struct type<JniR(JniArgs...), R(Class::*)(Args...)const volatile> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
-
-	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
-	struct type<JniR(JniArgs...), R(Class::*)(Args...)&> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
-
-	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
-	struct type<JniR(JniArgs...), R(Class::*)(Args...)const&> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
-
-	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
-	struct type<JniR(JniArgs...), R(Class::*)(Args...)volatile&> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
-
-	template <typename JniR, typename ...JniArgs, typename Class, typename R, typename ...Args>
-	struct type<JniR(JniArgs...), R(Class::*)(Args...)const volatile&> : type<JniR(JniArgs...), R(Class::*)(Args...)> {};
 
 	template <typename JniR, typename ...JniArgs, typename R, typename ...Args>
-	struct type<JniR(JniArgs...), R(Args...)>
+	struct type<false, JniR(JniArgs...), R(Args...)>
 	{
-		static param_type<JniR> thunk(JNIEnv* env, jclass clazz, param_type<JniArgs>... args)
+		static param_type<JniR> func(JNIEnv* env, jclass clazz, param_type<JniArgs>... args)
 		{
 			detail::env() = env;
 
 			try
 			{
-				return param<JniR, R>::jni(Method(param<JniArgs, Args>::cpp(args)...));
+				if constexpr (std::is_void_v<R>)
+				{
+					return Method(param<JniArgs, Args>::cpp(args)...);
+				}
+				else
+				{
+					return param<JniR, R>::jni(Method(param<JniArgs, Args>::cpp(args)...));
+				}
 			}
 			catch (const vm_exception& e)
 			{
@@ -212,43 +181,22 @@ private:
 				detail::native_exception::new_object()->throw_();
 			}
 
-			return {};
+			if constexpr (!std::is_void_v<R>)
+				return {};
 		}
 	};
 
-	template <typename ...JniArgs, typename ...Args>
-	struct type<void(JniArgs...), void(Args...)>
-	{
-		static void thunk(JNIEnv* env, jclass clazz, param_type<JniArgs>... args)
-		{
-			detail::env() = env;
-
-			try
-			{
-				Method(param<JniArgs, Args>::cpp(args)...);
-			}
-			catch (const vm_exception& e)
-			{
-				e.get()->throw_();
-			}
-			catch (...)
-			{
-				detail::native_exception::new_object()->throw_();
-			}
-		}
-	};
+	inline static constexpr auto func = &type<std::is_member_pointer_v<Type>, JniType, remove_function_qualifiers_t<member_pointer_type_t<std::remove_pointer_t<Type>>>>::func;
 
 public:
 
-	using func_type = decltype(type<JniType, Type>::thunk);
-
-	static constexpr jni_native_method<func_type> get()
+	static constexpr jni_native_method<decltype(func)> get()
 	{
 		return
 		{
 			const_cast<char*>(meta::c_str_v<Name>),
 			const_cast<char*>(meta::c_str_v<signature_t<JniType>>),
-			&type<JniType, Type>::thunk
+			func
 		};
 	}
 

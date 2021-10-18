@@ -8,6 +8,7 @@
 #define SCAPIX_CORE_TYPE_TRAITS_H
 
 #include <type_traits>
+#include <scapix/core/remove_function_qualifiers.h>
 
 namespace scapix {
 
@@ -27,29 +28,39 @@ struct type_identity
 template <typename T>
 using type_identity_t = typename type_identity<T>::type;
 
-// member_pointer_traits
+// member_pointer_type
 
 template <typename T>
-struct member_pointer_traits;
-
-template <typename T, typename Class>
-struct member_pointer_traits<T Class::*>
+struct member_pointer_type
 {
 	using type = T;
-	using class_type = Class;
+};
+
+template <typename T, typename C>
+struct member_pointer_type<T C::*>
+{
+	using type = T;
 };
 
 template <typename T>
-using member_pointer_type = typename member_pointer_traits<T>::type;
+using member_pointer_type_t = typename member_pointer_type<T>::type;
+
+// member_pointer_class
 
 template <typename T>
-using member_pointer_class_type = typename member_pointer_traits<T>::class_type;
+struct member_pointer_class
+{
+	using type = T;
+};
 
-template <auto Ptr>
-using member_type = member_pointer_type<decltype(Ptr)>;
+template <typename T, typename C>
+struct member_pointer_class<T C::*>
+{
+	using type = C;
+};
 
-template <auto Ptr>
-using member_class_type = member_pointer_class_type<decltype(Ptr)>;
+template <typename T>
+using member_pointer_class_t = typename member_pointer_class<T>::type;
 
 } // namespace scapix
 

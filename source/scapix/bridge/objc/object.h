@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 #include <cassert>
+#include <scapix/core/type_traits.h>
 #include <scapix/bridge/type_traits.h>
 #include <CoreFoundation/CFBase.h>
 
@@ -145,72 +146,54 @@ inline Wrapper* init(Wrapper* wrapper, ObjcArgs... args)
 }
 
 template <auto Func>
-struct call_impl;
-
-template <typename Class, typename R, typename ...Args, R(Class::*Func)(Args...)>
-struct call_impl<Func>
+struct call_impl
 {
-	template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
-	static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
-	{
-		return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
-	}
-};
+	using func_type = decltype(Func);
 
-template <typename Class, typename ...Args, void(Class::*Func)(Args...)>
-struct call_impl<Func>
-{
-	template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
-	static void call(Wrapper* wrapper, ObjcArgs... args)
-	{
-		(link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
-	}
-};
+	template <bool IsMember = std::is_member_pointer_v<func_type>, typename Type = remove_function_qualifiers_t<member_pointer_type_t<std::remove_pointer_t<func_type>>>>
+	struct select;
 
-template <typename Class, typename R, typename ...Args, R(Class::*Func)(Args...)const>
-struct call_impl<Func>
-{
-	template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
-	static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
+	template <typename R, typename ...Args>
+	struct select<true, R(Args...)>
 	{
-		return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
-	}
-};
+		template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
+		static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
+		{
+			using class_type = member_pointer_class_t<func_type>;
 
-template <typename Class, typename ...Args, void(Class::*Func)(Args...)const>
-struct call_impl<Func>
-{
-	template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
-	static void call(Wrapper* wrapper, ObjcArgs... args)
-	{
-		(link::objc::convert_cpp<Class>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
-	}
-};
+			if constexpr (std::is_void_v<R>)
+			{
+				return (link::objc::convert_cpp<class_type>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
+			}
+			else
+			{
+				return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<class_type>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
+			}
+		}
+	};
 
-template <typename R, typename ...Args, R(*Func)(Args...)>
-struct call_impl<Func>
-{
-	template <typename ObjcRet, typename ...ObjcArgs>
-	static ObjcRet call(ObjcArgs... args)
+	template <typename R, typename ...Args>
+	struct select<false, R(Args...)>
 	{
-		return link::objc::convert_objc<ObjcRet>((*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
-	}
-};
-
-template <typename ...Args, void(*Func)(Args...)>
-struct call_impl<Func>
-{
-	template <typename ObjcRet, typename ...ObjcArgs>
-	static void call(ObjcArgs... args)
-	{
-		(*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
-	}
+		template <typename ObjcRet, typename ...ObjcArgs>
+		static ObjcRet call(ObjcArgs... args)
+		{
+			if constexpr (std::is_void_v<R>)
+			{
+				return (*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
+			}
+			else
+			{
+				return link::objc::convert_objc<ObjcRet>((*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
+			}
+		}
+	};
 };
 
 template <typename F, F Func, typename ObjcRet, typename ...ObjcArgs>
 inline auto call(ObjcArgs... args)
 {
-	return call_impl<Func>::template call<ObjcRet>(std::forward<ObjcArgs>(args)...);
+	return call_impl<Func>::template select<>::template call<ObjcRet>(std::forward<ObjcArgs>(args)...);
 }
 
 } // namespace objc

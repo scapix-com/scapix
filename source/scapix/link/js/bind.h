@@ -18,89 +18,85 @@ namespace js {
 //using param = std::conditional_t<std::experimental::is_detected_v<has_convert_cpp_t<emscripten::val, T>>, emscripten::val, T>;
 
 template <typename T>
-using param = emscripten::val;
+struct param
+{
+	using type = emscripten::val;
+};
 
-// Clang bug
+template<>
+struct param<void>
+{
+	using type = void;
+};
 
-// template <typename Class, typename... Args>
-// std::shared_ptr<Class> constructor(param<Args>... args)
-// {
-// 	return std::make_shared<Class>(convert_cpp<Args>(args)...);
-// }
+template <typename T>
+using param_t = typename param<T>::type;
+
+// Clang bug:
+// https://bugs.llvm.org/show_bug.cgi?id=42805
+
+//template <typename Class, typename... Args>
+//std::shared_ptr<Class> constructor(param<Args>... args)
+//{
+//	return std::make_shared<Class>(convert_cpp<Args>(args)...);
+//}
 
 template <typename Class, typename... Args>
-struct constructor
+struct constructor_impl
 {
-	static std::shared_ptr<Class> func(param<Args>... args)
+	static std::shared_ptr<Class> func(param_t<Args>... args)
 	{
 		return std::make_shared<Class>(convert_cpp<Args>(args)...);
 	}
 };
 
+template <typename Class, typename... Args>
+constexpr auto constructor = &constructor_impl<Class, Args...>::func;
+
 template <typename Signature, Signature Function>
-struct function
+struct function_impl
 {
-	template <typename = Signature>
+	template <bool IsMember = std::is_member_pointer_v<Signature>, typename Type = remove_function_qualifiers_t<member_pointer_type_t<std::remove_pointer_t<Signature>>>>
 	struct select;
 
 	template <typename R, typename... Args>
-	struct select<R(Args...)>
+	struct select<true, R(Args...)>
 	{
-		static param<R> func(param<Args>... args)
+		using class_type = member_pointer_class_t<Signature>;
+
+		static param_t<R> func(class_type& thiz, param_t<Args>... args)
 		{
-			return convert_js<param<R>>(Function(convert_cpp<Args>(args)...));
+			if constexpr (std::is_void_v<R>)
+			{
+				return (thiz.*Function)(convert_cpp<Args>(args)...);
+			}
+			else
+			{
+				return convert_js<param_t<R>>((thiz.*Function)(convert_cpp<Args>(args)...));
+			}
 		}
 	};
 
-	template <typename... Args>
-	struct select<void(Args...)>
+	template <typename R, typename... Args>
+	struct select<false, R(Args...)>
 	{
-		static void func(param<Args>... args)
+		static param_t<R> func(param_t<Args>... args)
 		{
-			Function(convert_cpp<Args>(args)...);
+			if constexpr (std::is_void_v<R>)
+			{
+				return Function(convert_cpp<Args>(args)...);
+			}
+			else
+			{
+				return convert_js<param_t<R>>(Function(convert_cpp<Args>(args)...));
+			}
 		}
 	};
-
-	template <typename R, typename Class, typename... Args>
-	struct select<R(Class::*)(Args...)>
-	{
-		static param<R> func(Class& thiz, param<Args>... args)
-		{
-			return convert_js<param<R>>((thiz.*Function)(convert_cpp<Args>(args)...));
-		}
-	};
-
-	template <typename Class, typename... Args>
-	struct select<void(Class::*)(Args...)>
-	{
-		static void func(Class& thiz, param<Args>... args)
-		{
-			(thiz.*Function)(convert_cpp<Args>(args)...);
-		}
-	};
-
-	template <typename Class, typename R, typename ...Args>
-	struct select<R(Class::*)(Args...)const> : select<R(Class::*)(Args...)> {};
-
-	template <typename Class, typename R, typename ...Args>
-	struct select<R(Class::*)(Args...)volatile> : select<R(Class::*)(Args...)> {};
-
-	template <typename Class, typename R, typename ...Args>
-	struct select<R(Class::*)(Args...)const volatile> : select<R(Class::*)(Args...)> {};
-
-	template <typename Class, typename R, typename ...Args>
-	struct select<R(Class::*)(Args...)&> : select<R(Class::*)(Args...)> {};
-
-	template <typename Class, typename R, typename ...Args>
-	struct select<R(Class::*)(Args...)const&> : select<R(Class::*)(Args...)> {};
-
-	template <typename Class, typename R, typename ...Args>
-	struct select<R(Class::*)(Args...)volatile&> : select<R(Class::*)(Args...)> {};
-
-	template <typename Class, typename R, typename ...Args>
-	struct select<R(Class::*)(Args...)const volatile&> : select<R(Class::*)(Args...)> {};
 
 };
+
+template <typename Signature, Signature Function>
+constexpr auto function = &function_impl<Signature, Function>::template select<>::func;
 
 } // namespace js
 } // namespace link
