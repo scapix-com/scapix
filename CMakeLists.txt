@@ -4,17 +4,9 @@ project(scapix CXX)
 
 find_package(ScapixBin REQUIRED)
 
-if(NOT SCAPIX_BRIDGE)
-    set(SCAPIX_BRIDGE cpp)
-endif()
-
-if(NOT SCAPIX_PLATFORM)
-    set(SCAPIX_PLATFORM generic)
-endif()
-
-if(NOT SCAPIX_JAVA_API)
-    set(SCAPIX_JAVA_API jdk-11.0.2)
-endif()
+set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python, js, cs")
+set(SCAPIX_PLATFORM "generic" CACHE STRING "subfolder of 'platform' folder: generic, ios, android, macos, windows, linux, etc.")
+set(SCAPIX_JAVA_API "jdk-11.0.2" CACHE STRING "subfolder of 'scapix/java_api' folder: jdk-11.0.2, android-28, etc.")
 
 set(SCAPIX_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "")
 
@@ -117,14 +109,6 @@ foreach(import_target ${SCAPIX_IMPORT_TARGETS})
     list(APPEND bridge_headers ${headers})
 endforeach()
 set(PROJECT_ROOT ${CMAKE_SOURCE_DIR})
-
-set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python, js, cs")
-#set(SCAPIX_PLATFORM "generic" CACHE STRING "subfolder of 'platform' folder: ios, android, macos, windows, linux, etc.")
-#set(SCAPIX_JAVA_API "android-28" CACHE STRING "subfolder of 'scapix/java_api' folder: jdk-11.0.2, android-28, etc.")
-
-if(NOT DEFINED SCAPIX_BRIDGE)
-    message(FATAL_ERROR "SCAPIX_BRIDGE not defined (cpp, java, objc, python, js, cs)")
-endif()
 
 # to do: remove duplication
 set(bridges
