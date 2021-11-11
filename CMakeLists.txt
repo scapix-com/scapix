@@ -65,7 +65,24 @@ if(${SCAPIX_BRIDGE} STREQUAL java)
 endif()
 
 if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
+    # Save CMAKE_FIND_FRAMEWORK
+    if(DEFINED CMAKE_FIND_FRAMEWORK)
+        set(SCAPIX_CMAKE_FIND_FRAMEWORK ${CMAKE_FIND_FRAMEWORK})
+    else()
+        unset(SCAPIX_CMAKE_FIND_FRAMEWORK)
+    endif()
+
+    set(CMAKE_FIND_FRAMEWORK LAST)
     find_package(JNI REQUIRED)
+
+    # Restore CMAKE_FIND_FRAMEWORK
+    if(DEFINED SCAPIX_CMAKE_FIND_FRAMEWORK)
+        set(CMAKE_FIND_FRAMEWORK ${SCAPIX_CMAKE_FIND_FRAMEWORK})
+        unset(SCAPIX_CMAKE_FIND_FRAMEWORK)
+    else()
+        unset(CMAKE_FIND_FRAMEWORK)
+    endif()
+
     target_include_directories(scapix PUBLIC ${JNI_INCLUDE_DIRS})
     target_link_libraries(scapix PUBLIC ${JNI_LIBRARIES})
 endif()
