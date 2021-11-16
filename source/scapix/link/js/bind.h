@@ -36,9 +36,9 @@ using param_t = typename param<T>::type;
 // https://bugs.llvm.org/show_bug.cgi?id=42805
 
 //template <typename Class, typename... Args>
-//std::shared_ptr<Class> constructor(param<Args>... args)
+//std::shared_ptr<Class> constructor(param_t<Args>... args)
 //{
-//	return std::make_shared<Class>(convert_cpp<Args>(args)...);
+//	return std::make_shared<Class>(convert_cpp<Args>(std::forward<param_t<Args>>(args))...);
 //}
 
 template <typename Class, typename... Args>
@@ -46,7 +46,7 @@ struct constructor_impl
 {
 	static std::shared_ptr<Class> func(param_t<Args>... args)
 	{
-		return std::make_shared<Class>(convert_cpp<Args>(args)...);
+		return std::make_shared<Class>(convert_cpp<Args>(std::forward<param_t<Args>>(args))...);
 	}
 };
 
@@ -64,15 +64,15 @@ struct function_impl
 	{
 		using class_type = member_pointer_class_t<Signature>;
 
-		static param_t<R> func(class_type& thiz, param_t<Args>... args)
+		static param_t<R> func(class_type& obj, param_t<Args>... args)
 		{
 			if constexpr (std::is_void_v<R>)
 			{
-				return (thiz.*Function)(convert_cpp<Args>(args)...);
+				return (obj.*Function)(convert_cpp<Args>(std::forward<param_t<Args>>(args))...);
 			}
 			else
 			{
-				return convert_js<param_t<R>>((thiz.*Function)(convert_cpp<Args>(args)...));
+				return convert_js<param_t<R>>((obj.*Function)(convert_cpp<Args>(std::forward<param_t<Args>>(args))...));
 			}
 		}
 	};
@@ -84,15 +84,14 @@ struct function_impl
 		{
 			if constexpr (std::is_void_v<R>)
 			{
-				return Function(convert_cpp<Args>(args)...);
+				return Function(convert_cpp<Args>(std::forward<param_t<Args>>(args))...);
 			}
 			else
 			{
-				return convert_js<param_t<R>>(Function(convert_cpp<Args>(args)...));
+				return convert_js<param_t<R>>(Function(convert_cpp<Args>(std::forward<param_t<Args>>(args))...));
 			}
 		}
 	};
-
 };
 
 template <typename Signature, Signature Function>
