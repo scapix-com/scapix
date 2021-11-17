@@ -7,7 +7,6 @@
 #ifndef SCAPIX_BRIDGE_JS_INIT_H
 #define SCAPIX_BRIDGE_JS_INIT_H
 
-#include <emscripten/bind.h>
 #include <scapix/link/js/bind.h>
 
 #endif // SCAPIX_BRIDGE_JS_INIT_H

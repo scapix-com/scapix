@@ -7,7 +7,7 @@
 #ifndef SCAPIX_LINK_JS_BIND_H
 #define SCAPIX_LINK_JS_BIND_H
 
-#include <emscripten/val.h>
+#include <emscripten/bind.h>
 #include <scapix/link/js/convert.h>
 
 namespace scapix {
@@ -96,6 +96,30 @@ struct function_impl
 
 template <typename Signature, Signature Function>
 constexpr auto function = &function_impl<Signature, Function>::template select<>::func;
+
+template <typename T>
+class wrapper : public emscripten::wrapper<T>
+{
+public:
+
+	using emscripten::wrapper<T>::wrapper;
+
+protected:
+
+    template<typename R, typename... Args>
+    R call(const char* name, Args&&... args) const
+	{
+			if constexpr (std::is_void_v<R>)
+			{
+		        return emscripten::wrapper<T>::template call<param_t<R>>(name, convert_js<param_t<Args>>(std::forward<Args>(args))...);
+			}
+			else
+			{
+		        return convert_cpp<R>(emscripten::wrapper<T>::template call<param_t<R>>(name, convert_js<param_t<Args>>(std::forward<Args>(args))...));
+			}
+    }
+
+};
 
 } // namespace js
 } // namespace link
