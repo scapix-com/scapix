@@ -202,7 +202,7 @@ struct cpp_api
 		catch (...)
 		{
 			#ifdef __GNUC__
-			auto str = __cxxabiv1::__cxa_current_exception_type()->name();
+			auto str = abi::__cxa_current_exception_type()->name();
 			#else
 			auto str = "unknown";
 			#endif
