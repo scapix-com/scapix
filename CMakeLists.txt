@@ -168,6 +168,7 @@ get_target_property(scapix_position_independent_code ${target} POSITION_INDEPEND
 set_target_properties(scapix PROPERTIES POSITION_INDEPENDENT_CODE ${scapix_position_independent_code})
 
 if(${SCAPIX_BRIDGE} STREQUAL python)
+    set(PYBIND11_FINDPYTHON ON)
     find_package(Pybind11 REQUIRED)
     target_link_libraries(${target} PRIVATE pybind11::module)
     set_target_properties(${target} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")
