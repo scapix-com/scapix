@@ -44,7 +44,7 @@ template <typename ClassName, typename ...Bases>
 class object_base : protected object<ClassName>, public detail::tag<Bases, ClassName>...
 {
 protected:
-    
+
 	using base_classes = boost::mp11::mp_append<boost::mp11::mp_list<detail::tag<Bases, ClassName>...>, typename detail::tag<Bases, ClassName>::base_classes...>;
 
 	template <typename T>
@@ -74,7 +74,7 @@ protected:
 
 // to do: use befriend and make these protected.
 public:
-    
+
 //  using typename object_type::handle_type;
 	using handle_type = std::add_pointer_t<typename derived<std::remove_pointer_t<typename object_type::handle_type>, std::remove_pointer_t<typename Bases::handle_type>...>::type>;
 	using typename object_type::class_name;

@@ -24,9 +24,9 @@ namespace detail {
 
 // jni.h on android uses JNIEnv
 #ifdef ANDROID
-    using jnienv_api_type = JNIEnv;
+	using jnienv_api_type = JNIEnv;
 #else
-    using jnienv_api_type = void;
+	using jnienv_api_type = void;
 #endif
 
 inline std::vector<void(*)()>& init_handlers()

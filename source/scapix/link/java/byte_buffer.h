@@ -51,7 +51,7 @@ protected:
 //{
 //    using byte_buffer<>::byte_buffer;
 //};
-    
+
 } // namespace java
 } // namespace link
 } // namespace scapix

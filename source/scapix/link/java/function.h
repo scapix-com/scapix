@@ -20,9 +20,9 @@ class function
 {
 public:
 
-    using class_name = ClassName;
-    using type = Type;
-    using name = Name;
+	using class_name = ClassName;
+	using type = Type;
+	using name = Name;
 
 };
 

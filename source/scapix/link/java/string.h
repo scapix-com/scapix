@@ -39,8 +39,8 @@ public:
 	string_chars(const string_chars&) = delete;
 	string_chars& operator=(const string_chars&) = delete;
 
-    string_chars(string_chars&& c) : string_(c.string_), is_copy_(c.is_copy_), data_(c.data_), size_(c.size_) { c.data_ = nullptr; }
-    string_chars& operator=(string_chars&& c) = delete; // { c.swap(*this); return *this; }
+	string_chars(string_chars&& c) : string_(c.string_), is_copy_(c.is_copy_), data_(c.data_), size_(c.size_) { c.data_ = nullptr; }
+	string_chars& operator=(string_chars&& c) = delete; // { c.swap(*this); return *this; }
 
 	~string_chars() { release(); }
 
@@ -137,14 +137,14 @@ public:
 	template <typename Char = jchar, lock Lock = lock::noncritical>
 	string_chars<Char, Lock> chars() const
 	{
-        static_assert(!std::is_same_v<Char, char> || Lock != lock::critical, "Unsupported parameter combination: <char, critical>");
+		static_assert(!std::is_same_v<Char, char> || Lock != lock::critical, "Unsupported parameter combination: <char, critical>");
 		return string_chars<Char, Lock>(handle(), length());
 	}
 
 	template <typename Char = jchar, lock Lock = lock::noncritical>
 	string_chars<Char, Lock> chars(jsize size) const
 	{
-        static_assert(!std::is_same_v<Char, char> || Lock != lock::critical, "Unsupported parameter combination: <char, critical>");
+		static_assert(!std::is_same_v<Char, char> || Lock != lock::critical, "Unsupported parameter combination: <char, critical>");
 		assert(size <= length());
 		return string_chars<Char, Lock>(handle(), size);
 	}
@@ -164,7 +164,7 @@ protected:
 template <>
 class object<SCAPIX_META_STRING("java/lang/String")> : public string
 {
-    using string::string;
+	using string::string;
 };
 
 } // namespace java

@@ -37,7 +37,7 @@ protected:
 template <>
 class object<SCAPIX_META_STRING("java/lang/Throwable")> : public throwable<>
 {
-    using throwable::throwable;
+	using throwable::throwable;
 };
 
 } // namespace java

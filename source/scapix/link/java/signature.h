@@ -24,7 +24,7 @@ using class_name_t = typename class_name<T>::type;
 template <typename T>
 struct class_name
 {
-    using type = typename detail::befriend<T, class_name>::class_name;
+	using type = typename detail::befriend<T, class_name>::class_name;
 };
 
 template <typename T, typename Extends>
@@ -48,7 +48,7 @@ using signature_t = typename signature<T>::type;
 template <typename T>
 struct signature
 {
-    using type = meta::concat_t<meta::string<'L'>, class_name_t<T>, meta::string<';'>>;
+	using type = meta::concat_t<meta::string<'L'>, class_name_t<T>, meta::string<';'>>;
 };
 
 template<> struct signature<void>     { using type = meta::string<'V'>; };
@@ -70,19 +70,19 @@ struct signature<T[]>
 template <typename T>
 struct signature<ref<T[]>>
 {
-    using type = meta::concat_t<meta::string<'['>, signature_t<T>>;
+	using type = meta::concat_t<meta::string<'['>, signature_t<T>>;
 };
 
 template <typename T>
 struct signature<array<T>>
 {
-    using type = meta::concat_t<meta::string<'['>, signature_t<T>>;
+	using type = meta::concat_t<meta::string<'['>, signature_t<T>>;
 };
 
 template <typename T>
 struct signature<ref<array<T>>>
 {
-    using type = meta::concat_t<meta::string<'['>, signature_t<T>>;
+	using type = meta::concat_t<meta::string<'['>, signature_t<T>>;
 };
 
 template <typename R, typename ...Args>

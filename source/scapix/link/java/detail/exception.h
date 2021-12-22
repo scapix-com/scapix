@@ -35,7 +35,7 @@ inline jfieldID check_exception(jfieldID id)
 {
 	if (BOOST_UNLIKELY(!id))
 		throw_exception();
-    
+
 	return id;
 }
 

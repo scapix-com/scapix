@@ -105,7 +105,7 @@ struct convert_string
 	using charset = SCAPIX_META_STRING("java/nio/charset/Charset");
 	using standard_charsets = SCAPIX_META_STRING("java/nio/charset/StandardCharsets");
 
-    static ref<charset> utf8_charset()
+	static ref<charset> utf8_charset()
 	{
 //		static const global_ref<charset> ch = object<standard_charsets>::get_static_field<SCAPIX_META_STRING("UTF_8"), ref<charset>>();
 		static const ref<charset> ch (global_ref<charset>(object<standard_charsets>::get_static_field<SCAPIX_META_STRING("UTF_8"), ref<charset>>()).release());
@@ -117,15 +117,15 @@ struct convert_string
 	static std::string cpp(ref<string> obj)
 	{
 //		return obj->chars<char>().data();
-        
+
 		auto bytes = obj->call_method<SCAPIX_META_STRING("getBytes"), ref<jbyte[]>(ref<charset>)>(utf8_charset());
 		std::string str(bytes->size(), char());
 		bytes->get_region(0, static_cast<jsize>(str.size()), (jbyte*)str.data());
-        
+
 		return str;
 	}
 
-    static ref<string> jni(std::string_view str)
+	static ref<string> jni(std::string_view str)
 	{
 //		return string::new_(str.data());
 
@@ -312,7 +312,7 @@ struct convert<ref<generic_type<map_class_name, JK, JV>>, std::map<K, V, C, A>>
 };
 
 using treeset_class_name = SCAPIX_META_STRING("java/util/TreeSet");
-    
+
 template <typename JE, typename K, typename C, typename A>
 struct convert<ref<generic_type<treeset_class_name, JE>>, std::set<K, C, A>>
 {
@@ -330,7 +330,7 @@ struct convert<ref<generic_type<treeset_class_name, JE>>, std::set<K, C, A>>
 				convert_cpp<K>(i->call_method<SCAPIX_META_STRING("next"), ref<generic<JE>>()>())
 			);
 		}
-        
+
 		return m;
 	}
 
@@ -340,13 +340,13 @@ struct convert<ref<generic_type<treeset_class_name, JE>>, std::set<K, C, A>>
 
 		for (auto& i : s)
 			set->call_method<SCAPIX_META_STRING("add"), jboolean(ref<generic<JE>>)>(convert_jni<ref<JE>>(i));
-        
+
 		return set;
 	}
 };
 
 using hashmap_class_name = SCAPIX_META_STRING("java/util/HashMap");
-    
+
 template <typename JK, typename JV, typename K, typename T, typename H, typename KE, typename A>
 struct convert<ref<generic_type<hashmap_class_name, JK, JV>>, std::unordered_map<K, T, H, KE, A>>
 {
@@ -371,7 +371,7 @@ struct convert<ref<generic_type<hashmap_class_name, JK, JV>>, std::unordered_map
 
 		return m;
 	}
-    
+
 	static ref<hashmap_class_name> jni(const std::unordered_map<K, T, H, KE, A>& m)
 	{
 		auto tm = object<hashmap_class_name>::new_object<void()>();
@@ -391,9 +391,9 @@ struct convert<ref<generic_type<hashset_class_name, JE>>, std::unordered_set<K, 
 	static std::unordered_set<K, H, KE, A> cpp(ref<hashset_class_name> set)
 	{
 		std::unordered_set<K, H, KE, A> m;
-        
+
 		auto i = set->call_method<SCAPIX_META_STRING("iterator"), ref<SCAPIX_META_STRING("java/util/Iterator")>()>();
-        
+
 		while (i->call_method<SCAPIX_META_STRING("hasNext"), jboolean()>())
 		{
 			m.emplace_hint
@@ -402,17 +402,17 @@ struct convert<ref<generic_type<hashset_class_name, JE>>, std::unordered_set<K, 
 				convert_cpp<K>(i->call_method<SCAPIX_META_STRING("next"), ref<generic<JE>>()>())
 			);
 		}
-        
+
 		return m;
 	}
-    
+
 	static ref<hashset_class_name> jni(const std::unordered_set<K, H, KE, A>& s)
 	{
 		auto set = object<hashset_class_name>::new_object<void()>();
-        
+
 		for (auto& i : s)
 			set->call_method<SCAPIX_META_STRING("add"), jboolean(ref<generic<JE>>)>(convert_jni<ref<JE>>(i));
-        
+
 		return set;
 	}
 };

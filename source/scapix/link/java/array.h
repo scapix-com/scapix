@@ -471,7 +471,7 @@ class object<meta::string<'[', Chars...>> : public array<meta::string<Chars...>>
 {
 	using array<meta::string<Chars...>>::array;
 };
-    
+
 } // namespace java
 } // namespace link
 } // namespace scapix

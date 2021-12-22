@@ -42,7 +42,7 @@ private:
 
 	void get_class_name() const
 	{
-        cls_name = exception->get_object_class()->call_method<SCAPIX_META_STRING("getName"), ref<string>()>()->chars<char>().data();
+		cls_name = exception->get_object_class()->call_method<SCAPIX_META_STRING("getName"), ref<string>()>()->chars<char>().data();
 	}
 
 	local_ref<throwable<>> exception;
