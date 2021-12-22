@@ -32,7 +32,7 @@ template <typename ClassName, typename HandleType>
 template <typename Type, typename ...Args>
 inline local_ref<object<ClassName, HandleType>> object<ClassName, HandleType>::new_object(jmethodID id, Args&&... args)
 {
-    return detail::api::call<Type>::template new_object<object>(class_object().handle(), id, std::forward<Args>(args)...);
+	return detail::api::call<Type>::template new_object<object>(class_object().handle(), id, std::forward<Args>(args)...);
 }
 
 template <typename ClassName, typename HandleType>
@@ -64,7 +64,8 @@ inline local_ref<class_> object<ClassName, HandleType>::get_object_class() const
 template <typename ClassName, typename HandleType>
 inline ref<class_> object<ClassName, HandleType>::class_object()
 {
-//  static const global_ref<class_> cls(class_::find_class(meta::c_str_v<ClassName>));
+// Destructed after JNI_OnUnload, when JNI calls (like DeleteGlobalRef) do not work.
+//	static const global_ref<class_> cls(class_::find_class(meta::c_str_v<ClassName>));
 	static const ref<class_> cls(global_ref<class_>(class_::find_class(meta::c_str_v<ClassName>)).release());
 	return cls;
 }
