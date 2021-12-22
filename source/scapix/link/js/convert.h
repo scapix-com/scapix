@@ -33,13 +33,13 @@ struct convert;
 template <typename Js, typename Cpp>
 decltype(auto) convert_js(Cpp&& cpp)
 {
-    return convert<remove_cvref_t<Js>, remove_cvref_t<Cpp>>::js(std::forward<Cpp>(cpp));
+	return convert<remove_cvref_t<Js>, remove_cvref_t<Cpp>>::js(std::forward<Cpp>(cpp));
 }
 
 template <typename Cpp, typename Js>
 decltype(auto) convert_cpp(Js&& js)
 {
-    return convert<remove_cvref_t<Js>, remove_cvref_t<Cpp>>::cpp(std::forward<Js>(js));
+	return convert<remove_cvref_t<Js>, remove_cvref_t<Cpp>>::cpp(std::forward<Js>(js));
 }
 
 template<typename Js, typename Cpp>
@@ -298,7 +298,7 @@ struct convert<emscripten::val, std::unordered_set<K, H, KE, A>>
 
 		return s;
 	}
-    
+
 	static emscripten::val js(const std::unordered_set<K, H, KE, A>& s)
 	{
 		auto js = emscripten::val::global("Set").new_();

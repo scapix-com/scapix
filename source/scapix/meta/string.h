@@ -19,7 +19,7 @@ namespace meta {
 template <char... Chars>
 struct string
 {
-    using type = string;
+	using type = string;
 };
 
 template <class S>
@@ -28,7 +28,7 @@ struct c_str;
 template <char... Cs>
 struct c_str<string<Cs...>>
 {
-    static constexpr char value[sizeof...(Cs) + 1] = {Cs..., 0};
+	static constexpr char value[sizeof...(Cs) + 1] = {Cs..., 0};
 };
 
 template <char... Cs>
@@ -64,7 +64,7 @@ struct concat<String1, String2, Strings...> : concat_t<concat_t<String1, String2
 template <typename Char, Char... Chars>
 constexpr auto operator "" _scapix_meta_string()
 {
-    return scapix::meta::string<Chars...>();
+	return scapix::meta::string<Chars...>();
 }
 
 #pragma GCC diagnostic pop

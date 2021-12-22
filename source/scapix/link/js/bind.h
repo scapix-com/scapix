@@ -106,18 +106,18 @@ public:
 
 protected:
 
-    template<typename R, typename... Args>
-    R call(const char* name, Args&&... args) const
+	template<typename R, typename... Args>
+	R call(const char* name, Args&&... args) const
 	{
 			if constexpr (std::is_void_v<R>)
 			{
-		        return emscripten::wrapper<T>::template call<param_t<R>>(name, convert_js<param_t<Args>>(std::forward<Args>(args))...);
+				return emscripten::wrapper<T>::template call<param_t<R>>(name, convert_js<param_t<Args>>(std::forward<Args>(args))...);
 			}
 			else
 			{
-		        return convert_cpp<R>(emscripten::wrapper<T>::template call<param_t<R>>(name, convert_js<param_t<Args>>(std::forward<Args>(args))...));
+				return convert_cpp<R>(emscripten::wrapper<T>::template call<param_t<R>>(name, convert_js<param_t<Args>>(std::forward<Args>(args))...));
 			}
-    }
+	}
 
 };
 
