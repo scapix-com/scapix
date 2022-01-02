@@ -153,7 +153,7 @@ inline jint on_load(JavaVM *vm, void *reserved)
 	link::java::native_methods
 	<
 		detail::bridge::class_name,
-		link::java::native_method<SCAPIX_META_STRING("_finalize"), void(), void(object_base::*)(), &object_base::finalize>
+		link::java::native_method<SCAPIX_META_STRING("finalize"), void(), void(object_base::*)(), &object_base::finalize>
 	>
 	::register_();
 
