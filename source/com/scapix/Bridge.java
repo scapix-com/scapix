@@ -10,6 +10,8 @@ import com.scapix.NativeException; // force compilation
 public class Bridge
 {
 	private long ptr;
+
+	@SuppressWarnings("deprecation")
 	protected native void finalize();
 
 	protected static final class Nop {}
