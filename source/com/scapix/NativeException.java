@@ -10,10 +10,9 @@ import java.lang.RuntimeException;
 
 public class NativeException extends RuntimeException
 {
-	private NativeException(long p)
-	{
-		ptr = p;
-	}
-
 	private long ptr;
+	private NativeException(long p) { ptr = p; }
+
+//	@SuppressWarnings("deprecation")
+//	protected native void finalize();
 }
