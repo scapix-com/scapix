@@ -27,6 +27,24 @@ namespace scapix {
 namespace link {
 namespace js {
 
+//template <typename T>
+//using param = std::conditional_t<std::experimental::is_detected_v<has_convert_cpp_t<emscripten::val, T>>, emscripten::val, T>;
+
+template <typename T>
+struct param
+{
+	using type = emscripten::val;
+};
+
+template<>
+struct param<void>
+{
+	using type = void;
+};
+
+template <typename T>
+using param_t = typename param<T>::type;
+
 template <typename Js, typename Cpp, typename = void>
 struct convert;
 
@@ -318,15 +336,26 @@ struct convert<emscripten::val, std::function<R(Args...)>>
 		return std::function<R(Args...)>([val](Args... args)
 		{
 			if constexpr (std::is_void_v<R>)
-				val(convert_js<emscripten::val>(args)...);
+				val(convert_js<emscripten::val>(std::forward<Args>(args))...);
 			else
-				return convert_cpp<R>(val(convert_js<emscripten::val>(args)...));
+				return convert_cpp<R>(val(convert_js<emscripten::val>(std::forward<Args>(args))...));
 		});
 	}
 
-	// static emscripten::val js(const std::function<R(Args...)>& func)
-	// {
-	// }
+#if 0
+	// "BindingError", message: "_emval_take_value has unknown type NSt3__28functionIFvvEEE"
+
+	static emscripten::val js(const std::function<R(Args...)>& func)
+	{
+		return emscripten::val(std::function<param_t<R>(param_t<Args>...)>([func](param_t<Args>... args)
+		{
+			if constexpr (std::is_void_v<R>)
+				func(convert_cpp<Args>(std::forward<param_t<Args>>(args))...);
+			else
+				return convert_js<emscripten::val>(func(convert_cpp<Args>(std::forward<param_t<Args>>(args))...));
+		}));
+	}
+#endif
 };
 
 template <typename Struct>

@@ -14,24 +14,6 @@ namespace scapix {
 namespace link {
 namespace js {
 
-//template <typename T>
-//using param = std::conditional_t<std::experimental::is_detected_v<has_convert_cpp_t<emscripten::val, T>>, emscripten::val, T>;
-
-template <typename T>
-struct param
-{
-	using type = emscripten::val;
-};
-
-template<>
-struct param<void>
-{
-	using type = void;
-};
-
-template <typename T>
-using param_t = typename param<T>::type;
-
 // Clang bug:
 // https://bugs.llvm.org/show_bug.cgi?id=42805
 
@@ -67,13 +49,9 @@ struct function_impl
 		static param_t<R> func(class_type& obj, param_t<Args>... args)
 		{
 			if constexpr (std::is_void_v<R>)
-			{
 				return (obj.*Function)(convert_cpp<Args>(std::forward<param_t<Args>>(args))...);
-			}
 			else
-			{
 				return convert_js<param_t<R>>((obj.*Function)(convert_cpp<Args>(std::forward<param_t<Args>>(args))...));
-			}
 		}
 	};
 
@@ -83,13 +61,9 @@ struct function_impl
 		static param_t<R> func(param_t<Args>... args)
 		{
 			if constexpr (std::is_void_v<R>)
-			{
 				return Function(convert_cpp<Args>(std::forward<param_t<Args>>(args))...);
-			}
 			else
-			{
 				return convert_js<param_t<R>>(Function(convert_cpp<Args>(std::forward<param_t<Args>>(args))...));
-			}
 		}
 	};
 };
@@ -109,14 +83,10 @@ protected:
 	template<typename R, typename... Args>
 	R call(const char* name, Args&&... args) const
 	{
-			if constexpr (std::is_void_v<R>)
-			{
-				return emscripten::wrapper<T>::template call<param_t<R>>(name, convert_js<param_t<Args>>(std::forward<Args>(args))...);
-			}
-			else
-			{
-				return convert_cpp<R>(emscripten::wrapper<T>::template call<param_t<R>>(name, convert_js<param_t<Args>>(std::forward<Args>(args))...));
-			}
+		if constexpr (std::is_void_v<R>)
+			return emscripten::wrapper<T>::template call<param_t<R>>(name, convert_js<param_t<Args>>(std::forward<Args>(args))...);
+		else
+			return convert_cpp<R>(emscripten::wrapper<T>::template call<param_t<R>>(name, convert_js<param_t<Args>>(std::forward<Args>(args))...));
 	}
 
 };

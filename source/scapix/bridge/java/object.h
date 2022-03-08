@@ -21,6 +21,7 @@ namespace bridge {
 namespace java {
 
 class object_base;
+class function_base;
 
 namespace detail {
 
@@ -40,6 +41,24 @@ public:
 protected:
 
 	bridge(handle_type h) : object_type(h) {}
+
+};
+
+class function : public link::java::object<SCAPIX_META_STRING("com/scapix/Function")>
+{
+public:
+
+	using ptr = SCAPIX_META_STRING("ptr");
+
+	template <typename ClassName>
+	static link::java::local_ref<ClassName> create(function_base* p) { return link::java::static_pointer_cast<ClassName>(link::java::object<meta::concat_t<ClassName, SCAPIX_META_STRING("Impl")>>::template new_object<void(jlong)>(reinterpret_cast<jlong>(p))); }
+
+	void set_ptr(function_base* p) { set_field<ptr>(reinterpret_cast<jlong>(p)); }
+	function_base* get_ptr() { return reinterpret_cast<function_base*>(get_field<ptr, jlong>()); }
+
+protected:
+
+	function(handle_type h) : object_type(h) {}
 
 };
 
@@ -146,6 +165,46 @@ private:
 
 };
 
+class function_base
+{
+public:
+
+	virtual ~function_base() = default;
+
+	void finalize()
+	{
+		delete this;
+	}
+
+};
+
+template <typename T>
+class function;
+
+template <typename R, typename ...Args>
+class function<R(Args...)> : public function_base
+{
+public:
+
+	template <typename ClassName>
+	static link::java::ref<ClassName> create(std::function<R(Args...)>&& func)
+	{
+		return detail::function::create<ClassName>(new function<R(Args...)>(std::move(func)));
+	}
+
+	function(std::function<R(Args...)>&& f) : func(std::move(f)) {}
+
+	R call(Args... args)
+	{
+		return func(std::forward<Args>(args)...);
+	}
+
+private:
+
+	std::function<R(Args...)> func;
+
+};
+
 inline jint on_load(JavaVM *vm, void *reserved)
 {
 	auto result = link::java::on_load(vm, reserved);
@@ -154,6 +213,13 @@ inline jint on_load(JavaVM *vm, void *reserved)
 	<
 		detail::bridge::class_name,
 		link::java::native_method<SCAPIX_META_STRING("finalize"), void(), void(object_base::*)(), &object_base::finalize>
+	>
+	::register_();
+
+	link::java::native_methods
+	<
+		detail::function::class_name,
+		link::java::native_method<SCAPIX_META_STRING("finalize"), void(), void(function_base::*)(), &function_base::finalize>
 	>
 	::register_();
 
@@ -178,6 +244,18 @@ struct class_name<bridge::java::init<T>>
 	using type = class_name_t<T>;
 };
 
+template <>
+struct class_name<bridge::java::function_base>
+{
+	using type = bridge::java::detail::function::class_name;
+};
+
+template <typename T>
+struct class_name<bridge::java::function<T>>
+{
+	using type = bridge::java::detail::function::class_name;
+};
+
 // used to convert 'this'
 
 template <typename Jni, typename T>
@@ -200,6 +278,28 @@ struct convert<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 	}
 };
 
+// used to convert 'this'
+
+template <typename Jni, typename T>
+struct convert<Jni, bridge::java::function<T>>
+{
+	static bridge::java::function<T>& cpp(ref<bridge::java::detail::function> v)
+	{
+		return *static_cast<bridge::java::function<T>*>(v->get_ptr());
+	}
+};
+
+// used to convert 'this'
+
+template <typename Jni>
+struct convert<Jni, bridge::java::function_base>
+{
+	static bridge::java::function_base& cpp(ref<bridge::java::detail::function> v)
+	{
+		return *v->get_ptr();
+	}
+};
+
 template <typename Jni, typename T>
 struct convert_shared<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 {
@@ -218,6 +318,19 @@ struct convert_shared<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 
 		auto p = v.get();
 		return static_pointer_cast<class_name_t<T>>(p->get_ref(std::move(v)));
+	}
+};
+
+template <typename T>
+struct function_impl;
+
+template <typename ClassName, typename JniR, typename ...JniArgs>
+struct function_impl<function<ClassName, JniR(JniArgs...)>>
+{
+	template <typename R, typename ...Args>
+	static link::java::ref<ClassName> create(std::function<R(Args...)>&& func)
+	{
+		return bridge::java::function<R(Args...)>::template create<ClassName>(std::move(func));
 	}
 };
 

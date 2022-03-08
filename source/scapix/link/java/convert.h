@@ -26,6 +26,9 @@ namespace scapix {
 namespace link {
 namespace java {
 
+template <typename T>
+struct function_impl;
+
 template <typename Jni, typename Cpp, typename = void>
 struct convert_shared;
 
@@ -431,11 +434,10 @@ struct convert<ref<function<ClassName, JniR(JniArgs...), Name>>, std::function<R
 		});
 	}
 
-//    static ref<function<ClassName, JniR(JniArgs...), Name>> jni(const std::function<R(Args...)>& f)
-//    {
-//        auto c = std::make_shared<callback<J, R, Args...>>(f);
-//        return c.get_ref();
-//    }
+	static ref<function<ClassName, JniR(JniArgs...), Name>> jni(std::function<R(Args...)> f)
+	{
+		return function_impl<function<ClassName, JniR(JniArgs...), Name>>::create(std::move(f));
+	}
 };
 
 template <typename Jni, typename Struct>
