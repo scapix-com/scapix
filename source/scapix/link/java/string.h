@@ -8,6 +8,8 @@
 #define SCAPIX_LINK_JAVA_STRING_H
 
 #include <stdexcept>
+#include <type_traits>
+#include <iterator>
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/object.h>
 #include <scapix/link/java/detail/env.h>
