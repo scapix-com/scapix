@@ -72,7 +72,7 @@ inline jint attach_current_thread(void *args = nullptr) noexcept
 {
 	if (!detail::env())
 	{
-		auto r = detail::jvm()->AttachCurrentThread((detail::jnienv_api_type**)&detail::env(), args);
+		auto r = detail::jvm()->AttachCurrentThread(reinterpret_cast<detail::jnienv_type>(&detail::env()), args);
 		if (r == JNI_OK)
 			detail::register_thread_detach();
 		return r;
@@ -84,7 +84,7 @@ inline jint attach_current_thread_as_daemon(void *args = nullptr) noexcept
 {
 	if (!detail::env())
 	{
-		auto r = detail::jvm()->AttachCurrentThreadAsDaemon((detail::jnienv_api_type**)&detail::env(), args);
+		auto r = detail::jvm()->AttachCurrentThreadAsDaemon(reinterpret_cast<detail::jnienv_type>(&detail::env()), args);
 		if (r == JNI_OK)
 			detail::register_thread_detach();
 		return r;

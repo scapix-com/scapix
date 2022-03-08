@@ -7,7 +7,7 @@
 #ifndef SCAPIX_LINK_JAVA_DETAIL_CONFIG_H
 #define SCAPIX_LINK_JAVA_DETAIL_CONFIG_H
 
-#include <vector>
+#include <scapix/core/function_traits.h>
 
 // apple clang is missing thread_local
 
@@ -17,40 +17,26 @@
 #endif
 #endif
 
-namespace scapix {
-namespace link {
-namespace java {
-namespace detail {
+namespace scapix::link::java::detail {
 
-// jni.h on android uses JNIEnv
-#ifdef ANDROID
-	using jnienv_api_type = JNIEnv;
-#else
-	using jnienv_api_type = void;
-#endif
+/*
 
-inline std::vector<void(*)()>& init_handlers()
-{
-	static std::vector<void(*)()> handlers;
-	return handlers;
-}
+jni.h (JDK) uses void** type:
 
-inline void register_init_handler(void(*init)())
-{
-	init_handlers().push_back(init);
-}
+	jint JNI_CreateJavaVM(JavaVM**, void**, void*);
+	jint AttachCurrentThread(JavaVM*, void**, void*);
+	jint AttachCurrentThreadAsDaemon(JavaVM*, void**, void*);
 
-inline void execute_init_handlers()
-{
-	for (auto& handler : init_handlers())
-		handler();
+jni.h (Android NDK) uses JNIEnv** type:
 
-	init_handlers().clear();
-}
+	jint JNI_CreateJavaVM(JavaVM**, JNIEnv**, void*);
+	jint AttachCurrentThread(JavaVM*, JNIEnv**, void*);
+	jint AttachCurrentThreadAsDaemon(JavaVM*, JNIEnv**, void*);
 
-} // namespace detail
-} // namespace java
-} // namespace link
-} // namespace scapix
+*/
+
+using jnienv_type = function_traits<std::remove_pointer_t<decltype(&JNI_CreateJavaVM)>>::argument_type<1>;
+
+} // namespace scapix::link::java::detail
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_CONFIG_H

@@ -58,7 +58,7 @@ inline void deinit_created_vm() noexcept
 
 inline jint create_vm(void* args) noexcept
 {
-	return JNI_CreateJavaVM(&detail::jvm(), (detail::jnienv_api_type**)&detail::env(), args);
+	return JNI_CreateJavaVM(&detail::jvm(), reinterpret_cast<detail::jnienv_type>(&detail::env()), args);
 }
 
 inline jint destroy_vm() noexcept
