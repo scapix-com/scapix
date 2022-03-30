@@ -13,6 +13,6 @@ public class NativeException extends RuntimeException
 	private long ptr;
 	private NativeException(long p) { ptr = p; }
 
-//	@SuppressWarnings("deprecation")
+//	@SuppressWarnings({"deprecation","removal"})
 //	protected native void finalize();
 }

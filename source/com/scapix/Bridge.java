@@ -11,7 +11,7 @@ public class Bridge
 {
 	private long ptr;
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({"deprecation","removal"})
 	protected native void finalize();
 
 	protected static final class Nop {}

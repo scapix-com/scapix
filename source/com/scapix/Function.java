@@ -10,7 +10,7 @@ public class Function
 {
 	private long ptr;
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({"deprecation","removal"})
 	protected native void finalize();
 
 	protected Function(long p) { ptr = p; }
