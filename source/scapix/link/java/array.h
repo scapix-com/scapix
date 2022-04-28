@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/array.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_ARRAY_H
@@ -13,13 +13,10 @@
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/lock.h>
 #include <scapix/link/java/signature.h>
-#include <scapix/link/java/detail/env.h>
 #include <scapix/link/java/detail/api/type.h>
 #include <scapix/link/java/detail/api/array.h>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 //template <typename T>
 //using array = object_type<signature_t<T[]>>;
@@ -472,8 +469,6 @@ class object<meta::string<'[', Chars...>> : public array<meta::string<Chars...>>
 	using array<meta::string<Chars...>>::array;
 };
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_ARRAY_H

@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/type_traits.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_TYPE_TRAITS_H
@@ -9,11 +9,9 @@
 
 #include <type_traits>
 #include <scapix/meta/string.h>
-#include <scapix/link/java/detail/env.h>
+#include <scapix/link/java/detail/config.h>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 // handle_type
 
@@ -121,8 +119,6 @@ struct is_object_array : std::integral_constant<bool, meta::c_str_v<typename T::
 template<typename T>
 constexpr bool is_object_array_v = is_object_array<T>::value;
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_TYPE_TRAITS_H

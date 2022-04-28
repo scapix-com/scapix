@@ -1,23 +1,19 @@
 /*
 	scapix/link/java/thread.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_THREAD_H
 #define SCAPIX_LINK_JAVA_THREAD_H
 
-#include <boost/config.hpp>
-#include <scapix/link/java/vm.h>
-#include <scapix/link/java/detail/env.h>
+#include <scapix/link/java/detail/config.h>
 
 #ifdef SCAPIX_LINK_JAVA_NO_THREAD_LOCAL
 #include <pthread.h>
 #endif
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 inline jint detach_current_thread() noexcept
 {
@@ -92,13 +88,6 @@ inline jint attach_current_thread_as_daemon(void *args = nullptr) noexcept
 	return JNI_OK;
 }
 
-inline jint get_env(jint version = JNI_VERSION_1_6) noexcept
-{
-	return detail::jvm()->GetEnv((void**)&detail::env(), version);
-}
-
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_THREAD_H

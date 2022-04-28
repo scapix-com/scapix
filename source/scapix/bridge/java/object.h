@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <scapix/bridge/type_traits.h>
 #include <scapix/link/java/object.h>
-#include <scapix/link/java/vm.h> // on_load
+#include <scapix/link/java/init.h>
 #include <scapix/link/java/convert.h>
 #include <scapix/link/java/native_method.h>
 #include <scapix/link/java/array.h>

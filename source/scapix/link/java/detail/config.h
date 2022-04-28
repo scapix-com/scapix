@@ -1,12 +1,13 @@
 /*
 	scapix/link/java/detail/config.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_DETAIL_CONFIG_H
 #define SCAPIX_LINK_JAVA_DETAIL_CONFIG_H
 
+#include <jni.h>
 #include <scapix/core/function_traits.h>
 
 // apple clang is missing thread_local
@@ -36,6 +37,27 @@ jni.h (Android NDK) uses JNIEnv** type:
 */
 
 using jnienv_type = function_traits<std::remove_pointer_t<decltype(&JNI_CreateJavaVM)>>::argument_type<1>;
+
+inline JavaVM*& jvm() noexcept
+{
+	static JavaVM* ptr;
+	return ptr;
+}
+
+inline JNIEnv*& env() noexcept
+{
+#ifdef SCAPIX_LINK_JAVA_NO_THREAD_LOCAL
+
+	static __thread JNIEnv* ptr;
+
+#else
+
+	thread_local JNIEnv* ptr;
+
+#endif
+
+	return ptr;
+}
 
 } // namespace scapix::link::java::detail
 

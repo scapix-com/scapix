@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/object.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_OBJECT_H
@@ -15,9 +15,7 @@
 #include <scapix/link/java/detail/exception.h>
 #include <scapix/link/java/detail/api.h>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 class class_;
 
@@ -165,9 +163,7 @@ inline jboolean is_same_object(const object<C1, H1>& a, const object<C2, H2>& b)
 	return detail::env()->IsSameObject(a.handle(), b.handle());
 }
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #include <scapix/link/java/object.ipp>
 

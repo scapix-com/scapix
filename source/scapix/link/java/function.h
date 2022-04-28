@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/function.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_FUNCTION_H
@@ -9,9 +9,7 @@
 
 #include <scapix/meta/string.h>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 // represents java @FunctionalInterface
 
@@ -26,8 +24,6 @@ public:
 
 };
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_FUNCTION_H

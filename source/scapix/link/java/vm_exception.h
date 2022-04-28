@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/vm_exception.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_VM_EXCEPTION_H
@@ -12,9 +12,7 @@
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/throwable.h>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 class vm_exception : public std::exception
 {
@@ -56,8 +54,6 @@ inline bool operator == (const std::string& cls_name, const vm_exception& e) { r
 inline bool operator == (const vm_exception& e, const char* cls_name) { return e.class_name() == cls_name; }
 inline bool operator == (const char* cls_name, const vm_exception& e) { return e.class_name() == cls_name; }
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_VM_EXCEPTION_H

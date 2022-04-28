@@ -1,20 +1,15 @@
 /*
 	scapix/link/java/detail/api/type.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_DETAIL_API_TYPE_H
 #define SCAPIX_LINK_JAVA_DETAIL_API_TYPE_H
 
 #include <scapix/link/java/ref.h>
-#include <scapix/link/java/detail/env.h>
 
-namespace scapix {
-namespace link {
-namespace java {
-namespace detail {
-namespace api {
+namespace scapix::link::java::detail::api {
 
 template <typename T>
 struct type;
@@ -204,10 +199,6 @@ struct type<void>
 	template <typename ...Args> static void call_static_method(jclass cls, jmethodID id, Args... args) noexcept { env()->CallStaticVoidMethod(cls, id, args...); }
 };
 
-} // namespace api
-} // namespace detail
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java::detail::api
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_API_TYPE_H

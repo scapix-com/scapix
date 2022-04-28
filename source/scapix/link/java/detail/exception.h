@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/detail/exception.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_DETAIL_EXCEPTION_H
@@ -10,12 +10,8 @@
 #include <boost/config.hpp>
 #include <scapix/link/java/type_traits.h>
 #include <scapix/link/java/ref.h>
-#include <scapix/link/java/detail/env.h>
 
-namespace scapix {
-namespace link {
-namespace java {
-namespace detail {
+namespace scapix::link::java::detail {
 
 void throw_exception(jthrowable e);
 void throw_exception();
@@ -86,9 +82,6 @@ struct check_exception_on_destroy
 	check_exception_on_destroy& operator = (check_exception_on_destroy&&) = delete;
 };
 
-} // namespace detail
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java::detail
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_EXCEPTION_H

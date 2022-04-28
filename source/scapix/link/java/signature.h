@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/signature.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_SIGNATURE_H
@@ -11,9 +11,7 @@
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/detail/util.h>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 template <typename T>
 struct class_name;
@@ -91,8 +89,6 @@ struct signature<R(Args...)>
 	using type = meta::concat_t<meta::string<'('>, signature_t<Args>..., meta::string<')'>, signature_t<R>>;
 };
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_SIGNATURE_H

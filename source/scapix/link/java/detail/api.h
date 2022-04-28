@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/detail/api.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_DETAIL_API_H
@@ -13,11 +13,7 @@
 #include <scapix/link/java/detail/api/type.h>
 #include <scapix/link/java/detail/exception.h>
 
-namespace scapix {
-namespace link {
-namespace java {
-namespace detail {
-namespace api {
+namespace scapix::link::java::detail::api {
 
 // It is possible to allow creating ref<T> for incomplete T from jobject handle (but quite painfull).
 // This would allow moving all api calls using ref<class_>, ref<string>, ref<throwable>, etc. to "api.h".
@@ -224,10 +220,6 @@ inline void get_string_region(jstring str, jsize start, jsize len, Char* buf)
 	check_exception();
 }
 
-} // namespace api
-} // namespace detail
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java::detail::api
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_API_H

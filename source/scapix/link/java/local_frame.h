@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/local_frame.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_LOCAL_FRAME_H
@@ -10,9 +10,7 @@
 #include <utility>
 #include <scapix/link/java/detail/env.h>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 class local_frame
 {
@@ -72,8 +70,6 @@ inline void swap(local_frame& a, local_frame& b)
 	a.swap(b);
 }
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_LOCAL_FRAME_H

@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/object_base.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_OBJECT_BASE_H
@@ -11,9 +11,7 @@
 #include <scapix/link/java/detail/util.h>
 #include <boost/mp11.hpp>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 // given list of (linearly) derived types, select the most derived
 
@@ -112,8 +110,6 @@ protected:
 
 };
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_OBJECT_BASE_H

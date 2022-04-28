@@ -1,19 +1,15 @@
 /*
 	scapix/link/java/detail/api/ref.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_DETAIL_API_REF_H
 #define SCAPIX_LINK_JAVA_DETAIL_API_REF_H
 
-#include <scapix/link/java/detail/env.h>
+#include <scapix/link/java/detail/config.h>
 
-namespace scapix {
-namespace link {
-namespace java {
-namespace detail {
-namespace api {
+namespace scapix::link::java::detail::api {
 
 enum class scope
 {
@@ -47,10 +43,6 @@ struct ref<scope::weak>
 	static void delete_ref(jobject h) noexcept { detail::env()->DeleteWeakGlobalRef(h); }
 };
 
-} // namespace api
-} // namespace detail
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java::detail::api
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_API_REF_H

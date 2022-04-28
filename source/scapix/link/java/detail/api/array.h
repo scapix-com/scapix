@@ -1,21 +1,16 @@
 /*
 	scapix/link/java/detail/api/array.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_DETAIL_API_ARRAY_H
 #define SCAPIX_LINK_JAVA_DETAIL_API_ARRAY_H
 
 #include <scapix/link/java/lock.h>
-#include <scapix/link/java/detail/env.h>
 #include <scapix/link/java/detail/api/type.h>
 
-namespace scapix {
-namespace link {
-namespace java {
-namespace detail {
-namespace api {
+namespace scapix::link::java::detail::api {
 
 template <typename T, lock Lock>
 struct array;
@@ -34,10 +29,6 @@ struct array<T, lock::critical>
 	static void release_array_elements(handle_type_t<T[]> obj, T* elems, jint mode) { env()->ReleasePrimitiveArrayCritical(obj, elems, mode); }
 };
 
-} // namespace api
-} // namespace detail
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java::detail::api
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_API_ARRAY_H

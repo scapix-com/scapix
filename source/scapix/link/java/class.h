@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/class.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_CLASS_H
@@ -10,12 +10,9 @@
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/signature.h>
 #include <scapix/link/java/object.h>
-#include <scapix/link/java/detail/env.h>
 #include <scapix/link/java/detail/exception.h>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 class class_ : public object<SCAPIX_META_STRING("java/lang/Class"), jclass>
 {
@@ -126,8 +123,6 @@ class object<SCAPIX_META_STRING("java/lang/Class")> : public class_
 	using class_::class_;
 };
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_CLASS_H

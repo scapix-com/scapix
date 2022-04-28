@@ -1,16 +1,13 @@
 /*
 	scapix/link/java/detail/util.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_DETAIL_UTIL_H
 #define SCAPIX_LINK_JAVA_DETAIL_UTIL_H
 
-namespace scapix {
-namespace link {
-namespace java {
-namespace detail {
+namespace scapix::link::java::detail {
 
 template <typename T, typename>
 class tag : public T
@@ -31,9 +28,6 @@ class befriend : public T
 #define protected public
 #endif
 
-} // namespace detail
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java::detail
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_UTIL_H

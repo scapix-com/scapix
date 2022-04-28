@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/object.ipp
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #include <scapix/link/java/class.h>
@@ -10,9 +10,7 @@
 #include <scapix/link/java/byte_buffer.h>
 #include <scapix/link/java/array.h>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 template <typename ClassName, typename HandleType>
 template <typename Type, typename ...Args>
@@ -102,6 +100,4 @@ inline jfieldID object<ClassName, HandleType>::static_field_id()
 	return id;
 }
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java

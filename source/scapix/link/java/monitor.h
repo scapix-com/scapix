@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/monitor.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_MONITOR_H
@@ -11,9 +11,7 @@
 #include <cassert>
 #include <scapix/link/java/ref.h>
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 template <typename T>
 class monitor
@@ -82,8 +80,6 @@ inline void swap(monitor<T>& a, monitor<T>& b)
 	a.swap(b);
 }
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_MONITOR_H

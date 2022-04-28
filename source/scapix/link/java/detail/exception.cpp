@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/detail/exception.cpp
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #include <scapix/link/java/detail/exception.h>
@@ -10,10 +10,7 @@
 #include <scapix/link/java/detail/native_exception.h>
 #include <scapix/link/java/vm_exception.h>
 
-namespace scapix {
-namespace link {
-namespace java {
-namespace detail {
+namespace scapix::link::java::detail {
 
 void throw_exception(jthrowable e)
 {
@@ -41,7 +38,4 @@ void throw_exception()
 	throw_exception(env()->ExceptionOccurred());
 }
 
-} // namespace detail
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java::detail

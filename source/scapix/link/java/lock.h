@@ -1,15 +1,13 @@
 /*
 	scapix/link/java/lock.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_LOCK_H
 #define SCAPIX_LINK_JAVA_LOCK_H
 
-namespace scapix {
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 enum class lock
 {
@@ -17,8 +15,6 @@ enum class lock
 	critical,
 };
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_LOCK_H
