@@ -16,11 +16,12 @@ void throw_exception(jthrowable e)
 {
 	local_ref<throwable<>> exception(e);
 
+//	env()->ExceptionDescribe();
 	env()->ExceptionClear();
 
-//	std::string msg = exception->call_method<SCAPIX_META_STRING("getMessage"), ref<string>()>();
+//	std::string msg = exception->call_method<SCAPIX_META_STRING("getMessage"), ref<string>()>()->chars<char>().data();
 
-	// if com.scapix.NativeException is not found, native_exception::class_object() causes infitine recursion:
+	// if com.scapix.NativeException is not found, native_exception::class_object() causes infinite recursion:
 	// libc++abi.dylib: __cxa_guard_acquire detected deadlock
 
 	if (auto native = dynamic_pointer_cast<native_exception>(std::move(exception)))
