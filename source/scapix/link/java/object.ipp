@@ -10,6 +10,11 @@
 #include <scapix/link/java/byte_buffer.h>
 #include <scapix/link/java/array.h>
 
+#ifdef SCAPIX_CACHE_CLASS_LOADER
+#include <scapix/link/java/init.h>
+#include <scapix/mpv/replace.h>
+#endif
+
 namespace scapix::link::java {
 
 template <typename ClassName, typename HandleType>
@@ -64,7 +69,13 @@ inline ref<class_> object<ClassName, HandleType>::class_object()
 {
 // Destructed after JNI_OnUnload, when JNI calls (like DeleteGlobalRef) do not work.
 //	static const global_ref<class_> cls(class_::find_class(meta::c_str_v<ClassName>));
+
+#ifdef SCAPIX_CACHE_CLASS_LOADER
+	static const ref<class_> cls(global_ref<class_>(class_loader::find_class(meta::c_str_v<mpv::replace<ClassName, '/', '.'>>)).release());
+#else
 	static const ref<class_> cls(global_ref<class_>(class_::find_class(meta::c_str_v<ClassName>)).release());
+#endif
+
 	return cls;
 }
 
