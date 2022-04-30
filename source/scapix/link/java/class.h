@@ -4,12 +4,13 @@
 	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
+#include <scapix/link/java/object.h>
+
 #ifndef SCAPIX_LINK_JAVA_CLASS_H
 #define SCAPIX_LINK_JAVA_CLASS_H
 
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/signature.h>
-#include <scapix/link/java/object.h>
 #include <scapix/link/java/detail/exception.h>
 
 namespace scapix::link::java {

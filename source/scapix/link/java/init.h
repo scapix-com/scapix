@@ -33,9 +33,6 @@ public:
 		load_class_method = loader_cls->get_method_id<SCAPIX_META_STRING("loadClass"), ref<SCAPIX_META_STRING("java/lang/Class")>(ref<SCAPIX_META_STRING("java/lang/String")>)>();
 	}
 
-	// template to fix header circular dependency
-
-	template <typename = void>
 	static local_ref<class_> find_class(const char* name)
 	{
 		return loader->call_method<ref<SCAPIX_META_STRING("java/lang/Class")>(ref<SCAPIX_META_STRING("java/lang/String")>)>(load_class_method, string::new_(name));

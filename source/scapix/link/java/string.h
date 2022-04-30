@@ -4,6 +4,8 @@
 	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
+#include <scapix/link/java/object.h>
+
 #ifndef SCAPIX_LINK_JAVA_STRING_H
 #define SCAPIX_LINK_JAVA_STRING_H
 
@@ -11,7 +13,6 @@
 #include <type_traits>
 #include <iterator>
 #include <scapix/link/java/ref.h>
-#include <scapix/link/java/object.h>
 #include <scapix/link/java/detail/api/string.h>
 #include <scapix/link/java/lock.h>
 
