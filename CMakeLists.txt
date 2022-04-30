@@ -53,6 +53,10 @@ if(${SCAPIX_BRIDGE} STREQUAL objc)
     set_source_files_properties(${SCAPIX_ROOT}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_OPTIONS "-fno-objc-arc")
 endif()
 
+if(MSVC)
+    target_compile_options(scapix PUBLIC /permissive-)
+endif()
+
 target_compile_features(scapix PUBLIC cxx_std_17)
 
 target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/source)
