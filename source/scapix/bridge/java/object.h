@@ -1,7 +1,7 @@
 /*
 	scapix/bridge/java/object.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_BRIDGE_JAVA_OBJECT_H
@@ -10,15 +10,14 @@
 #include <memory>
 #include <type_traits>
 #include <scapix/bridge/type_traits.h>
+#include <scapix/bridge/java/on_load.h>
 #include <scapix/link/java/object.h>
 #include <scapix/link/java/init.h>
 #include <scapix/link/java/convert.h>
 #include <scapix/link/java/native_method.h>
 #include <scapix/link/java/array.h>
 
-namespace scapix {
-namespace bridge {
-namespace java {
+namespace scapix::bridge::java {
 
 class object_base;
 class function_base;
@@ -82,7 +81,7 @@ private:
 	template <typename Jni, typename Cpp, typename>
 	friend struct link::java::convert_shared;
 
-	friend jint on_load(JavaVM *vm, void *reserved);
+	friend jint on_load(JavaVM *vm, void *reserved, void(*init)());
 
 	void attach(link::java::ref<detail::bridge> obj, std::shared_ptr<object_base> shared_this)
 	{
@@ -205,32 +204,41 @@ private:
 
 };
 
-inline jint on_load(JavaVM *vm, void *reserved)
+inline jint on_load(JavaVM *vm, void *reserved, void(*init)())
 {
-	auto result = link::java::on_load(vm, reserved);
+	try
+	{
+		auto result = link::java::on_load(vm, reserved);
 
-	link::java::native_methods
-	<
-		detail::bridge::class_name,
-		link::java::native_method<SCAPIX_META_STRING("finalize"), void(), void(object_base::*)(), &object_base::finalize>
-	>
-	::register_();
+		link::java::native_methods
+		<
+			detail::bridge::class_name,
+			link::java::native_method<SCAPIX_META_STRING("finalize"), void(), void(object_base::*)(), &object_base::finalize>
+		>
+		::register_();
 
-	link::java::native_methods
-	<
-		detail::function::class_name,
-		link::java::native_method<SCAPIX_META_STRING("finalize"), void(), void(function_base::*)(), &function_base::finalize>
-	>
-	::register_();
+		link::java::native_methods
+		<
+			detail::function::class_name,
+			link::java::native_method<SCAPIX_META_STRING("finalize"), void(), void(function_base::*)(), &function_base::finalize>
+		>
+		::register_();
 
-	return result;
+		init();
+
+		return result;
+	}
+	catch (const link::java::vm_exception& e)
+	{
+		e.get()->throw_();
+	}
+
+	return 0;
 }
 
-} // namespace java
-} // namespace bridge
+} // namespace scapix::bridge::java
 
-namespace link {
-namespace java {
+namespace scapix::link::java {
 
 template <>
 struct class_name<bridge::java::object_base>
@@ -334,8 +342,6 @@ struct function_impl<function<ClassName, JniR(JniArgs...)>>
 	}
 };
 
-} // namespace java
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::java
 
 #endif // SCAPIX_BRIDGE_JAVA_OBJECT_H
