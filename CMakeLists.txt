@@ -400,6 +400,8 @@ target_sources(${target} PRIVATE ${generated_sources_${SCAPIX_BRIDGE}_private})
 target_sources(${target} INTERFACE ${generated_sources_${SCAPIX_BRIDGE}_interface})
 source_group(TREE ${PROJECT_ROOT}/generated PREFIX "generated" FILES ${generated_sources})
 
+set(all_generated_sources)
+
 foreach(bridge_header ${bridge_headers})
 
     get_filename_component(bridge_header_name ${bridge_header} NAME_WLE)
@@ -504,7 +506,22 @@ foreach(bridge_header ${bridge_headers})
             VERBATIM
     )
 
+    # GENERATED property implicitly set for OUTPUT arguments of add_custom_command(), so we generally wouldn't need this.
+    # In CMake 3.18 we can make GENERATED property visible also in target directory.
+    # cmake_minimum_required(VERSION 3.20) makes GENERATED property visible in all directories.
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.18)
+        set_source_files_properties(${generated_sources} TARGET_DIRECTORY ${target} PROPERTIES GENERATED TRUE)
+    endif()
+
+    set(all_generated_sources ${all_generated_sources} ${generated_sources})
+
 endforeach(bridge_header)
+
+# when add_library() and scapix_bridge_headers() are in different directories:
+# add_custom_command: A target created in the same directory (CMakeLists.txt file) that specifies any output of the custom command as a source file is given a rule to generate the file using the command at build time.
+add_custom_target(${target}_scapix_generated DEPENDS ${all_generated_sources})
+add_dependencies(${target} ${target}_scapix_generated)
+
 endfunction(scapix_bridge)
 
 function(scapix_add_target target domain)
