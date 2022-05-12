@@ -25,10 +25,10 @@ class ModuleDescriptor_Builder : public object_base<SCAPIX_META_STRING("java/lan
 {
 public:
 
-	ref<java::lang::module::ModuleDescriptor_Builder> requires(ref<java::lang::module::ModuleDescriptor_Requires> req);
-	ref<java::lang::module::ModuleDescriptor_Builder> requires(ref<java::util::Set> ms, ref<java::lang::String> mn, ref<java::lang::module::ModuleDescriptor_Version> compiledVersion);
-	ref<java::lang::module::ModuleDescriptor_Builder> requires(ref<java::util::Set> ms, ref<java::lang::String> mn);
-	ref<java::lang::module::ModuleDescriptor_Builder> requires(ref<java::lang::String> mn);
+	ref<java::lang::module::ModuleDescriptor_Builder> requires_(ref<java::lang::module::ModuleDescriptor_Requires> req);
+	ref<java::lang::module::ModuleDescriptor_Builder> requires_(ref<java::util::Set> ms, ref<java::lang::String> mn, ref<java::lang::module::ModuleDescriptor_Version> compiledVersion);
+	ref<java::lang::module::ModuleDescriptor_Builder> requires_(ref<java::util::Set> ms, ref<java::lang::String> mn);
+	ref<java::lang::module::ModuleDescriptor_Builder> requires_(ref<java::lang::String> mn);
 	ref<java::lang::module::ModuleDescriptor_Builder> exports(ref<java::lang::module::ModuleDescriptor_Exports> e);
 	ref<java::lang::module::ModuleDescriptor_Builder> exports(ref<java::util::Set> ms, ref<java::lang::String> pn, ref<java::util::Set> targets);
 	ref<java::lang::module::ModuleDescriptor_Builder> exports(ref<java::util::Set> ms, ref<java::lang::String> pn);
@@ -70,10 +70,10 @@ protected:
 namespace scapix::java_api {
 namespace java::lang::module {
 
-inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::requires(ref<java::lang::module::ModuleDescriptor_Requires> req) { return call_method<SCAPIX_META_STRING("requires"), ref<java::lang::module::ModuleDescriptor_Builder>>(req); }
-inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::requires(ref<java::util::Set> ms, ref<java::lang::String> mn, ref<java::lang::module::ModuleDescriptor_Version> compiledVersion) { return call_method<SCAPIX_META_STRING("requires"), ref<java::lang::module::ModuleDescriptor_Builder>>(ms, mn, compiledVersion); }
-inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::requires(ref<java::util::Set> ms, ref<java::lang::String> mn) { return call_method<SCAPIX_META_STRING("requires"), ref<java::lang::module::ModuleDescriptor_Builder>>(ms, mn); }
-inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::requires(ref<java::lang::String> mn) { return call_method<SCAPIX_META_STRING("requires"), ref<java::lang::module::ModuleDescriptor_Builder>>(mn); }
+inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::requires_(ref<java::lang::module::ModuleDescriptor_Requires> req) { return call_method<SCAPIX_META_STRING("requires"), ref<java::lang::module::ModuleDescriptor_Builder>>(req); }
+inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::requires_(ref<java::util::Set> ms, ref<java::lang::String> mn, ref<java::lang::module::ModuleDescriptor_Version> compiledVersion) { return call_method<SCAPIX_META_STRING("requires"), ref<java::lang::module::ModuleDescriptor_Builder>>(ms, mn, compiledVersion); }
+inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::requires_(ref<java::util::Set> ms, ref<java::lang::String> mn) { return call_method<SCAPIX_META_STRING("requires"), ref<java::lang::module::ModuleDescriptor_Builder>>(ms, mn); }
+inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::requires_(ref<java::lang::String> mn) { return call_method<SCAPIX_META_STRING("requires"), ref<java::lang::module::ModuleDescriptor_Builder>>(mn); }
 inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::exports(ref<java::lang::module::ModuleDescriptor_Exports> e) { return call_method<SCAPIX_META_STRING("exports"), ref<java::lang::module::ModuleDescriptor_Builder>>(e); }
 inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::exports(ref<java::util::Set> ms, ref<java::lang::String> pn, ref<java::util::Set> targets) { return call_method<SCAPIX_META_STRING("exports"), ref<java::lang::module::ModuleDescriptor_Builder>>(ms, pn, targets); }
 inline ref<java::lang::module::ModuleDescriptor_Builder> ModuleDescriptor_Builder::exports(ref<java::util::Set> ms, ref<java::lang::String> pn) { return call_method<SCAPIX_META_STRING("exports"), ref<java::lang::module::ModuleDescriptor_Builder>>(ms, pn); }

@@ -43,7 +43,7 @@ public:
 	ref<java::util::Set> modifiers();
 	jboolean isOpen();
 	jboolean isAutomatic();
-	ref<java::util::Set> requires();
+	ref<java::util::Set> requires_();
 	ref<java::util::Set> exports();
 	ref<java::util::Set> opens();
 	ref<java::util::Set> uses();
@@ -90,7 +90,7 @@ inline ref<java::lang::String> ModuleDescriptor::name() { return call_method<SCA
 inline ref<java::util::Set> ModuleDescriptor::modifiers() { return call_method<SCAPIX_META_STRING("modifiers"), ref<java::util::Set>>(); }
 inline jboolean ModuleDescriptor::isOpen() { return call_method<SCAPIX_META_STRING("isOpen"), jboolean>(); }
 inline jboolean ModuleDescriptor::isAutomatic() { return call_method<SCAPIX_META_STRING("isAutomatic"), jboolean>(); }
-inline ref<java::util::Set> ModuleDescriptor::requires() { return call_method<SCAPIX_META_STRING("requires"), ref<java::util::Set>>(); }
+inline ref<java::util::Set> ModuleDescriptor::requires_() { return call_method<SCAPIX_META_STRING("requires"), ref<java::util::Set>>(); }
 inline ref<java::util::Set> ModuleDescriptor::exports() { return call_method<SCAPIX_META_STRING("exports"), ref<java::util::Set>>(); }
 inline ref<java::util::Set> ModuleDescriptor::opens() { return call_method<SCAPIX_META_STRING("opens"), ref<java::util::Set>>(); }
 inline ref<java::util::Set> ModuleDescriptor::uses() { return call_method<SCAPIX_META_STRING("uses"), ref<java::util::Set>>(); }
