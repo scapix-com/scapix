@@ -9,7 +9,7 @@
 
 #include <type_traits>
 #include <scapix/meta/string.h>
-#include <scapix/link/java/detail/config.h>
+#include <scapix/link/java/env.h>
 
 namespace scapix::link::java {
 

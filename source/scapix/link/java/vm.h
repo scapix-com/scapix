@@ -7,32 +7,32 @@
 #ifndef SCAPIX_LINK_JAVA_VM_H
 #define SCAPIX_LINK_JAVA_VM_H
 
-#include <scapix/link/java/detail/config.h>
+#include <scapix/link/java/env.h>
 
 namespace scapix::link::java {
 
 inline bool init_created_vm() noexcept
 {
 	jint count;
-	JNI_GetCreatedJavaVMs(&detail::jvm(), 1, &count);
+	JNI_GetCreatedJavaVMs(&detail::jvm_ptr, 1, &count);
 	return count != 0;
 }
 
 inline void deinit_created_vm() noexcept
 {
-	detail::jvm() = nullptr;
+	detail::jvm_ptr = nullptr;
 }
 
 inline jint create_vm(void* args) noexcept
 {
-	return JNI_CreateJavaVM(&detail::jvm(), reinterpret_cast<detail::jnienv_type>(&detail::env()), args);
+	return JNI_CreateJavaVM(&detail::jvm_ptr, detail::env_.addr(), args);
 }
 
 inline jint destroy_vm() noexcept
 {
 	auto r = detail::jvm()->DestroyJavaVM();
 	if (r == JNI_OK)
-		detail::jvm() = nullptr;
+		detail::jvm_ptr = nullptr;
 	return r;
 }
 

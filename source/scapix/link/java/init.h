@@ -49,7 +49,7 @@ private:
 
 inline jint on_load(JavaVM *vm, void *reserved) noexcept
 {
-	detail::jvm() = vm;
+	detail::jvm_ptr = vm;
 	get_env();
 
 #ifdef SCAPIX_CACHE_CLASS_LOADER
@@ -61,7 +61,7 @@ inline jint on_load(JavaVM *vm, void *reserved) noexcept
 
 inline void on_unload(JavaVM *vm, void *reserved) noexcept
 {
-	detail::jvm() = nullptr;
+	detail::jvm_ptr = nullptr;
 }
 
 } // namespace scapix::link::java

@@ -7,7 +7,7 @@
 #ifndef SCAPIX_LINK_JAVA_DETAIL_API_REF_H
 #define SCAPIX_LINK_JAVA_DETAIL_API_REF_H
 
-#include <scapix/link/java/detail/config.h>
+#include <scapix/link/java/env.h>
 
 namespace scapix::link::java::detail::api {
 

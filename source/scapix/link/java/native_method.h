@@ -122,7 +122,7 @@ private:
 	{
 		static param_type<JniR> func(JNIEnv* env, jobject thiz, param_type<JniArgs>... args)
 		{
-			detail::env() = env;
+			detail::env_.ptr = env;
 
 			try
 			{
@@ -156,7 +156,7 @@ private:
 	{
 		static param_type<JniR> func(JNIEnv* env, jclass clazz, param_type<JniArgs>... args)
 		{
-			detail::env() = env;
+			detail::env_.ptr = env;
 
 			try
 			{
