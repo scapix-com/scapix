@@ -143,11 +143,7 @@ private:
 
 protected:
 
-	object(handle_type h) : handle_(h)
-	{
-		// to do: move to ipp
-//		assert(class_object()->is_assignable_from(get_object_class()));
-	}
+	object(handle_type h) : handle_(h) {}
 
 	handle_type handle() const { return handle_; }
 
