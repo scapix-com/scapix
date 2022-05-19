@@ -4,14 +4,14 @@
 	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_DETAIL_API_H
-#define SCAPIX_LINK_JAVA_DETAIL_API_H
-
 #include <scapix/link/java/detail/api/array.h>
 #include <scapix/link/java/detail/api/ref.h>
 #include <scapix/link/java/detail/api/string.h>
 #include <scapix/link/java/detail/api/type.h>
 #include <scapix/link/java/detail/exception.h>
+
+#ifndef SCAPIX_LINK_JAVA_DETAIL_API_H
+#define SCAPIX_LINK_JAVA_DETAIL_API_H
 
 namespace scapix::link::java::detail::api {
 

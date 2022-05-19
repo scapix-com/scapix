@@ -4,11 +4,10 @@
 	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
+#include <scapix/link/java/object.h>
+
 #ifndef SCAPIX_LINK_JAVA_THROWABLE_H
 #define SCAPIX_LINK_JAVA_THROWABLE_H
-
-#include <scapix/link/java/ref.h>
-#include <scapix/link/java/object.h>
 
 namespace scapix::link::java {
 

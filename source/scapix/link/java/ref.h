@@ -4,6 +4,11 @@
 	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
+#include <scapix/link/java/type_traits.h>
+#include <scapix/link/java/function.h>
+#include <scapix/link/java/detail/api/ref.h>
+#include <scapix/link/java/detail/util.h>
+
 #ifndef SCAPIX_LINK_JAVA_REF_H
 #define SCAPIX_LINK_JAVA_REF_H
 
@@ -11,10 +16,6 @@
 #include <experimental/type_traits>
 #include <scapix/core/type_traits.h>
 #include <scapix/meta/string.h>
-#include <scapix/link/java/type_traits.h>
-#include <scapix/link/java/function.h>
-#include <scapix/link/java/detail/api/ref.h>
-#include <scapix/link/java/detail/util.h>
 
 namespace scapix::link::java {
 

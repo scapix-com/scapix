@@ -18,7 +18,7 @@ if(${SCAPIX_BRIDGE} STREQUAL java)
     source_group(TREE ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API}/scapix/java_api PREFIX "java_api" FILES ${java_api_sources})
 endif()
 
-add_library(scapix ${sources} ${java_api_sources})
+add_library(scapix INTERFACE ${sources} ${java_api_sources})
 
 if(${SCAPIX_BRIDGE} STREQUAL java)
     file(GLOB_RECURSE interface_sources CONFIGURE_DEPENDS ${SCAPIX_ROOT}/source/*/*.java)
@@ -49,23 +49,23 @@ foreach(bridge ${bridges})
 endforeach()
 
 if(${SCAPIX_BRIDGE} STREQUAL objc)
-    target_compile_options(scapix PUBLIC "-fobjc-arc")
+    target_compile_options(scapix INTERFACE "-fobjc-arc")
     set_source_files_properties(${SCAPIX_ROOT}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_OPTIONS "-fno-objc-arc")
 endif()
 
 if(MSVC)
-    target_compile_options(scapix PUBLIC /permissive-)
+    target_compile_options(scapix INTERFACE /permissive-)
 endif()
 
-target_compile_features(scapix PUBLIC cxx_std_17)
+target_compile_features(scapix INTERFACE cxx_std_17)
 
-target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/source)
-target_include_directories(scapix PUBLIC ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
-target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
+target_include_directories(scapix INTERFACE ${SCAPIX_ROOT}/source)
+target_include_directories(scapix INTERFACE ${SCAPIX_ROOT}/java_api/${SCAPIX_JAVA_API})
+target_compile_definitions(scapix INTERFACE SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
 
 if(${SCAPIX_BRIDGE} STREQUAL java)
     find_package(Boost REQUIRED)
-    target_link_libraries(scapix PUBLIC Boost::headers)
+    target_link_libraries(scapix INTERFACE Boost::headers)
 endif()
 
 if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
@@ -87,8 +87,8 @@ if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
         unset(CMAKE_FIND_FRAMEWORK)
     endif()
 
-    target_include_directories(scapix PUBLIC ${JNI_INCLUDE_DIRS})
-    target_link_libraries(scapix PUBLIC ${JNI_LIBRARIES})
+    target_include_directories(scapix INTERFACE ${JNI_INCLUDE_DIRS})
+    target_link_libraries(scapix INTERFACE ${JNI_LIBRARIES})
 endif()
 
 function(camel_case source target)

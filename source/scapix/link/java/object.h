@@ -4,16 +4,17 @@
 	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
+#include <scapix/link/java/type_traits.h>
+#include <scapix/link/java/ref.h>
+#include <scapix/link/java/detail/exception.h>
+#include <scapix/link/java/detail/api.h>
+
 #ifndef SCAPIX_LINK_JAVA_OBJECT_H
 #define SCAPIX_LINK_JAVA_OBJECT_H
 
 #include <cassert>
 #include <type_traits>
 #include <scapix/meta/string.h>
-#include <scapix/link/java/type_traits.h>
-#include <scapix/link/java/ref.h>
-#include <scapix/link/java/detail/exception.h>
-#include <scapix/link/java/detail/api.h>
 
 namespace scapix::link::java {
 

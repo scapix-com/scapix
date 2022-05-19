@@ -4,12 +4,13 @@
 	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
 */
 
+#include <scapix/link/java/type_traits.h>
+#include <scapix/link/java/ref.h>
+
 #ifndef SCAPIX_LINK_JAVA_DETAIL_EXCEPTION_H
 #define SCAPIX_LINK_JAVA_DETAIL_EXCEPTION_H
 
 #include <boost/config.hpp>
-#include <scapix/link/java/type_traits.h>
-#include <scapix/link/java/ref.h>
 
 namespace scapix::link::java::detail {
 
@@ -81,6 +82,41 @@ struct check_exception_on_destroy
 	check_exception_on_destroy& operator = (const check_exception_on_destroy&) = delete;
 	check_exception_on_destroy& operator = (check_exception_on_destroy&&) = delete;
 };
+
+} // namespace scapix::link::java::detail
+
+#include <scapix/link/java/throwable.h>
+#include <scapix/link/java/detail/native_exception.h>
+#include <scapix/link/java/vm_exception.h>
+
+namespace scapix::link::java::detail {
+
+inline void throw_exception(jthrowable e)
+{
+	local_ref<throwable<>> exception(e);
+
+//	env()->ExceptionDescribe();
+	env()->ExceptionClear();
+
+//	std::string msg = exception->call_method<SCAPIX_META_STRING("getMessage"), ref<string>()>()->chars<char>().data();
+
+	// if com.scapix.NativeException is not found, native_exception::class_object() causes infinite recursion:
+	// libc++abi.dylib: __cxa_guard_acquire detected deadlock
+
+	if (auto native = dynamic_pointer_cast<native_exception>(std::move(exception)))
+	{
+		native->rethrow();
+	}
+	else
+	{
+		throw vm_exception(std::move(exception));
+	}
+}
+
+inline void throw_exception()
+{
+	throw_exception(env()->ExceptionOccurred());
+}
 
 } // namespace scapix::link::java::detail
 
