@@ -8,7 +8,7 @@ set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python, js, cs")
 set(SCAPIX_PLATFORM "generic" CACHE STRING "subfolder of 'platform' folder: generic, ios, android, macos, windows, linux, etc.")
 set(SCAPIX_JAVA_API "jdk-11.0.2" CACHE STRING "subfolder of 'scapix/java_api' folder: jdk-11.0.2, android-28, etc.")
 
-set(SCAPIX_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "")
+set(SCAPIX_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS ${SCAPIX_ROOT}/source/*)
 source_group(TREE ${SCAPIX_ROOT}/source PREFIX "source" FILES ${sources})
