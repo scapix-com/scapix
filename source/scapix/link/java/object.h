@@ -168,7 +168,7 @@ inline jboolean is_same_object(const object<C1, H1>& a, const object<C2, H2>& b)
 #include <scapix/link/java/array.h>
 
 #ifdef SCAPIX_CACHE_CLASS_LOADER
-#include <scapix/link/java/init.h>
+#include <scapix/link/java/class_loader.h>
 #include <scapix/mpv/replace.h>
 #endif
 

@@ -8,7 +8,7 @@
 #define SCAPIX_LINK_JAVA_DETAIL_NATIVE_EXCEPTION_H
 
 #include <memory>
-#include <scapix/link/java/object.h>
+#include <scapix/link/java/throwable.h>
 
 namespace scapix::link::java::detail {
 
@@ -23,8 +23,13 @@ public:
 
 	void rethrow()
 	{
-		std::unique_ptr<std::exception_ptr> ptr(reinterpret_cast<std::exception_ptr*>(get_field<SCAPIX_META_STRING("ptr"), jlong>()));
+		std::unique_ptr<std::exception_ptr> ptr(reinterpret_cast<std::exception_ptr*>(call_method<SCAPIX_META_STRING("release"), jlong()>()));
 		std::rethrow_exception(*ptr);
+	}
+
+	static void finalize(std::int64_t ptr)
+	{
+		delete reinterpret_cast<std::exception_ptr*>(ptr);
 	}
 
 protected:
