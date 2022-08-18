@@ -473,10 +473,6 @@ foreach(bridge_header ${bridge_headers})
 
     set(scapix_clang_config)
 
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        set(scapix_clang_config ${scapix_clang_config} -nobuiltininc)
-    endif()
-
     if(ANDROID)
         set(scapix_clang_config ${scapix_clang_config} -DANDROID -target ${ANDROID_LLVM_TRIPLE})
     elseif(APPLE)
