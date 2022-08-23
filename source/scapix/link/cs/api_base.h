@@ -12,10 +12,7 @@
 
 #define SCAPIX_CALL //__stdcall
 
-namespace scapix {
-namespace link {
-namespace cs {
-namespace api {
+namespace scapix::link::cs::api {
 
 using handle_type = const void*;
 using size_type = std::int32_t;
@@ -58,9 +55,6 @@ struct cs_api
 
 inline cs_api funcs;
 
-} // namespace api
-} // namespace cs
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::cs::api
 
 #endif // SCAPIX_LINK_CS_API_BASE_H

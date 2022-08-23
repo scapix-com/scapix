@@ -33,10 +33,7 @@
 
 namespace scapix::bridge::cs { class object_base; }
 
-namespace scapix {
-namespace link {
-namespace cs {
-namespace api {
+namespace scapix::link::cs::api {
 
 template <typename Cpp, typename = void>
 struct cs_type
@@ -340,9 +337,6 @@ struct hash_set
 template <typename K>
 hash_set<K> hash_set<K>::global;
 
-} // namespace api
-} // namespace cs
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::cs::api
 
 #endif // SCAPIX_LINK_CS_API_H

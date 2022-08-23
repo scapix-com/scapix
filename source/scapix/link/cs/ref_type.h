@@ -7,9 +7,7 @@
 #ifndef SCAPIX_LINK_CS_REF_TYPE_H
 #define SCAPIX_LINK_CS_REF_TYPE_H
 
-namespace scapix {
-namespace link {
-namespace cs {
+namespace scapix::link::cs {
 
 enum class ref_type
 {
@@ -19,8 +17,6 @@ enum class ref_type
 	pinned,
 };
 
-} // namespace cs
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::cs
 
 #endif // SCAPIX_LINK_CS_REF_TYPE_H

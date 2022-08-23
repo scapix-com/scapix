@@ -7,9 +7,7 @@
 #ifndef SCAPIX_LINK_CS_OBJECT_H
 #define SCAPIX_LINK_CS_OBJECT_H
 
-namespace scapix {
-namespace link {
-namespace cs {
+namespace scapix::link::cs {
 
 class object
 {
@@ -17,8 +15,6 @@ public:
 
 };
 
-} // namespace cs
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::cs
 
 #endif // SCAPIX_LINK_CS_OBJECT_H

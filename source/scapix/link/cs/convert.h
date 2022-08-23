@@ -22,9 +22,7 @@
 #include <scapix/link/cs/api.h>
 #include <scapix/link/cs/ref.h>
 
-namespace scapix {
-namespace link {
-namespace cs {
+namespace scapix::link::cs {
 
 using api::param;
 using api::param_t;
@@ -343,8 +341,6 @@ struct convert<Cs, Struct, std::enable_if_t<is_struct_v<Struct>>>
 	}
 };
 
-} // namespace cs
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::cs
 
 #endif // SCAPIX_LINK_CS_CONVERT_H

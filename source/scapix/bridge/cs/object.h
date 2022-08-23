@@ -18,8 +18,7 @@
 #endif
 
 namespace scapix {
-namespace bridge {
-namespace cs {
+namespace bridge::cs {
 
 using link::cs::ref;
 using link::cs::ref_type;
@@ -128,11 +127,9 @@ object_base* init(link::cs::api::handle_type weak_wrapper, Args&&... args)
 	return ptr;
 }
 
-} // namespace cs
-} // namespace bridge
+} // namespace bridge::cs
 
-namespace link {
-namespace cs {
+namespace link::cs {
 
 template <typename T>
 struct convert_shared<ref<>, T, std::enable_if_t<bridge::is_object<T>>>
@@ -141,7 +138,7 @@ struct convert_shared<ref<>, T, std::enable_if_t<bridge::is_object<T>>>
 	{
 		if (!v)
 			return nullptr;
-		
+
 		return std::static_pointer_cast<T>(link::cs::api::get_cpp(v)->scapix_shared());
 	}
 
@@ -155,8 +152,7 @@ struct convert_shared<ref<>, T, std::enable_if_t<bridge::is_object<T>>>
 	}
 };
 
-} // namespace cs
-} // namespace link
+} // namespace link::cs
 } // namespace scapix
 
 #endif // SCAPIX_BRIDGE_CS_OBJECT_H

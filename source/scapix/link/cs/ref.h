@@ -10,9 +10,7 @@
 #include <scapix/link/cs/ref_type.h>
 #include <scapix/link/cs/api_base.h>
 
-namespace scapix {
-namespace link {
-namespace cs {
+namespace scapix::link::cs {
 
 class object;
 
@@ -52,8 +50,6 @@ private:
 
 };
 
-} // namespace cs
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::cs
 
 #endif // SCAPIX_LINK_CS_REF_H
