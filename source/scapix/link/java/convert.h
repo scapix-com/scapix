@@ -212,6 +212,33 @@ struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<is_primitive_v
 	}
 };
 
+template <typename A>
+struct convert<ref<array<jboolean>>, std::vector<bool, A>>
+{
+	static std::vector<bool, A> cpp(ref<array<jboolean>> a)
+	{
+		std::vector<bool, A> v(a->size());
+		auto e = a->elements<lock::critical>();
+
+		for (jsize i = 0; i < static_cast<jsize>(v.size()); ++i)
+			v[i] = e[i];
+
+		e.abort();
+		return v;
+	}
+
+	static ref<array<jboolean>> jni(const std::vector<bool, A>& v)
+	{
+		auto a = array<jboolean>::new_(static_cast<jsize>(v.size()));
+		auto e = a->elements<lock::critical>();
+
+		for (jsize i = 0; i < static_cast<jsize>(v.size()); ++i)
+			e[i] = v[i];
+
+		return a;
+	}
+};
+
 template <typename J, typename T, typename A>
 struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<!is_primitive_v<J>>>
 {
