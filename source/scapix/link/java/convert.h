@@ -199,15 +199,17 @@ struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<is_primitive_v
 
 	static std::vector<T, A> cpp(ref<array<J>> a)
 	{
-		std::vector<T, A> v(a->size());
-		a->get_region(0, static_cast<jsize>(v.size()), reinterpret_cast<J*>(v.data()));
+		const auto size = a->size();
+		std::vector<T, A> v(size);
+		a->get_region(0, size, reinterpret_cast<J*>(v.data()));
 		return v;
 	}
 
 	static ref<array<J>> jni(const std::vector<T, A>& v)
 	{
-		auto a = array<J>::new_(static_cast<jsize>(v.size()));
-		a->set_region(0, static_cast<jsize>(v.size()), reinterpret_cast<const J*>(v.data()));
+		const auto size = static_cast<jsize>(v.size());
+		auto a = array<J>::new_(size);
+		a->set_region(0, size, reinterpret_cast<const J*>(v.data()));
 		return a;
 	}
 };
@@ -217,22 +219,23 @@ struct convert<ref<array<jboolean>>, std::vector<bool, A>>
 {
 	static std::vector<bool, A> cpp(ref<array<jboolean>> a)
 	{
-		std::vector<bool, A> v(a->size());
-		auto e = a->elements<lock::critical>();
+		const auto size = a->size();
+		std::vector<bool, A> v(size);
+		auto e = a->const_elements<lock::critical>(size);
 
-		for (jsize i = 0; i < static_cast<jsize>(v.size()); ++i)
+		for (jsize i = 0; i < size; ++i)
 			v[i] = e[i];
 
-		e.abort();
 		return v;
 	}
 
 	static ref<array<jboolean>> jni(const std::vector<bool, A>& v)
 	{
-		auto a = array<jboolean>::new_(static_cast<jsize>(v.size()));
-		auto e = a->elements<lock::critical>();
+		const auto size = static_cast<jsize>(v.size());
+		auto a = array<jboolean>::new_(size);
+		auto e = a->elements<lock::critical>(size);
 
-		for (jsize i = 0; i < static_cast<jsize>(v.size()); ++i)
+		for (jsize i = 0; i < size; ++i)
 			e[i] = v[i];
 
 		return a;
@@ -244,9 +247,10 @@ struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<!is_primitive_
 {
 	static std::vector<T, A> cpp(ref<array<J>> a)
 	{
-		std::vector<T, A> v(a->size());
+		const auto size = a->size();
+		std::vector<T, A> v(size);
 
-		for (jsize i = 0; i < static_cast<jsize>(v.size()); ++i)
+		for (jsize i = 0; i < size; ++i)
 			v[i] = convert_cpp<T>(a[i].get());
 
 		return v;
@@ -254,9 +258,10 @@ struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<!is_primitive_
 
 	static ref<array<J>> jni(const std::vector<T, A>& v)
 	{
-		auto a = array<J>::new_(static_cast<jsize>(v.size()));
+		const auto size = static_cast<jsize>(v.size());
+		auto a = array<J>::new_(size);
 
-		for (jsize i = 0; i < static_cast<jsize>(v.size()); ++i)
+		for (jsize i = 0; i < size; ++i)
 			a[i] = convert_jni<ref<J>>(v[i]);
 
 		return a;

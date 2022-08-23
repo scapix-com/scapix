@@ -15,6 +15,12 @@ enum class lock
 	critical,
 };
 
+enum class release_mode
+{
+	copy = 0,
+	abort = JNI_ABORT,
+};
+
 } // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_LOCK_H

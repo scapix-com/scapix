@@ -301,7 +301,7 @@ private:
 
 // primitive array
 
-template <typename T, lock Lock>
+template <typename T, lock Lock, release_mode Mode>
 class array_elements
 {
 public:
@@ -320,7 +320,8 @@ public:
 
 	~array_elements()
 	{
-		release();
+		if (data_)
+			detail::api::release_array_elements<T, Lock>(ref<T[]>(array_), data_, static_cast<jint>(Mode));
 	}
 
 	pointer data() { return data_; }
@@ -430,27 +431,27 @@ public:
 
 	static ref<array> new_(jsize len) { return detail::api::new_array<T>(len); }
 
-	template <lock Lock = lock::noncritical>
-	array_elements<T, Lock> elements() { return array_elements<T, Lock>(this->handle(), this->size()); }
+	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
+	array_elements<T, Lock, Mode> elements() { return array_elements<T, Lock, Mode>(this->handle(), this->size()); }
 
-	template <lock Lock = lock::noncritical>
-	array_elements<T, Lock> elements(jsize size) { return array_elements<T, Lock>(this->handle(), size); }
+	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
+	array_elements<T, Lock, Mode> elements(jsize size) { return array_elements<T, Lock, Mode>(this->handle(), size); }
 
 	// to do: const versions (const array_elements isn't movable, add const_array_elements?)
 	// const array<jint> vs array<const jint> vs const_array<jint>?
 	// to do: const_elements should always call abort().
 
-	template <lock Lock = lock::noncritical>
-	const array_elements<T, Lock> elements() const { return array_elements<T, Lock>(this->handle(), this->size()); }
+	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
+	const array_elements<T, Lock, Mode> elements() const { return array_elements<T, Lock, Mode>(this->handle(), this->size()); }
+
+	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
+	const array_elements<T, Lock, Mode> elements(jsize size) const { return array_elements<T, Lock, Mode>(this->handle(), size); }
 
 	template <lock Lock = lock::noncritical>
-	const array_elements<T, Lock> elements(jsize size) const { return array_elements<T, Lock>(this->handle(), size); }
+	const array_elements<T, Lock, release_mode::abort> const_elements() const { return array_elements<T, Lock, release_mode::abort>(this->handle(), this->size()); }
 
 	template <lock Lock = lock::noncritical>
-	const array_elements<T, Lock> const_elements() const { return array_elements<T, Lock>(this->handle(), this->size()); }
-
-	template <lock Lock = lock::noncritical>
-	const array_elements<T, Lock> const_elements(jsize size) const { return array_elements<T, Lock>(this->handle(), size); }
+	const array_elements<T, Lock, release_mode::abort> const_elements(jsize size) const { return array_elements<T, Lock, release_mode::abort>(this->handle(), size); }
 
 	void get_region(jsize start, jsize len, T* buf) { detail::api::get_array_region(ref<T[]>(this->handle()), start, len, buf); }
 	void set_region(jsize start, jsize len, const T* buf) { detail::api::set_array_region(ref<T[]>(this->handle()), start, len, buf); }
