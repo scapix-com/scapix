@@ -145,7 +145,10 @@ struct convert<emscripten::val, std::vector<T, A>, std::enable_if_t<is_native_v<
 	{
 		auto a = emscripten::val::array();
 
-		for (auto& i : v)
+		// explicit const T& for std::vector<bool>,
+		// alternatively could call convert_js<emscripten::val, const T&>()
+
+		for (const T& i : v)
 		{
 			a.call<void>("push", convert_js<emscripten::val>(i));
 		}
@@ -175,7 +178,7 @@ struct convert<emscripten::val, std::vector<T, A>, std::enable_if_t<!is_native_v
 	{
 		auto a = emscripten::val::array();
 
-		for (auto& i : v)
+		for (const auto& i : v)
 		{
 			a.call<void>("push", convert_js<emscripten::val>(i));
 		}
@@ -218,7 +221,7 @@ struct convert<emscripten::val, std::map<K, V, C, A>>
 	{
 		auto jm = emscripten::val::global("Map").new_();
 
-		for (auto& i : m)
+		for (const auto& i : m)
 			jm.call<void>("set", convert_js<emscripten::val>(i.first), convert_js<emscripten::val>(i.second));
 
 		return jm;
@@ -249,7 +252,7 @@ struct convert<emscripten::val, std::set<K, C, A>>
 	{
 		auto js = emscripten::val::global("Set").new_();
 
-		for (auto& i : s)
+		for (const auto& i : s)
 			js.call<void>("add", convert_js<emscripten::val>(i));
 
 		return js;
@@ -290,7 +293,7 @@ struct convert<emscripten::val, std::unordered_map<K, T, H, KE, A>>
 	{
 		auto jm = emscripten::val::global("Map").new_();
 
-		for (auto& i : m)
+		for (const auto& i : m)
 			jm.call<void>("set", convert_js<emscripten::val>(i.first), convert_js<emscripten::val>(i.second));
 
 		return jm;
@@ -321,7 +324,7 @@ struct convert<emscripten::val, std::unordered_set<K, H, KE, A>>
 	{
 		auto js = emscripten::val::global("Set").new_();
 
-		for (auto& i : s)
+		for (const auto& i : s)
 			js.call<void>("add", convert_js<emscripten::val>(i));
 
 		return js;
