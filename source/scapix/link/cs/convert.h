@@ -114,17 +114,19 @@ struct convert<ref<>, std::string>
 template <typename T, typename A>
 struct convert<ref<>, std::vector<T, A>, std::enable_if_t<is_simple_v<T>>>
 {
+	using cs_type = std::conditional_t<std::is_same_v<T, bool>, char, T>;
+
 	static std::vector<T, A> cpp(ref<>&& value)
 	{
-		auto data = static_cast<const T*>(api::funcs.addr_of_pinned_object(value.get()));
+		auto data = static_cast<const cs_type*>(api::funcs.addr_of_pinned_object(value.get()));
 		return std::vector<T, A>(data, data + api::funcs.get_array_size(value.get()));
 	}
 
 	static ref<> cs(const std::vector<T, A>& value)
 	{
 		auto a = api::create_struct_array<param_t<T>>(static_cast<api::size_type>(value.size()));
-		auto data = static_cast<T*>(api::funcs.addr_of_pinned_object(a.get()));
-		std::copy(value.data(), value.data() + value.size(), data);
+		auto data = static_cast<cs_type*>(api::funcs.addr_of_pinned_object(a.get()));
+		std::copy(value.begin(), value.end(), data);
 		return a;
 	}
 };
