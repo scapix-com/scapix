@@ -219,14 +219,8 @@ struct convert<ref<array<jboolean>>, std::vector<bool, A>>
 {
 	static std::vector<bool, A> cpp(ref<array<jboolean>> a)
 	{
-		const auto size = a->size();
-		std::vector<bool, A> v(size);
-		auto e = a->const_elements<lock::critical>(size);
-
-		for (jsize i = 0; i < size; ++i)
-			v[i] = e[i];
-
-		return v;
+		auto e = a->const_elements<lock::critical>();
+		return std::vector<bool, A>(e.begin(), e.end());
 	}
 
 	static ref<array<jboolean>> jni(const std::vector<bool, A>& v)
@@ -234,10 +228,7 @@ struct convert<ref<array<jboolean>>, std::vector<bool, A>>
 		const auto size = static_cast<jsize>(v.size());
 		auto a = array<jboolean>::new_(size);
 		auto e = a->elements<lock::critical>(size);
-
-		for (jsize i = 0; i < size; ++i)
-			e[i] = v[i];
-
+		std::copy(v.begin(), v.end(), e.begin());
 		return a;
 	}
 };
