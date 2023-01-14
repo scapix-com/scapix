@@ -13,21 +13,19 @@ namespace scapix::mpv {
 namespace detail {
 
 template <auto Old, auto New>
-struct replace_impl
+constexpr auto replace(decltype(Old) v)
 {
-	constexpr static auto func(decltype(Old) C)
-	{
-		if (C == Old)
-			return New;
-
-		return C;
-	}
-};
+	return v == Old ? New : v;
+}
 
 } // namespace detail
 
 template <typename List, auto Old, auto New>
-using replace = transform<List, detail::replace_impl<Old, New>::func>;
+using replace = transform<List, detail::replace<Old, New>>;
+
+// C++20
+//template <typename List, auto Old, auto New>
+//using replace = transform<List, [](decltype(Old) v) { return v == Old ? New : v; }> ;
 
 } // namespace scapix::mpv
 
