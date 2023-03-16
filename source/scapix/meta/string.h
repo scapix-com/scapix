@@ -111,7 +111,7 @@ constexpr auto& c_str_v = boost::mpl::c_str<T>::value;
 
 } // namespace scapix::meta
 
-#endif // !__GNUG__
+#endif // BOOST_METAPARSE
 
 namespace scapix::meta {
 
