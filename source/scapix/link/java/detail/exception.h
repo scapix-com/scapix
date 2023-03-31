@@ -13,18 +13,21 @@
 
 namespace scapix::link::java::detail {
 
-void throw_exception(jthrowable e);
-void throw_exception();
-
-// to do:
-// auto check_exception(T v) {check(); return v; }
-// auto check_exception_value(T v) { check(v); return v; }
+[[noreturn]] void throw_exception(jthrowable e = env()->ExceptionOccurred());
+[[noreturn]] void throw_exception_nested(jthrowable e = env()->ExceptionOccurred());
 
 inline void check_exception()
 {
 	jthrowable e = env()->ExceptionOccurred();
 	if (BOOST_UNLIKELY(e != 0))
 		throw_exception(e);
+}
+
+inline void check_exception_nested()
+{
+	jthrowable e = env()->ExceptionOccurred();
+	if (BOOST_UNLIKELY(e != 0))
+		throw_exception_nested(e);
 }
 
 inline jfieldID check_exception(jfieldID id)
@@ -51,7 +54,7 @@ inline jint check_exception(jint i)
 	return i;
 }
 
-// to do: remove after api refactoring finished
+// to do: remove when all api calls return ref<>
 
 template <typename T, typename = std::enable_if_t<is_object_handle_v<T>>>
 inline T check_exception(T obj)
@@ -71,6 +74,15 @@ inline ref<T, Scope> check_exception(ref<T, Scope> obj)
 	return obj;
 }
 
+template <typename T, scope Scope>
+inline ref<T, Scope> check_exception_nested(ref<T, Scope> obj)
+{
+	if (BOOST_UNLIKELY(!obj.handle()))
+		throw_exception_nested();
+
+	return obj;
+}
+
 struct check_exception_on_destroy
 {
 	check_exception_on_destroy() = default;
@@ -80,6 +92,17 @@ struct check_exception_on_destroy
 	check_exception_on_destroy(check_exception_on_destroy&&) = delete;
 	check_exception_on_destroy& operator = (const check_exception_on_destroy&) = delete;
 	check_exception_on_destroy& operator = (check_exception_on_destroy&&) = delete;
+};
+
+struct check_exception_nested_on_destroy
+{
+	check_exception_nested_on_destroy() = default;
+	~check_exception_nested_on_destroy() noexcept(false) { check_exception_nested(); }
+
+	check_exception_nested_on_destroy(const check_exception_nested_on_destroy&) = delete;
+	check_exception_nested_on_destroy(check_exception_nested_on_destroy&&) = delete;
+	check_exception_nested_on_destroy& operator = (const check_exception_nested_on_destroy&) = delete;
+	check_exception_nested_on_destroy& operator = (check_exception_nested_on_destroy&&) = delete;
 };
 
 } // namespace scapix::link::java::detail

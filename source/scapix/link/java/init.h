@@ -17,7 +17,7 @@
 
 namespace scapix::link::java {
 
-inline jint on_load(JavaVM *vm, void *reserved) noexcept
+inline jint on_load(JavaVM *vm, void *reserved)
 {
 	detail::jvm_ptr = vm;
 	get_env();

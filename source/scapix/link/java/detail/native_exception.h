@@ -21,7 +21,7 @@ public:
 		return object_type::new_object<void(jlong)>(reinterpret_cast<jlong>(new std::exception_ptr(std::current_exception())));
 	}
 
-	void rethrow()
+	[[noreturn]] void rethrow()
 	{
 		std::unique_ptr<std::exception_ptr> ptr(reinterpret_cast<std::exception_ptr*>(call_method<SCAPIX_META_STRING("release"), jlong()>()));
 		std::rethrow_exception(*ptr);

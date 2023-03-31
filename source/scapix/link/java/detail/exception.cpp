@@ -12,31 +12,37 @@
 
 namespace scapix::link::java::detail {
 
-void throw_exception(jthrowable e)
+[[noreturn]] void throw_exception(jthrowable e)
 {
-	local_ref<throwable<>> exception(e);
+//	env()->ExceptionDescribe();
+	env()->ExceptionClear();
+	throw vm_exception(local_ref<throwable<>>(e));
+}
 
+/*
+
+Only check for possible (nested) C++ exception (native_exception)
+after calling these four JNI function families,
+which can throw any exception thrown by executed Java code:
+
+1. call_method
+2. call_nonvirtual_method
+3. call_static_method
+4. new_object
+
+*/
+
+[[noreturn]] void throw_exception_nested(jthrowable e)
+{
 //	env()->ExceptionDescribe();
 	env()->ExceptionClear();
 
-//	std::string msg = exception->call_method<SCAPIX_META_STRING("getMessage"), ref<string>()>()->chars<char>().data();
-
-	// if com.scapix.NativeException is not found, native_exception::class_object() causes infinite recursion:
-	// libc++abi.dylib: __cxa_guard_acquire detected deadlock
+	local_ref<throwable<>> exception(e);
 
 	if (auto native = dynamic_pointer_cast<native_exception>(std::move(exception)))
-	{
 		native->rethrow();
-	}
-	else
-	{
-		throw vm_exception(std::move(exception));
-	}
-}
 
-void throw_exception()
-{
-	throw_exception(env()->ExceptionOccurred());
+	throw vm_exception(std::move(exception));
 }
 
 } // namespace scapix::link::java::detail

@@ -26,26 +26,26 @@ struct call<R(Args...)>
 {
 	static R method(jobject obj, jmethodID id, Args... args)
 	{
-		check_exception_on_destroy check;
+		check_exception_nested_on_destroy check;
 		return type<R>::call_method(obj, id, arg(args)...);
 	}
 
 	static R nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args)
 	{
-		check_exception_on_destroy check;
+		check_exception_nested_on_destroy check;
 		return type<R>::call_nonvirtual_method(obj, cls, id, arg(args)...);
 	}
 
 	static R static_method(jclass cls, jmethodID id, Args... args)
 	{
-		check_exception_on_destroy check;
+		check_exception_nested_on_destroy check;
 		return type<R>::call_static_method(cls, id, arg(args)...);
 	}
 
 	template <typename T>
 	static java::ref<T> new_object(jclass cls, jmethodID id, Args... args)
 	{
-		return check_exception(type<java::ref<T>>::new_object(cls, id, arg(args)...));
+		return check_exception_nested(type<java::ref<T>>::new_object(cls, id, arg(args)...));
 	}
 
 private:

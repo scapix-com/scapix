@@ -231,9 +231,15 @@ inline jint on_load(JavaVM *vm, void *reserved, void(*init)())
 	catch (const link::java::vm_exception& e)
 	{
 		e.get()->throw_();
+
+		// Android doesn't check exception after calling JNI_OnLoad()
+		#ifdef ANDROID
+		link::java::detail::env()->ExceptionDescribe();
+		link::java::detail::env()->ExceptionClear();
+		#endif
 	}
 
-	return 0;
+	return JNI_ERR;
 }
 
 } // namespace scapix::bridge::java
