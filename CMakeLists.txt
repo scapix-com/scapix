@@ -478,26 +478,21 @@ foreach(bridge_header ${bridge_headers})
     endif()
 
     if(ANDROID)
-        set(scapix_clang_config ${scapix_clang_config} -DANDROID -target ${ANDROID_LLVM_TRIPLE})
+        set(scapix_clang_config ${scapix_clang_config} -DANDROID -target ${ANDROID_LLVM_TRIPLE} --sysroot "${ANDROID_TOOLCHAIN_ROOT}/sysroot")
     elseif(APPLE)
         if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
             set(scapix_clang_config ${scapix_clang_config} -arch arm64)
         endif()
+        set(scapix_clang_config ${scapix_clang_config} --sysroot ${CMAKE_OSX_SYSROOT})
     elseif(EMSCRIPTEN)
         set(scapix_clang_config ${scapix_clang_config} -target wasm32-unknown-emscripten --sysroot $ENV{EMSDK}/upstream/emscripten/cache/sysroot -iwithsysroot /include/compat)
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_TARGET)
         set(scapix_clang_config ${scapix_clang_config} -target ${CMAKE_CXX_COMPILER_TARGET})
     endif()
 
-    set(scapix_clang_env)
-
-    if(APPLE AND NOT XCODE)
-        set(scapix_clang_env ${scapix_clang_env} SDKROOT=${CMAKE_OSX_SYSROOT})
-    endif()
-
     add_custom_command(
             OUTPUT ${generated_sources}
-            COMMAND ${CMAKE_COMMAND} -E env "${scapix_clang_env}" "${SCAPIX_EXE_DIR}/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix" -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=$<IF:$<IN_LIST:cxx_std_23,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++2b,$<IF:$<IN_LIST:cxx_std_20,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++20,c++17>> ${scapix_clang_config} "$<$<BOOL:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}>:-isystem$<JOIN:${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES},;-isystem>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>"
+            COMMAND "${SCAPIX_EXE_DIR}/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix" -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=$<IF:$<IN_LIST:cxx_std_23,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++2b,$<IF:$<IN_LIST:cxx_std_20,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++20,c++17>> ${scapix_clang_config} "$<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>"
             DEPENDS "${bridge_header_absolute}" # "${SCAPIX_EXE}"
             IMPLICIT_DEPENDS CXX "${bridge_header_absolute}"
             WORKING_DIRECTORY "${PROJECT_ROOT}"
