@@ -8,21 +8,16 @@
 #define SCAPIX_CORE_FIXED_STRING_H
 
 #include <cstddef>
+#include <utility>
 
 namespace scapix {
 
 template <typename Char, std::size_t N>
-class fixed_string
+struct fixed_string
 {
-public:
-
-	using char_type = Char;
-
-	constexpr fixed_string(const Char(&input)[N]) noexcept
-	{
-		for (std::size_t i = 0; i < N; ++i)
-			content[i] = input[i];
-	}
+	template <std::size_t... I>
+	constexpr fixed_string(const Char(&input)[N], std::index_sequence<I...>) noexcept: content{input[I]...} {}
+	constexpr fixed_string(const Char(&input)[N]) noexcept: fixed_string(input, std::make_index_sequence<N>()) {}
 
 	constexpr std::size_t size() const noexcept { return N - 1; }
 
@@ -34,13 +29,9 @@ public:
 };
 
 template <typename Char>
-class fixed_string<Char, 0>
+struct fixed_string<Char, 0>
 {
-public:
-
-	using char_type = Char;
-
-	constexpr fixed_string(const Char*) noexcept { }
+	constexpr fixed_string(const Char*) noexcept {}
 	constexpr std::size_t size() const noexcept { return 0; }
 	constexpr const Char* begin() const noexcept { return nullptr; }
 	constexpr const Char* end() const noexcept { return nullptr; }
