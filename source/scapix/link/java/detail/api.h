@@ -138,7 +138,7 @@ inline local_ref<T[]> new_array(jsize len)
 template <typename T, lock Lock>
 inline T* get_array_elements(java::ref<T[]> obj, jboolean* is_copy) noexcept
 {
-	return array<T, Lock>::get_array_elements(obj.handle(), is_copy);
+	return check_exception(array<T, Lock>::get_array_elements(obj.handle(), is_copy));
 }
 
 template <typename T, lock Lock>

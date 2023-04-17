@@ -46,12 +46,25 @@ inline jmethodID check_exception(jmethodID id)
 	return id;
 }
 
+// RegisterNatives()
+
 inline jint check_exception(jint i)
 {
 	if (BOOST_UNLIKELY(i))
 		throw_exception();
 
 	return i;
+}
+
+// Get<PrimitiveType>ArrayElements(), GetPrimitiveArrayCritical()
+
+template <typename T, typename = std::enable_if_t<is_primitive_v<T>>>
+inline T* check_exception(T* p)
+{
+	if (BOOST_UNLIKELY(!p))
+		throw_exception();
+
+	return p;
 }
 
 // to do: remove when all api calls return ref<>
