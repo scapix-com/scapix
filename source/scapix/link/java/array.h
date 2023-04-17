@@ -370,7 +370,7 @@ public:
 		return is_copy_;
 	}
 
-	void commit() const
+	void commit()
 	{
 		detail::api::release_array_elements<T, Lock>(ref<T[]>(array_), data_, JNI_COMMIT);
 	}
@@ -387,7 +387,7 @@ public:
 		}
 	}
 
-	void abort()
+	void abort() const
 	{
 		if (data_)
 		{
@@ -437,11 +437,11 @@ public:
 	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
 	array_elements<T, Lock, Mode> elements(jsize size) { return array_elements<T, Lock, Mode>(this->handle(), size); }
 
-	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
-	const array_elements<T, Lock, Mode> elements() const { return array_elements<T, Lock, Mode>(this->handle(), this->size()); }
+	template <lock Lock = lock::noncritical>
+	const array_elements<T, Lock, release_mode::abort> elements() const { return array_elements<T, Lock, release_mode::abort>(this->handle(), this->size()); }
 
-	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
-	const array_elements<T, Lock, Mode> elements(jsize size) const { return array_elements<T, Lock, Mode>(this->handle(), size); }
+	template <lock Lock = lock::noncritical>
+	const array_elements<T, Lock, release_mode::abort> elements(jsize size) const { return array_elements<T, Lock, release_mode::abort>(this->handle(), size); }
 
 	template <lock Lock = lock::noncritical>
 	const array_elements<T, Lock, release_mode::abort> const_elements() const { return array_elements<T, Lock, release_mode::abort>(this->handle(), this->size()); }
