@@ -23,7 +23,7 @@ inline void deinit_created_vm() noexcept
 	detail::jvm_ptr = nullptr;
 }
 
-inline jint create_vm(void* args) noexcept
+inline jint create_vm(JavaVMInitArgs* args) noexcept
 {
 	return JNI_CreateJavaVM(&detail::jvm_ptr, detail::env_.addr(), args);
 }
