@@ -437,10 +437,6 @@ public:
 	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
 	array_elements<T, Lock, Mode> elements(jsize size) { return array_elements<T, Lock, Mode>(this->handle(), size); }
 
-	// to do: const versions (const array_elements isn't movable, add const_array_elements?)
-	// const array<jint> vs array<const jint> vs const_array<jint>?
-	// to do: const_elements should always call abort().
-
 	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
 	const array_elements<T, Lock, Mode> elements() const { return array_elements<T, Lock, Mode>(this->handle(), this->size()); }
 
