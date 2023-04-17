@@ -449,7 +449,7 @@ public:
 	template <lock Lock = lock::noncritical>
 	const array_elements<T, Lock, release_mode::abort> const_elements(jsize size) const { return array_elements<T, Lock, release_mode::abort>(this->handle(), size); }
 
-	void get_region(jsize start, jsize len, T* buf) { detail::api::get_array_region(ref<T[]>(this->handle()), start, len, buf); }
+	void get_region(jsize start, jsize len, T* buf) const { detail::api::get_array_region(ref<T[]>(this->handle()), start, len, buf); }
 	void set_region(jsize start, jsize len, const T* buf) { detail::api::set_array_region(ref<T[]>(this->handle()), start, len, buf); }
 
 protected:
