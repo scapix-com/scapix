@@ -21,6 +21,7 @@ inline bool init_created_vm() noexcept
 inline void deinit_created_vm() noexcept
 {
 	detail::jvm_ptr = nullptr;
+	detail::env_.ptr = nullptr;
 }
 
 inline jint create_vm(JavaVMInitArgs* args) noexcept
@@ -31,8 +32,10 @@ inline jint create_vm(JavaVMInitArgs* args) noexcept
 inline jint destroy_vm() noexcept
 {
 	auto r = detail::jvm()->DestroyJavaVM();
-	if (r == JNI_OK)
-		detail::jvm_ptr = nullptr;
+
+	detail::jvm_ptr = nullptr;
+	detail::env_.ptr = nullptr;
+
 	return r;
 }
 

@@ -43,7 +43,7 @@ struct thread_env
 {
 	~thread_env()
 	{
-		if (ptr)
+		if (ptr && jvm())
 			jvm()->DetachCurrentThread();
 	}
 
