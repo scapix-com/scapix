@@ -62,12 +62,12 @@ inline jint get_env(jint version = JNI_VERSION_1_6) noexcept
 	return detail::jvm()->GetEnv(detail::env_.addr_void(), version);
 }
 
-inline jint attach_current_thread(void *args = nullptr) noexcept
+inline jint attach_current_thread(JavaVMAttachArgs* args = nullptr) noexcept
 {
 	return detail::jvm()->AttachCurrentThread(detail::env_.addr(), args);
 }
 
-inline jint attach_current_thread_as_daemon(void *args = nullptr) noexcept
+inline jint attach_current_thread_as_daemon(JavaVMAttachArgs* args = nullptr) noexcept
 {
 	return detail::jvm()->AttachCurrentThreadAsDaemon(detail::env_.addr(), args);
 }
