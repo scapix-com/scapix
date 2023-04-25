@@ -20,7 +20,7 @@ struct type<java::ref<T>>
 	static local_ref<T> get_field(jobject obj, jfieldID id) noexcept { return make_local_ref(env()->GetObjectField(obj, id)); }
 	static void set_field(jobject obj, jfieldID id, java::ref<T> value) noexcept { env()->SetObjectField(obj, id, value.handle()); }
 	static local_ref<T> get_static_field(jclass cls, jfieldID id) noexcept { return make_local_ref(env()->GetStaticObjectField(cls, id)); }
-	static void set_static_field(jclass cls, jfieldID id, java::ref<T> value) noexcept { env()->SetStaticObjectField(cls, id, value); }
+	static void set_static_field(jclass cls, jfieldID id, java::ref<T> value) noexcept { env()->SetStaticObjectField(cls, id, value.handle()); }
 
 	template <typename ...Args> static local_ref<T> call_method(jobject obj, jmethodID id, Args... args) noexcept { return make_local_ref(env()->CallObjectMethod(obj, id, args...)); }
 	template <typename ...Args> static local_ref<T> call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return make_local_ref(env()->CallNonvirtualObjectMethod(obj, cls, id, args...)); }
