@@ -9,45 +9,18 @@
 
 #include <scapix/meta/string.h>
 #include <scapix/link/java/ref.h>
-#include <scapix/link/java/detail/util.h>
+#include <scapix/link/java/class_name.h>
 
 namespace scapix::link::java {
-
-template <typename T>
-struct class_name;
-
-template <typename T>
-using class_name_t = typename class_name<T>::type;
-
-template <typename T>
-struct class_name
-{
-	using type = typename detail::befriend<T, class_name>::class_name;
-};
-
-template <typename T, typename Extends>
-struct class_name<ref<generic<T, Extends>>>
-{
-	using type = class_name_t<Extends>;
-};
-
-template <char... Chars>
-struct class_name<meta::string<Chars...>>
-{
-	using type = meta::string<Chars...>;
-};
-
-template <typename T>
-struct signature;
-
-template <typename T>
-using signature_t = typename signature<T>::type;
 
 template <typename T>
 struct signature
 {
 	using type = meta::concat_t<meta::string<'L'>, class_name_t<T>, meta::string<';'>>;
 };
+
+template <typename T>
+using signature_t = typename signature<T>::type;
 
 template<> struct signature<void>     { using type = meta::string<'V'>; };
 template<> struct signature<jboolean> { using type = meta::string<'Z'>; };
@@ -60,15 +33,9 @@ template<> struct signature<jfloat>   { using type = meta::string<'F'>; };
 template<> struct signature<jdouble>  { using type = meta::string<'D'>; };
 
 template <typename T>
-struct signature<T[]>
+struct signature<ref<T>>
 {
-	using type = meta::concat_t<meta::string<'['>, signature_t<T>>;
-};
-
-template <typename T>
-struct signature<ref<T[]>>
-{
-	using type = meta::concat_t<meta::string<'['>, signature_t<T>>;
+	using type = signature_t<T>;
 };
 
 template <typename T>
@@ -78,15 +45,33 @@ struct signature<array<T>>
 };
 
 template <typename T>
-struct signature<ref<array<T>>>
+struct signature<T[]>
 {
-	using type = meta::concat_t<meta::string<'['>, signature_t<T>>;
+	using type = signature_t<array<T>>;
+};
+
+template <typename T, typename ...Params>
+struct signature<generic_type<T, Params...>>
+{
+	using type = signature_t<T>;
+};
+
+template <typename T, typename Extends>
+struct signature<generic<T, Extends>>
+{
+	using type = signature_t<Extends>;
 };
 
 template <typename R, typename ...Args>
 struct signature<R(Args...)>
 {
 	using type = meta::concat_t<meta::string<'('>, signature_t<Args>..., meta::string<')'>, signature_t<R>>;
+};
+
+template <char... Chars>
+struct signature<meta::string<Chars...>>
+{
+	using type = meta::concat_t<meta::string<'L'>, meta::string<Chars...>, meta::string<';'>>;
 };
 
 } // namespace scapix::link::java

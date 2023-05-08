@@ -11,6 +11,7 @@
 #include <experimental/type_traits>
 #include <scapix/core/type_traits.h>
 #include <scapix/meta/string.h>
+#include <scapix/link/java/class_name.h>
 #include <scapix/link/java/type_traits.h>
 #include <scapix/link/java/function.h>
 #include <scapix/link/java/detail/api/ref.h>
@@ -97,22 +98,25 @@ template <typename T, typename = void>
 class array;
 
 template <typename T, typename ...Params>
-struct generic_type {};
+struct generic_type;
 
 template <typename T, typename Extends = object<>>
 struct generic;
 
-template <typename T>
-struct extends;
+//template <typename T>
+//struct extends;
 
-template <typename T>
-struct super;
+//template <typename T>
+//struct super;
 
 template <typename T>
 struct element_type
 {
 	using type = T;
 };
+
+template <typename T>
+using element_type_t = typename element_type<T>::type;
 
 template <char... Chars>
 struct element_type<meta::string<Chars...>>
@@ -129,25 +133,25 @@ struct element_type<T[]>
 template <typename T, typename ...Params>
 struct element_type<generic_type<T, Params...>>
 {
-	using type = typename element_type<T>::type;
+	using type = element_type_t<T>;
 };
 
-template <typename T>
-struct element_type<generic<T>>
+template <typename T, typename Extends>
+struct element_type<generic<T, Extends>>
 {
-	using type = typename element_type<T>::type;
+	using type = element_type_t<T>;
 };
 
 template <typename ClassName, typename Signature, typename Name>
 struct element_type<function<ClassName, Signature, Name>>
 {
-	using type = typename element_type<ClassName>::type;
+	using type = element_type_t<ClassName>;
 };
 
 template <typename T>
 struct element_type<detail::cast<T>>
 {
-	using type = typename element_type<T>::type;
+	using type = element_type_t<T>;
 };
 
 using scope = detail::api::scope;
@@ -200,10 +204,10 @@ class ref
 {
 public:
 
-	using element_type = typename element_type<T>::type;
+	using element_type = element_type_t<T>;
+	using class_name = class_name_t<element_type>;
 	using element_type_friend = detail::befriend<element_type, ref>;
 	using handle_type = typename element_type_friend::handle_type;
-	using class_name = typename element_type_friend::class_name;
 
 	static_assert(!is_ref_v<T> && !is_ref_v<element_type>);
 
@@ -278,7 +282,7 @@ public:
 	element_type_friend operator * () { return handle(); }
 	const element_type_friend operator * () const { return handle(); }
 
-	template <typename Y = element_type, typename = std::enable_if_t<is_array_v<Y>>>
+	template <typename Y = element_type, typename = std::enable_if_t<is_object_array_v<Y>>>
 	auto operator [] (jsize i) { return get()[i]; }
 
 	explicit operator bool() const { return handle() != nullptr; }
@@ -331,10 +335,10 @@ class ref<T, scope::generic>
 {
 public:
 
-	using element_type = typename element_type<T>::type;
+	using element_type = element_type_t<T>;
+	using class_name = class_name_t<element_type>;
 	using element_type_friend = detail::befriend<element_type, ref>;
 	using handle_type = typename element_type_friend::handle_type;
-	using class_name = typename element_type_friend::class_name;
 
 	static_assert(!is_ref_v<T> && !is_ref_v<element_type>);
 
