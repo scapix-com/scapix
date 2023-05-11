@@ -13,10 +13,10 @@ namespace scapix::link::java::detail::api {
 
 enum class scope
 {
+	generic,
 	local,
 	global,
-	weak,
-	generic
+	weak
 };
 
 template <scope Scope>
