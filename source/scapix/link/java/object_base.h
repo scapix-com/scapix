@@ -9,7 +9,6 @@
 
 #include <scapix/link/java/object.h>
 #include <scapix/link/java/detail/util.h>
-#include <boost/mp11.hpp>
 
 namespace scapix::link::java {
 
@@ -41,30 +40,6 @@ struct derived<T1, T2, Ts...>
 template <typename ClassName, typename ...Bases>
 class object_base : protected object<ClassName>, public detail::tag<Bases, ClassName>...
 {
-protected:
-
-	using base_classes = boost::mp11::mp_append<boost::mp11::mp_list<detail::tag<Bases, ClassName>...>, typename detail::tag<Bases, ClassName>::base_classes...>;
-
-	template <typename T>
-	struct is_same_key
-	{
-		template <typename L>
-		struct result;
-
-		template <template <typename...> class List, typename E1, typename ...Es>
-		struct result<List<E1, Es...>> : std::is_same<E1, T> {};
-	};
-
-public:
-
-	// Access base classes derived from more than once:
-	// r->base_class<java::lang::Object>::getClass();
-	// This includes java::lang::Object (all java classes AND interfaces extend it),
-	// and the same java interface implemented by more than one base class.
-
-	template <typename T>
-	using base_class = boost::mp11::mp_at<base_classes, boost::mp11::mp_find_if<base_classes, is_same_key<T>::template result>>;
-
 protected:
 
 	using base_ = object_base;
