@@ -11,50 +11,39 @@
 #include <scapix/link/java/detail/util.h>
 
 namespace scapix::link::java {
+namespace detail {
 
-// given list of (linearly) derived types, select the most derived
+	template <typename Object, typename ...Bases>
+	struct select_handle_type;
 
-template <typename ...Ts>
-struct derived;
+	template <typename Object>
+	struct select_handle_type<Object>
+	{
+		using type = typename Object::handle_type;
+	};
 
-template <typename T>
-struct derived<T>
-{
-	using type = T;
-};
+	template <typename Object, typename Base1, typename ...Bases>
+	struct select_handle_type<Object, Base1, Bases...>
+	{
+		using base1_handle_type = typename detail::befriend<Base1, select_handle_type>::handle_type;
+		using type = std::conditional_t<std::is_same_v<base1_handle_type, jobject>, typename Object::handle_type, base1_handle_type>;
+	};
 
-template <typename T1, typename T2>
-struct derived<T1, T2>
-{
-	using type = std::conditional_t<std::is_base_of_v<T1, T2>, T2, T1>;
-};
-
-template <typename T1, typename T2, typename ...Ts>
-struct derived<T1, T2, Ts...>
-{
-	using type = typename derived<typename derived<T1, T2>::type, Ts...>::type;
-};
-
-// object_base
+} // namespace detail
 
 template <typename ClassName, typename ...Bases>
 class object_base : protected object<ClassName>, public detail::tag<Bases, ClassName>...
 {
+public:
+
+	using object<ClassName>::native;
+
 protected:
 
 	using base_ = object_base;
 	using object_type = object<ClassName>;
-
-// to do: use befriend and make these protected.
-public:
-
-//  using typename object_type::handle_type;
-	using handle_type = std::add_pointer_t<typename derived<std::remove_pointer_t<typename object_type::handle_type>, std::remove_pointer_t<typename Bases::handle_type>...>::type>;
 	using typename object_type::class_name;
-	using object_type::class_object;
-	using object_type::native;
-
-protected:
+	using handle_type = typename detail::select_handle_type<object_type, Bases...>::type;
 
 	object_base(handle_type h) : object_type(h), detail::tag<Bases, ClassName>(h)... {}
 

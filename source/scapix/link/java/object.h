@@ -29,11 +29,11 @@ class object
 {
 public:
 
-	typedef object object_type;
-	typedef ClassName class_name;
-	typedef HandleType handle_type;
+	using object_type = object;
+	using class_name = ClassName;
+	using handle_type = HandleType;
 
-	static_assert(std::is_base_of_v<std::remove_pointer_t<jobject>, std::remove_pointer_t<handle_type>>, "Unknown JNI object handle type");
+	static_assert(std::is_convertible_v<HandleType, jobject>, "Not JNI object handle type");
 
 	// for consistency with link::java::object_base
 

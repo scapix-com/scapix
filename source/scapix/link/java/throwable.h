@@ -24,10 +24,8 @@ public:
 
 protected:
 
-	typedef object<ClassName, jthrowable> base;
-	typedef typename base::handle_type handle_type;
-
-	throwable(handle_type h) : base(h) {}
+	using base = object<ClassName, jthrowable>;
+	throwable(typename base::handle_type h) : base(h) {}
 
 };
 
