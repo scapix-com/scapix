@@ -21,9 +21,9 @@ public:
 
 	// Note: DefineClass() not supported on Android
 
-	static local_ref<class_> define_class(const char *name, ref<object> loader, const jbyte *buf, jsize bufLen)
+	static local_ref<class_> define_class(const char* name, ref<> loader, const jbyte* buf, jsize size)
 	{
-		jclass cls = detail::env()->DefineClass(name, loader.handle(), buf, bufLen);
+		jclass cls = detail::env()->DefineClass(name, loader.handle(), buf, size);
 		detail::check_exception(cls);
 		return local_ref<class_>(cls);
 	}
