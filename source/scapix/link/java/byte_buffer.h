@@ -34,10 +34,8 @@ public:
 
 protected:
 
-	typedef object<ClassName> base;
-	typedef typename base::handle_type handle_type;
-
-	byte_buffer(handle_type h) : base(h) {}
+	using base = object<ClassName>;
+	byte_buffer(typename base::handle_type h) : base(h) {}
 
 };
 
