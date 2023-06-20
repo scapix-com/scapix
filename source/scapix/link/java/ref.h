@@ -156,6 +156,28 @@ struct element_type<detail::cast<T>>
 
 using scope = detail::api::scope;
 
+// ref
+
+template <typename T = object<>, scope Scope = scope::generic>
+class ref;
+
+// canonical_ref
+
+template <typename T>
+struct canonical_ref
+{
+	using type = T;
+};
+
+template <typename T, typename Extends, scope Scope>
+struct canonical_ref<ref<generic<T, Extends>, Scope>>
+{
+	using type = ref<T, Scope>;
+};
+
+template <typename T>
+using canonical_ref_t = typename canonical_ref<T>::type;
+
 // convert
 
 template <typename Jni, typename Cpp, typename = void>
@@ -164,33 +186,30 @@ struct convert;
 template <typename Jni, typename Cpp>
 decltype(auto) convert_jni(Cpp&& cpp)
 {
-	return convert<remove_cvref_t<Jni>, remove_cvref_t<Cpp>>::jni(std::forward<Cpp>(cpp));
+	return convert<canonical_ref_t<remove_cvref_t<Jni>>, remove_cvref_t<Cpp>>::jni(std::forward<Cpp>(cpp));
 }
 
 template <typename Cpp, typename Jni>
 decltype(auto) convert_cpp(Jni&& jni)
 {
-	return convert<remove_cvref_t<Jni>, remove_cvref_t<Cpp>>::cpp(std::forward<Jni>(jni));
+	return convert<canonical_ref_t<remove_cvref_t<Jni>>, remove_cvref_t<Cpp>>::cpp(std::forward<Jni>(jni));
 }
 
 template<typename Jni, typename Cpp>
-using has_convert_jni_t = decltype(std::declval<Jni>() = convert<remove_cvref_t<Jni>, remove_cvref_t<Cpp>>::jni(std::declval<Cpp>()));
+using has_convert_jni_t = decltype(std::declval<Jni>() = convert<canonical_ref_t<remove_cvref_t<Jni>>, remove_cvref_t<Cpp>>::jni(std::declval<Cpp>()));
 
 template<typename Jni, typename Cpp>
-using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<remove_cvref_t<Jni>, remove_cvref_t<Cpp>>::cpp(std::declval<Jni>()));
+using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<canonical_ref_t<remove_cvref_t<Jni>>, remove_cvref_t<Cpp>>::cpp(std::declval<Jni>()));
 
 // is_ref
 
-template <typename T = object<>, scope Scope = scope::generic>
-class ref;
-
-template<typename T>
+template <typename T>
 struct is_ref : std::false_type {};
 
-template<typename T, scope Scope>
+template <typename T, scope Scope>
 struct is_ref<ref<T, Scope>> : std::true_type {};
 
-template<typename T>
+template <typename T>
 constexpr bool is_ref_v = is_ref<T>::value;
 
 /*
