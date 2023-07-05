@@ -16,7 +16,7 @@ namespace scapix::link::java::detail {
 {
 //	env()->ExceptionDescribe();
 	env()->ExceptionClear();
-	throw vm_exception(local_ref<throwable<>>(e));
+	throw vm_exception(local_ref<throwable>(e));
 }
 
 /*
@@ -37,7 +37,7 @@ which can throw any exception thrown by executed Java code:
 //	env()->ExceptionDescribe();
 	env()->ExceptionClear();
 
-	local_ref<throwable<>> exception(e);
+	local_ref<throwable> exception(e);
 
 	if (auto native = dynamic_pointer_cast<native_exception>(std::move(exception)))
 		native->rethrow();

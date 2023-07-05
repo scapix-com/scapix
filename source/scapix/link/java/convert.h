@@ -139,7 +139,7 @@ struct convert_string
 };
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<ref<string>::convertible_from<J> && std::is_convertible_v<Cpp, std::string> && !is_ref_v<Cpp>>> : convert_string
+struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, string> && std::is_convertible_v<Cpp, std::string> && !is_ref_v<Cpp>>> : convert_string
 {
 };
 
@@ -158,39 +158,39 @@ struct convert_primitive_object
 };
 
 using boolean_class_name = SCAPIX_META_STRING("java/lang/Boolean");
-template <typename J> struct convert<ref<J>, bool, std::enable_if_t<ref<boolean_class_name>::convertible_from<J>>> :
+template <typename J> struct convert<ref<J>, bool, std::enable_if_t<detail::is_convertible_element<J, boolean_class_name>>> :
 convert_primitive_object<boolean_class_name, bool, jboolean, SCAPIX_META_STRING("booleanValue")> {};
 
 using byte_class_name = SCAPIX_META_STRING("java/lang/Byte");
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<ref<byte_class_name>::convertible_from<J> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int8_t)>> :
+struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, byte_class_name> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int8_t)>> :
 convert_primitive_object<byte_class_name, Cpp, jbyte, SCAPIX_META_STRING("byteValue")> {};
 
 using short_class_name = SCAPIX_META_STRING("java/lang/Short");
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<ref<short_class_name>::convertible_from<J> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int16_t)>> :
+struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, short_class_name> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int16_t)>> :
 convert_primitive_object<short_class_name, Cpp, jshort, SCAPIX_META_STRING("shortValue")> {};
 
 using integer_class_name = SCAPIX_META_STRING("java/lang/Integer");
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<ref<integer_class_name>::convertible_from<J> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int32_t)>> :
+struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, integer_class_name> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int32_t)>> :
 convert_primitive_object<integer_class_name, Cpp, jint, SCAPIX_META_STRING("intValue")> {};
 
 using long_class_name = SCAPIX_META_STRING("java/lang/Long");
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<ref<long_class_name>::convertible_from<J> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int64_t)>> :
+struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, long_class_name> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int64_t)>> :
 convert_primitive_object<long_class_name, Cpp, jlong, SCAPIX_META_STRING("longValue")> {};
 
 using float_class_name = SCAPIX_META_STRING("java/lang/Float");
-template <typename J> struct convert<ref<J>, float, std::enable_if_t<ref<float_class_name>::convertible_from<J>>> :
+template <typename J> struct convert<ref<J>, float, std::enable_if_t<detail::is_convertible_element<J, float_class_name>>> :
 convert_primitive_object<float_class_name, float, jfloat, SCAPIX_META_STRING("floatValue")> {};
 
 using double_class_name = SCAPIX_META_STRING("java/lang/Double");
-template <typename J> struct convert<ref<J>, double, std::enable_if_t<ref<double_class_name>::convertible_from<J>>> :
+template <typename J> struct convert<ref<J>, double, std::enable_if_t<detail::is_convertible_element<J, double_class_name>>> :
 convert_primitive_object<double_class_name, double, jdouble, SCAPIX_META_STRING("doubleValue")> {};
 
 template <typename J, typename T, typename A>

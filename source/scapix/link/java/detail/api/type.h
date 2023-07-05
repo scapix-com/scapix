@@ -17,26 +17,19 @@ struct type;
 template <typename T>
 struct type<java::ref<T>>
 {
-	static local_ref<T> get_field(jobject obj, jfieldID id) noexcept { return make_local_ref(env()->GetObjectField(obj, id)); }
+	static local_ref<T> get_field(jobject obj, jfieldID id) noexcept { return local_ref<T>(env()->GetObjectField(obj, id)); }
 	static void set_field(jobject obj, jfieldID id, java::ref<T> value) noexcept { env()->SetObjectField(obj, id, value.handle()); }
-	static local_ref<T> get_static_field(jclass cls, jfieldID id) noexcept { return make_local_ref(env()->GetStaticObjectField(cls, id)); }
+	static local_ref<T> get_static_field(jclass cls, jfieldID id) noexcept { return local_ref<T>(env()->GetStaticObjectField(cls, id)); }
 	static void set_static_field(jclass cls, jfieldID id, java::ref<T> value) noexcept { env()->SetStaticObjectField(cls, id, value.handle()); }
 
-	template <typename ...Args> static local_ref<T> call_method(jobject obj, jmethodID id, Args... args) noexcept { return make_local_ref(env()->CallObjectMethod(obj, id, args...)); }
-	template <typename ...Args> static local_ref<T> call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return make_local_ref(env()->CallNonvirtualObjectMethod(obj, cls, id, args...)); }
-	template <typename ...Args> static local_ref<T> call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return make_local_ref(env()->CallStaticObjectMethod(cls, id, args...)); }
+	template <typename ...Args> static local_ref<T> call_method(jobject obj, jmethodID id, Args... args) noexcept { return local_ref<T>(env()->CallObjectMethod(obj, id, args...)); }
+	template <typename ...Args> static local_ref<T> call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return local_ref<T>(env()->CallNonvirtualObjectMethod(obj, cls, id, args...)); }
+	template <typename ...Args> static local_ref<T> call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return local_ref<T>(env()->CallStaticObjectMethod(cls, id, args...)); }
 
-	template <typename ...Args> static local_ref<T> new_object(jclass cls, jmethodID id, Args... args) noexcept { return make_local_ref(env()->NewObject(cls, id, args...)); }
+	template <typename ...Args> static local_ref<T> new_object(jclass cls, jmethodID id, Args... args) noexcept { return local_ref<T>(env()->NewObject(cls, id, args...)); }
 	static local_ref<java::array<T>> new_array(jsize len, java::ref<T> init) noexcept { return local_ref<java::array<T>>(env()->NewObjectArray(len, detail::befriend<T, type>::class_object().handle(), init.handle())); }
-	static local_ref<T> get_array_element(java::ref<java::array<T>> array, jsize index) noexcept { return make_local_ref(env()->GetObjectArrayElement(array.handle(), index)); }
+	static local_ref<T> get_array_element(java::ref<java::array<T>> array, jsize index) noexcept { return local_ref<T>(env()->GetObjectArrayElement(array.handle(), index)); }
 	static void set_array_element(java::ref<java::array<T>> array, jsize index, java::ref<T> value) noexcept { env()->SetObjectArrayElement(array.handle(), index, value.handle()); }
-
-private:
-
-	static local_ref<T> make_local_ref(jobject handle)
-	{
-		return local_ref<T>(static_cast<typename java::ref<T>::handle_type>(handle));
-	}
 };
 
 template <>

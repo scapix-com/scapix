@@ -4,269 +4,108 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
+// outside of include guard
+#include <scapix/link/java/object_impl.h>
+
 #ifndef SCAPIX_LINK_JAVA_OBJECT_H
 #define SCAPIX_LINK_JAVA_OBJECT_H
 
-#include <cassert>
-#include <type_traits>
-#include <scapix/meta/string.h>
-#include <scapix/link/java/type_traits.h>
-#include <scapix/link/java/ref.h>
-#include <scapix/link/java/detail/exception.h>
-#include <scapix/link/java/detail/api.h>
+#include <scapix/link/java/fwd/object.h>
+#include <scapix/link/java/object_impl.h>
 
 namespace scapix::link::java {
 
-class class_;
+#include <scapix/detail/warning/inaccessible_base.h>
 
-// fix: already defined in ref.h
-
-//template <typename ClassName = SCAPIX_META_STRING("java/lang/Object"), typename HandleType = jobject>
-//class object;
-
-template <typename ClassName, typename HandleType>
-class object
+template <typename ClassName, typename ...Bases>
+class object : private object_impl<ClassName>, public Bases...
 {
+	using impl = object_impl<ClassName>;
+
 public:
 
-	using object_type = object;
 	using class_name = ClassName;
-	using handle_type = HandleType;
+	using base_classes = std::tuple<Bases...>;
+	using handle_type = handle_type_t<object>;
 
-	static_assert(std::is_convertible_v<HandleType, jobject>, "Not JNI object handle type");
+	using impl::call_method;
+	using impl::call_nonvirtual_method;
+	using impl::call_static_method;
+	using impl::new_object;
+	using impl::get_field;
+	using impl::set_field;
+	using impl::get_static_field;
+	using impl::set_static_field;
+	using impl::class_object;
 
-	// for consistency with link::java::object_base
-
-	object& native() { return *this; }
-	const object& native() const { return *this; }
-
-	// call_method
-
-	template <typename Name, typename Type, typename ...Args>
-	auto call_method(Args&&... args) const
-	{
-		return call_method<Type>(method_id<Name, Type>(), std::forward<Args>(args)...);
-	}
-
-	template <typename Type, typename ...Args>
-	auto call_method(jmethodID id, Args&&... args) const
-	{
-		return detail::api::call<Type>::method(handle(), id, std::forward<Args>(args)...);
-	}
-
-	// call_nonvirtual_method
-
-	template <typename Name, typename Type, typename ...Args>
-	auto call_nonvirtual_method(Args&&... args) const
-	{
-		return call_nonvirtual_method<Type>(method_id<Name, Type>(), std::forward<Args>(args)...);
-	}
-
-	template <typename Type, typename ...Args>
-	auto call_nonvirtual_method(jmethodID id, Args&&... args) const;
-
-	// call_static_method
-
-	template <typename Name, typename Type, typename ...Args>
-	static auto call_static_method(Args&&... args)
-	{
-		return call_static_method<Type>(static_method_id<Name, Type>(), std::forward<Args>(args)...);
-	}
-
-	template <typename Type, typename ...Args>
-	static auto call_static_method(jmethodID id, Args&&... args);
-
-	// new_object
-
-	template <typename Type, typename ...Args>
-	static local_ref<object_type> new_object(Args&&... args)
-	{
-		return new_object<Type>(method_id<SCAPIX_META_STRING("<init>"), Type>(), std::forward<Args>(args)...);
-	}
-
-	template <typename Type, typename ...Args>
-	static local_ref<object_type> new_object(jmethodID id, Args&&... args);
-
-	template <typename Name, typename Type>
-	Type get_field() const
-	{
-		return detail::api::get_field<Type>(handle(), field_id<Name, Type>());
-	}
-
-	template <typename Name, typename Type>
-	void set_field(Type value) const
-	{
-		detail::api::set_field<Type>(handle(), field_id<Name, Type>(), value);
-	}
-
-	template <typename Name, typename Type>
-	static Type get_static_field();
-
-	template <typename Name, typename Type>
-	static void set_static_field(Type value);
-
-	template <typename T>
-	jboolean is_instance_of() const
-	{
-		return is_instance_of(T::class_object());
-	}
-
-	jboolean is_instance_of(ref<class_> cls) const;
-
-	// MSC (as of 2017 15.9) fails if is_same_object defined here.
-
-	template <typename C1, typename H1, typename C2, typename H2>
-	friend jboolean is_same_object(const object<C1, H1>& a, const object<C2, H2>& b);
-
-	local_ref<class_> get_object_class() const noexcept;
-
-	//jmethodID FromReflectedMethod(jobject method);
-	//jfieldID FromReflectedField(jobject field);
-	//jobject ToReflectedMethod(jclass cls, jmethodID methodID, jboolean isStatic);
-	//jobject ToReflectedField(jclass cls, jfieldID fieldID, jboolean isStatic);
-
-	static ref<class_> class_object();
-
-private:
-
-	template <typename Name, typename Type>
-	static jmethodID method_id();
-
-	template <typename Name, typename Type>
-	static jmethodID static_method_id();
-
-	template <typename Name, typename Type>
-	static jfieldID field_id();
-
-	template <typename Name, typename Type>
-	static jfieldID static_field_id();
+	handle_type handle() const { return static_cast<handle_type>(impl::handle()); }
 
 protected:
 
-	object(handle_type h) : handle_(h) {}
-
-	handle_type handle() const { return handle_; }
-
-private:
-
-	handle_type handle_;
+	object(handle_type h) : impl(h), Bases(h)... {}
 
 };
 
-template <typename C1, typename H1, typename C2, typename H2>
-inline jboolean is_same_object(const object<C1, H1>& a, const object<C2, H2>& b)
+template <typename ClassName>
+class object<ClassName> : public object<ClassName, object<>>
 {
-	return detail::env()->IsSameObject(a.handle(), b.handle());
-}
+public:
 
-} // namespace scapix::link::java
+	using object<ClassName, object<>>::object;
 
-#include <scapix/link/java/class.h>
-#include <scapix/link/java/string.h>
-#include <scapix/link/java/throwable.h>
-#include <scapix/link/java/byte_buffer.h>
-#include <scapix/link/java/array.h>
+};
 
-#ifdef SCAPIX_CACHE_CLASS_LOADER
-#include <scapix/link/java/class_loader.h>
-#include <scapix/mpv/replace.h>
-#endif
+template <typename T>
+struct always_false : std::false_type {}; 
 
-namespace scapix::link::java {
-
-template <typename ClassName, typename HandleType>
-template <typename Type, typename ...Args>
-inline auto object<ClassName, HandleType>::call_nonvirtual_method(jmethodID id, Args&&... args) const
+template <typename Base1, typename ...Bases>
+class object<SCAPIX_META_STRING("java/lang/Object"), Base1, Bases...>
 {
-	return detail::api::call<Type>::nonvirtual_method(handle(), class_object().handle(), id, std::forward<Args>(args)...);
-}
+	static_assert(always_false<Base1>::value, "java/lang/Object should not specify base classes");
+};
 
-template <typename ClassName, typename HandleType>
-template <typename Type, typename ...Args>
-inline auto object<ClassName, HandleType>::call_static_method(jmethodID id, Args&&... args)
+template <>
+class object<SCAPIX_META_STRING("java/lang/Object")> : private object_impl<SCAPIX_META_STRING("java/lang/Object")>
 {
-	return detail::api::call<Type>::static_method(class_object().handle(), id, std::forward<Args>(args)...);
-}
+public:
 
-template <typename ClassName, typename HandleType>
-template <typename Type, typename ...Args>
-inline local_ref<object<ClassName, HandleType>> object<ClassName, HandleType>::new_object(jmethodID id, Args&&... args)
-{
-	return detail::api::call<Type>::template new_object<object>(class_object().handle(), id, std::forward<Args>(args)...);
-}
+	using class_name = SCAPIX_META_STRING("java/lang/Object");
+	using base_classes = std::tuple<>;
+	using handle_type = handle_type_t<object>;
 
-template <typename ClassName, typename HandleType>
-template <typename Name, typename Type>
-inline Type object<ClassName, HandleType>::get_static_field()
-{
-	return detail::api::get_static_field<Type>(class_object().handle(), static_field_id<Name, Type>());
-}
+	using object_impl::call_method;
+	using object_impl::call_nonvirtual_method;
+	using object_impl::call_static_method;
+	using object_impl::new_object;
+	using object_impl::get_field;
+	using object_impl::set_field;
+	using object_impl::get_static_field;
+	using object_impl::set_static_field;
+	using object_impl::class_object;
 
-template <typename ClassName, typename HandleType>
-template <typename Name, typename Type>
-inline void object<ClassName, HandleType>::set_static_field(Type value)
-{
-	detail::api::set_static_field<Type>(class_object().handle(), static_field_id<Name, Type>(), value);
-}
+	template <typename T>
+	bool is_instance_of() const
+	{
+		return is_instance_of(detail::befriend<T, object>::class_object());
+	}
 
-template <typename ClassName, typename HandleType>
-inline jboolean object<ClassName, HandleType>::is_instance_of(ref<class_> cls) const
-{
-	return detail::env()->IsInstanceOf(handle(), cls.handle());
-}
+	bool is_instance_of(ref<class_> cls) const noexcept
+	{
+		return detail::env()->IsInstanceOf(handle(), cls.handle());
+	}
 
-template <typename ClassName, typename HandleType>
-inline local_ref<class_> object<ClassName, HandleType>::get_object_class() const noexcept
-{
-	return local_ref<class_>(detail::env()->GetObjectClass(handle()));
-}
+	local_ref<class_> get_object_class() const noexcept
+	{
+		return local_ref<class_>(detail::env()->GetObjectClass(handle()));
+	}
 
-template <typename ClassName, typename HandleType>
-inline ref<class_> object<ClassName, HandleType>::class_object()
-{
-// Destructed after JNI_OnUnload, when JNI calls (like DeleteGlobalRef) do not work.
-//	static const global_ref<class_> cls(class_::find_class(meta::c_str_v<ClassName>));
+protected:
 
-#ifdef SCAPIX_CACHE_CLASS_LOADER
-	static const ref<class_> cls(global_ref<class_>(class_loader::find_class(meta::c_str_v<mpv::replace<ClassName, '/', '.'>>)).release());
-#else
-	static const ref<class_> cls(global_ref<class_>(class_::find_class(meta::c_str_v<ClassName>)).release());
-#endif
+	object(handle_type h) : object_impl(h) {}
 
-	return cls;
-}
+};
 
-template <typename ClassName, typename HandleType>
-template <typename Name, typename Type>
-inline jmethodID object<ClassName, HandleType>::method_id()
-{
-	static const jmethodID id(class_object()->get_method_id<Name, Type>());
-	return id;
-}
-
-template <typename ClassName, typename HandleType>
-template <typename Name, typename Type>
-inline jmethodID object<ClassName, HandleType>::static_method_id()
-{
-	static const jmethodID id(class_object()->get_static_method_id<Name, Type>());
-	return id;
-}
-
-template <typename ClassName, typename HandleType>
-template <typename Name, typename Type>
-inline jfieldID object<ClassName, HandleType>::field_id()
-{
-	static const jfieldID id(class_object()->get_field_id<Name, Type>());
-	return id;
-}
-
-template <typename ClassName, typename HandleType>
-template <typename Name, typename Type>
-inline jfieldID object<ClassName, HandleType>::static_field_id()
-{
-	static const jfieldID id(class_object()->get_static_field_id<Name, Type>());
-	return id;
-}
+#include <scapix/detail/warning/pop.h>
 
 } // namespace scapix::link::java
 

@@ -8,8 +8,10 @@
 #define SCAPIX_LINK_JAVA_SIGNATURE_H
 
 #include <scapix/meta/string.h>
-#include <scapix/link/java/ref.h>
-#include <scapix/link/java/class_name.h>
+#include <scapix/link/java/type_traits.h>
+#include <scapix/link/java/fwd/ref.h>
+#include <scapix/link/java/fwd/array.h>
+#include <scapix/link/java/fwd/signature.h>
 
 namespace scapix::link::java {
 
@@ -18,9 +20,6 @@ struct signature
 {
 	using type = meta::concat_t<meta::string<'L'>, class_name_t<T>, meta::string<';'>>;
 };
-
-template <typename T>
-using signature_t = typename signature<T>::type;
 
 template<> struct signature<void>     { using type = meta::string<'V'>; };
 template<> struct signature<jboolean> { using type = meta::string<'Z'>; };

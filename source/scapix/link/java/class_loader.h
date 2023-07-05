@@ -4,6 +4,9 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
+// outside of include guard
+#include <scapix/link/java/object_impl.h>
+
 #ifndef SCAPIX_LINK_JAVA_CLASS_LOADER_H
 #define SCAPIX_LINK_JAVA_CLASS_LOADER_H
 

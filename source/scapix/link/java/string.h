@@ -4,7 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#include <scapix/link/java/object.h>
+// outside of include guard
+#include <scapix/link/java/object_impl.h>
 
 #ifndef SCAPIX_LINK_JAVA_STRING_H
 #define SCAPIX_LINK_JAVA_STRING_H
@@ -12,9 +13,9 @@
 #include <stdexcept>
 #include <type_traits>
 #include <iterator>
-#include <scapix/link/java/ref.h>
-#include <scapix/link/java/detail/api/string.h>
+#include <scapix/link/java/object.h>
 #include <scapix/link/java/lock.h>
+#include <scapix/link/java/detail/api/string.h>
 
 namespace scapix::link::java {
 
@@ -114,7 +115,7 @@ private:
 
 };
 
-class string : public object<SCAPIX_META_STRING("java/lang/String"), jstring>
+class string : public object<SCAPIX_META_STRING("java/lang/String")>
 {
 public:
 
@@ -157,14 +158,8 @@ public:
 
 protected:
 
-	string(handle_type h) : object_type(h) {}
+	string(handle_type h) : object(h) {}
 
-};
-
-template <>
-class object<SCAPIX_META_STRING("java/lang/String")> : public string
-{
-	using string::string;
 };
 
 } // namespace scapix::link::java

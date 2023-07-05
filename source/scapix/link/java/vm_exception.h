@@ -20,7 +20,7 @@ public:
 
 	virtual const char* what() const noexcept override { return message().c_str(); }
 
-	ref<throwable<>> get() const { return exception; }
+	ref<throwable> get() const { return exception; }
 
 	const std::string& class_name() const
 	{
@@ -43,7 +43,7 @@ private:
 	friend void detail::throw_exception(jthrowable e);
 	friend void detail::throw_exception_nested(jthrowable e);
 
-	vm_exception(local_ref<throwable<>>&& e) : exception(std::move(e)) {}
+	vm_exception(local_ref<throwable>&& e) : exception(std::move(e)) {}
 
 private:
 
@@ -57,7 +57,7 @@ private:
 		msg = exception->call_method<SCAPIX_META_STRING("getMessage"), ref<string>()>()->chars<char>().data();
 	}
 
-	local_ref<throwable<>> exception;
+	local_ref<throwable> exception;
 	mutable std::string cls_name;
 	mutable std::string msg;
 

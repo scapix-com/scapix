@@ -8,17 +8,14 @@
 #define SCAPIX_JAVA_API_H
 
 #include <scapix/link/java/object_base.h>
-#include <scapix/link/java/ref.h>
 #include <scapix/link/java/convert.h>
 
-namespace scapix {
-namespace java_api {
+namespace scapix::java_api {
 
 using link::java::object_base;
 using link::java::ref;
 using link::java::generic;
 
-} // namespace java_api
-} // namespace scapix
+} // namespace scapix::java_api
 
 #endif // SCAPIX_JAVA_API_H

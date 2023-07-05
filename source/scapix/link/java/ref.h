@@ -11,10 +11,14 @@
 #include <experimental/type_traits>
 #include <scapix/core/type_traits.h>
 #include <scapix/meta/string.h>
-#include <scapix/link/java/class_name.h>
 #include <scapix/link/java/type_traits.h>
 #include <scapix/link/java/detail/api/ref.h>
 #include <scapix/link/java/detail/util.h>
+#include <scapix/link/java/fwd/object.h>
+#include <scapix/link/java/fwd/class.h>
+#include <scapix/link/java/fwd/string.h>
+#include <scapix/link/java/fwd/array.h>
+#include <scapix/link/java/fwd/ref.h>
 
 namespace scapix::link::java {
 
@@ -59,8 +63,7 @@ public:
 	redirector(redirector&&) = delete;
 	redirector& operator = (redirector&&) = delete;
 
-	template <typename Y>
-	explicit redirector(Y&& v) : value(std::forward<Y>(v)) {}
+	explicit redirector(T&& v) : value(std::move(v)) {}
 
 	T* operator -> () && { return &value; }
 	const T* operator -> () const && { return &value; }
@@ -73,9 +76,20 @@ public:
 
 private:
 
-	detail::befriend<T, redirector> value;
+	T value;
 
 };
+
+// is_ref
+
+template<typename T>
+struct is_ref : std::false_type {};
+
+template<typename T, scope Scope>
+struct is_ref<ref<T, Scope>> : std::true_type {};
+
+template<typename T>
+constexpr bool is_ref_v = is_ref<T>::value;
 
 namespace detail {
 
@@ -88,13 +102,13 @@ struct is_cast : std::false_type {};
 template <typename T>
 struct is_cast<cast<T>> : std::true_type {};
 
+template <typename From, typename To>
+constexpr bool is_convertible_element =
+	is_convertible_object_v<typename ref<From>::element_type, typename ref<To>::element_type> ||
+	is_cast<From>::value
+;
+
 } // namespace detail
-
-template <typename ClassName = SCAPIX_META_STRING("java/lang/Object"), typename HandleType = jobject>
-class object;
-
-template <typename T, typename = void>
-class array;
 
 template <typename T, typename ...Params>
 struct generic_type;
@@ -147,13 +161,6 @@ struct element_type<detail::cast<T>>
 	using type = element_type_t<T>;
 };
 
-using scope = detail::api::scope;
-
-// ref
-
-template <typename T = object<>, scope Scope = scope::generic>
-class ref;
-
 // canonical_ref
 
 template <typename T>
@@ -194,17 +201,6 @@ using has_convert_jni_t = decltype(std::declval<Jni>() = convert<canonical_ref_t
 template<typename Jni, typename Cpp>
 using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<canonical_ref_t<remove_cvref_t<Jni>>, remove_cvref_t<Cpp>>::cpp(std::declval<Jni>()));
 
-// is_ref
-
-template <typename T>
-struct is_ref : std::false_type {};
-
-template <typename T, scope Scope>
-struct is_ref<ref<T, Scope>> : std::true_type {};
-
-template <typename T>
-constexpr bool is_ref_v = is_ref<T>::value;
-
 /*
 
 Implementation for owning reference types: local_ref, global_ref, weak_ref.
@@ -218,33 +214,21 @@ public:
 
 	using element_type = element_type_t<T>;
 	using class_name = class_name_t<element_type>;
-	using element_type_friend = detail::befriend<element_type, ref>;
-	using handle_type = typename element_type_friend::handle_type;
 
 	static_assert(!is_ref_v<T> && !is_ref_v<element_type>);
-
-	template <typename Y>
-	static constexpr bool convertible_from =
-		std::is_same_v<class_name, SCAPIX_META_STRING("java/lang/Object")> ||
-		std::is_base_of_v<element_type, typename ref<Y>::element_type> ||
-		std::is_same_v<class_name, typename ref<Y>::class_name> ||
-		detail::is_cast<Y>::value
-	;
 
 	constexpr scope get_scope() { return Scope; }
 
 	ref(std::nullptr_t = nullptr) : object(nullptr) {}
-
-	explicit ref(handle_type h) : object(h) {}
-
+	explicit ref(jobject h) : object(h) {}
 	ref(const ref& r) : object(new_ref(r)) {}
 
-	template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
+	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
 	ref(const ref<Y, S>& r) : object(new_ref(r)) {}
 
 	ref(ref&& r) noexcept : object(r.release()) {}
 
-	template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
+	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
 	ref(ref<Y, S>&& r) : object(nullptr)
 	{
 		if (get_scope() == r.get_scope())
@@ -269,7 +253,7 @@ public:
 		return *this;
 	}
 
-	template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
+	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
 	ref& operator = (const ref<Y, S>& r)
 	{
 		ref(r).swap(*this);
@@ -282,33 +266,39 @@ public:
 		return *this;
 	}
 
-	template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
+	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
 	ref& operator = (ref<Y, S>&& r)
 	{
 		ref(std::move(r)).swap(*this);
 		return *this;
 	}
 
-	redirector<element_type> operator -> () { return redirector<element_type>(handle()); }
-	const redirector<element_type> operator -> () const { return redirector<element_type>(handle()); }
-	element_type_friend operator * () { return handle(); }
-	const element_type_friend operator * () const { return handle(); }
+	redirector<element_type> operator -> () { return redirector<element_type>(make_element()); }
+	const redirector<element_type> operator -> () const { return redirector<element_type>(make_element()); }
+	element_type operator * () { return make_element(); }
+	const element_type operator * () const { return make_element(); }
 
 	template <typename Y = element_type, typename = std::enable_if_t<is_object_array_v<Y>>>
 	auto operator [] (jsize i) { return get()[i]; }
 
 	explicit operator bool() const { return handle() != nullptr; }
-	element_type_friend get() const { return handle(); }
-	handle_type handle() const { return static_cast<handle_type>(object); }
+	element_type get() const { return make_element(); }
 
-	void reset(handle_type h = nullptr)
+	auto handle() const
+	{
+		using handle_type = handle_type_t<element_type>;
+
+		return static_cast<handle_type>(object);
+	}
+
+	void reset(jobject h = nullptr)
 	{
 		ref(h).swap(*this);
 	}
 
-	handle_type release()
+	jobject release()
 	{
-		auto temp(handle());
+		auto temp(object);
 		object = nullptr;
 		return temp;
 	}
@@ -320,6 +310,11 @@ public:
 	}
 
 private:
+
+	element_type make_element() const
+	{
+		return detail::befriend<element_type, ref>(handle());
+	}
 
 	template <typename Ref>
 	static jobject new_ref(const Ref& r)
@@ -349,18 +344,8 @@ public:
 
 	using element_type = element_type_t<T>;
 	using class_name = class_name_t<element_type>;
-	using element_type_friend = detail::befriend<element_type, ref>;
-	using handle_type = typename element_type_friend::handle_type;
 
 	static_assert(!is_ref_v<T> && !is_ref_v<element_type>);
-
-	template <typename Y>
-	static constexpr bool convertible_from =
-		std::is_same_v<class_name, SCAPIX_META_STRING("java/lang/Object")> ||
-		std::is_base_of_v<element_type, typename ref<Y>::element_type> ||
-		std::is_same_v<class_name, typename ref<Y>::class_name> ||
-		detail::is_cast<Y>::value
-	;
 
 	scope get_scope() { return scp; }
 
@@ -370,19 +355,19 @@ public:
 	// all other refs can only be constructed from handle explicitly.
 
 	template <typename Ref = ref<T>, std::enable_if_t<std::is_same_v<Ref, ref<>>, bool> = false>
-	ref(handle_type h) : object(h), scp(scope::generic) {}
+	ref(jobject h) : object(h), scp(scope::generic) {}
 
 	template <typename Ref = ref<T>, std::enable_if_t<!std::is_same_v<Ref, ref<>>, bool> = false>
-	explicit ref(handle_type h) : object(h), scp(scope::generic) {}
+	explicit ref(jobject h) : object(h), scp(scope::generic) {}
 
 	ref(const ref& r) : object(r.handle()), scp(scope::generic) {}
 
-	template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
+	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
 	ref(const ref<Y, S>& r) : object(r.handle()), scp(scope::generic) {}
 
 	ref(ref&& r) noexcept : object(r.release()), scp(r.get_scope()) {}
 
-	template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
+	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
 	ref(ref<Y, S>&& r) : object(r.release()), scp(r.get_scope()) {}
 
 	template <typename X, typename = std::enable_if_t<std::experimental::is_detected_v<has_convert_jni_t, ref, X>>>
@@ -422,7 +407,7 @@ public:
 		return *this;
 	}
 
-	template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
+	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
 	ref& operator = (const ref<Y, S>& r)
 	{
 		ref(r).swap(*this);
@@ -435,33 +420,39 @@ public:
 		return *this;
 	}
 
-	template <typename Y, scope S, typename = std::enable_if_t<convertible_from<Y>>>
+	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
 	ref& operator = (ref<Y, S>&& r)
 	{
 		ref(std::move(r)).swap(*this);
 		return *this;
 	}
 
-	redirector<element_type> operator -> () { return redirector<element_type>(handle()); }
-	const redirector<element_type> operator -> () const { return redirector<element_type>(handle()); }
-	element_type_friend operator * () { return handle(); }
-	const element_type_friend operator * () const { return handle(); }
+	redirector<element_type> operator -> () { return redirector<element_type>(make_element()); }
+	const redirector<element_type> operator -> () const { return redirector<element_type>(make_element()); }
+	element_type operator * () { return make_element(); }
+	const element_type operator * () const { return make_element(); }
 
 	template <typename Y = element_type, typename = std::enable_if_t<is_object_array_v<Y>>>
 	auto operator [] (jsize i) { return get()[i]; }
 
 	explicit operator bool() const { return handle() != nullptr; }
-	element_type_friend get() const { return handle(); }
-	handle_type handle() const { return static_cast<handle_type>(object); }
+	element_type get() const { return make_element(); }
 
-	void reset(handle_type h = nullptr)
+	auto handle() const
+	{
+		using handle_type = handle_type_t<element_type>;
+
+		return static_cast<handle_type>(object);
+	}
+
+	void reset(jobject h = nullptr)
 	{
 		ref(h).swap(*this);
 	}
 
-	handle_type release()
+	jobject release()
 	{
-		auto temp(handle());
+		auto temp(object);
 		object = nullptr;
 		return temp;
 	}
@@ -474,6 +465,11 @@ public:
 	}
 
 private:
+
+	element_type make_element() const
+	{
+		return detail::befriend<element_type, ref>(handle());
+	}
 
 	jobject object;
 	scope scp;
@@ -498,7 +494,7 @@ inline void swap(ref<T, Scope>& a, ref<T, Scope>& b)
 template <typename T1, scope S1, typename T2, scope S2>
 inline bool operator ==(const ref<T1, S1>& a, const ref<T2, S2>& b)
 {
-	return is_same_object(a->native(), b->native());
+	return detail::env()->IsSameObject(a.handle(), b.handle());
 }
 
 template <typename T1, scope S1, typename T2, scope S2>
@@ -516,7 +512,7 @@ inline ref<T, Scope> static_pointer_cast(const ref<Y, Scope>& r)
 template <typename T, typename Y, scope Scope>
 inline ref<T, Scope> dynamic_pointer_cast(const ref<Y, Scope>& r)
 {
-	if (r->native().template is_instance_of<T>())
+	if (ref<object<>>(r)->template is_instance_of<T>())
 		return static_pointer_cast<T>(r);
 
 	return ref<T, Scope>();
@@ -531,7 +527,7 @@ inline ref<T, Scope> static_pointer_cast(ref<Y, Scope>&& r)
 template <typename T, typename Y, scope Scope>
 inline ref<T, Scope> dynamic_pointer_cast(ref<Y, Scope>&& r)
 {
-	if (r->native().template is_instance_of<T>())
+	if (ref<object<>>(r)->template is_instance_of<T>())
 		return static_pointer_cast<T>(std::move(r));
 
 	return ref<T, Scope>();

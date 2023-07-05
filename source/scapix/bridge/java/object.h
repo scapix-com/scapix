@@ -39,7 +39,7 @@ public:
 
 protected:
 
-	bridge(handle_type h) : object_type(h) {}
+	bridge(handle_type h) : object(h) {}
 
 };
 
@@ -57,7 +57,7 @@ public:
 
 protected:
 
-	function(handle_type h) : object_type(h) {}
+	function(handle_type h) : object(h) {}
 
 };
 

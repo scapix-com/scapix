@@ -45,7 +45,7 @@ struct param<ref<T>, Cpp>
 
 	static decltype(auto) cpp(jobject v)
 	{
-		return convert_cpp<Cpp>(ref<T>(static_cast<typename ref<T>::handle_type>(v)));
+		return convert_cpp<Cpp>(ref<T>(v));
 	}
 };
 

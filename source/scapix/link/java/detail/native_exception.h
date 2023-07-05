@@ -12,13 +12,13 @@
 
 namespace scapix::link::java::detail {
 
-class native_exception : public throwable<SCAPIX_META_STRING("com/scapix/NativeException")>
+class native_exception : public object<SCAPIX_META_STRING("com/scapix/NativeException"), throwable>
 {
 public:
 
 	static local_ref<native_exception> new_object()
 	{
-		return object_type::new_object<void(jlong)>(reinterpret_cast<jlong>(new std::exception_ptr(std::current_exception())));
+		return object::new_object<void(jlong)>(reinterpret_cast<jlong>(new std::exception_ptr(std::current_exception())));
 	}
 
 	[[noreturn]] void rethrow()
@@ -34,7 +34,7 @@ public:
 
 protected:
 
-	native_exception(handle_type h) : throwable(h) {}
+	native_exception(handle_type h) : object(h) {}
 
 };
 

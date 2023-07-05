@@ -4,24 +4,23 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#include <scapix/link/java/object.h>
+// outside of include guard
+#include <scapix/link/java/object_impl.h>
 
 #ifndef SCAPIX_LINK_JAVA_CLASS_H
 #define SCAPIX_LINK_JAVA_CLASS_H
 
-#include <scapix/link/java/ref.h>
+#include <scapix/link/java/object.h>
 #include <scapix/link/java/signature.h>
 #include <scapix/link/java/detail/exception.h>
 
 namespace scapix::link::java {
 
-class class_ : public object<SCAPIX_META_STRING("java/lang/Class"), jclass>
+class class_ : public object<SCAPIX_META_STRING("java/lang/Class")>
 {
 public:
 
-	// Note: DefineClass() not supported on Android
-
-	static local_ref<class_> define_class(const char* name, ref<> loader, const jbyte* buf, jsize size)
+	static local_ref<class_> define_class(const char* name, ref<SCAPIX_META_STRING("java/lang/ClassLoader")> loader, const jbyte* buf, jsize size)
 	{
 		jclass cls = detail::env()->DefineClass(name, loader.handle(), buf, size);
 		detail::check_exception(cls);
@@ -114,14 +113,8 @@ public:
 
 protected:
 
-	class_(handle_type h) : object_type(h) {}
+	class_(handle_type h) : object(h) {}
 
-};
-
-template <>
-class object<SCAPIX_META_STRING("java/lang/Class")> : public class_
-{
-	using class_::class_;
 };
 
 } // namespace scapix::link::java

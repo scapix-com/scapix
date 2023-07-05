@@ -7,13 +7,11 @@
 #ifndef SCAPIX_LINK_JAVA_BYTE_BUFFER_H
 #define SCAPIX_LINK_JAVA_BYTE_BUFFER_H
 
-#include <scapix/link/java/ref.h>
 #include <scapix/link/java/object.h>
 
 namespace scapix::link::java {
 
-template <typename ClassName = SCAPIX_META_STRING("java/nio/ByteBuffer")>
-class byte_buffer : public object<ClassName>
+class byte_buffer : public object<SCAPIX_META_STRING("java/nio/ByteBuffer")>
 {
 public:
 
@@ -24,28 +22,19 @@ public:
 
 	void* direct_address() const
 	{
-		return detail::env()->GetDirectBufferAddress(this->handle());
+		return detail::env()->GetDirectBufferAddress(handle());
 	}
 
 	jlong direct_capacity() const
 	{
-		return detail::env()->GetDirectBufferCapacity(this->handle());
+		return detail::env()->GetDirectBufferCapacity(handle());
 	}
 
 protected:
 
-	using base = object<ClassName>;
-	byte_buffer(typename base::handle_type h) : base(h) {}
+	byte_buffer(handle_type h) : object(h) {}
 
 };
-
-// to do: fix dependence on handle template parameter (add third bool template parameter?)
-
-//template <>
-//class object<SCAPIX_META_STRING("java/nio/ByteBuffer")> : public byte_buffer<>
-//{
-//    using byte_buffer<>::byte_buffer;
-//};
 
 } // namespace scapix::link::java
 

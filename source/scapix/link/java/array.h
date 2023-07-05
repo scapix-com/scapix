@@ -18,18 +18,10 @@
 
 namespace scapix::link::java {
 
-//template <typename T>
-//using array = object_type<signature_t<T[]>>;
-
-// fix: already declared in ref.h
-
-//template <typename T, typename = void>
-//class array;
-
 template <typename T>
-class array_base : public object<signature_t<T[]>, handle_type_t<T[]>>
+class array_base : public object<signature_t<T[]>>
 {
-	using base = object<signature_t<T[]>, handle_type_t<T[]>>;
+	using base = object<signature_t<T[]>>;
 
 public:
 
@@ -456,14 +448,6 @@ protected:
 
 	array(typename base::handle_type h) : base(h) {}
 
-};
-
-// to do: array<"Ljava/lang/Object;"> and array<'I'> is wrong
-
-template <char... Chars>
-class object<meta::string<'[', Chars...>> : public array<meta::string<Chars...>>
-{
-	using array<meta::string<Chars...>>::array;
 };
 
 } // namespace scapix::link::java
