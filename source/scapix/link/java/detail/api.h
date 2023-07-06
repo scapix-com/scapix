@@ -213,10 +213,10 @@ inline void release_string_chars(jstring str, const Char* chars) noexcept
 	string<Char, Lock>::release_chars(str, chars);
 }
 
-template <typename Char, lock Lock>
+template <typename Char>
 inline void get_string_region(jstring str, jsize start, jsize len, Char* buf)
 {
-	string<Char, Lock>::get_region(str, start, len, buf);
+	string<Char>::get_region(str, start, len, buf);
 	check_exception();
 }
 
