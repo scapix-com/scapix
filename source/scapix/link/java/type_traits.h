@@ -17,7 +17,7 @@ namespace scapix::link::java {
 
 /*
 
-template<typename ClassName>
+template <typename ClassName>
 struct handle_type { using type = jobject; };
 
 template<> struct handle_type<SCAPIX_META_STRING("java/lang/Object")> { using type = jobject; };
@@ -34,18 +34,18 @@ template<> struct handle_type<SCAPIX_META_STRING("[F")> { using type = jfloatArr
 template<> struct handle_type<SCAPIX_META_STRING("[D")> { using type = jdoubleArray; };
 template <char... Cs> struct handle_type<meta::string<'[', 'L', Cs...>> { using type = jobjectArray; };
 
-template<typename ClassName>
+template <typename ClassName>
 using handle_type_t = typename handle_type<ClassName>::type;
 
 */
 
-template<typename T>
+template <typename T>
 struct handle_type;
 
-template<typename T>
+template <typename T>
 using handle_type_t = typename handle_type<T>::type;
 
-template<typename T>
+template <typename T>
 struct handle_type<T[]> { using type = jobjectArray; };
 
 template<> struct handle_type<jboolean[]> { using type = jbooleanArray; };
@@ -59,7 +59,7 @@ template<> struct handle_type<jdouble[]> { using type = jdoubleArray; };
 
 // is_primitive
 
-template<class T>
+template <typename T>
 struct is_primitive : std::false_type {};
 
 template<> struct is_primitive<jboolean> : std::true_type {};
@@ -71,21 +71,21 @@ template<> struct is_primitive<jlong> : std::true_type {};
 template<> struct is_primitive<jfloat> : std::true_type {};
 template<> struct is_primitive<jdouble> : std::true_type {};
 
-template<typename T>
+template <typename T>
 constexpr bool is_primitive_v = is_primitive<T>::value;
 
 // is_array
 
-template<typename T>
+template <typename T>
 struct is_array : std::integral_constant<bool, meta::c_str_v<typename T::class_name>[0] == '['> {};
 
-template<typename T>
+template <typename T>
 constexpr bool is_array_v = is_array<T>::value;
 
-template<typename T>
+template <typename T>
 struct is_object_array : std::integral_constant<bool, meta::c_str_v<typename T::class_name>[0] == '[' && (meta::c_str_v<typename T::class_name>[1] == 'L' || meta::c_str_v<typename T::class_name>[1] == '[')> {};
 
-template<typename T>
+template <typename T>
 constexpr bool is_object_array_v = is_object_array<T>::value;
 
 } // namespace scapix::link::java
