@@ -7,8 +7,7 @@
 #ifndef SCAPIX_LINK_JAVA_DETAIL_API_STRING_H
 #define SCAPIX_LINK_JAVA_DETAIL_API_STRING_H
 
-#include <scapix/link/java/ref.h>
-#include <scapix/link/java/object.h>
+#include <scapix/link/java/env.h>
 #include <scapix/link/java/lock.h>
 
 namespace scapix::link::java::detail::api {

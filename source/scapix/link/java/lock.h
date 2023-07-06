@@ -7,6 +7,8 @@
 #ifndef SCAPIX_LINK_JAVA_LOCK_H
 #define SCAPIX_LINK_JAVA_LOCK_H
 
+#include <scapix/link/java/env.h>
+
 namespace scapix::link::java {
 
 enum class lock
