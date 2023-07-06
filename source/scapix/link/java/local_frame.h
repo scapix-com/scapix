@@ -8,7 +8,7 @@
 #define SCAPIX_LINK_JAVA_LOCAL_FRAME_H
 
 #include <utility>
-#include <scapix/link/java/detail/env.h>
+#include <scapix/link/java/env.h>
 
 namespace scapix::link::java {
 
