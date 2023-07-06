@@ -57,29 +57,6 @@ template<> struct handle_type<jlong[]> { using type = jlongArray; };
 template<> struct handle_type<jfloat[]> { using type = jfloatArray; };
 template<> struct handle_type<jdouble[]> { using type = jdoubleArray; };
 
-// is_object_handle
-
-template<typename T>
-struct is_object_handle : std::false_type {};
-
-template<> struct is_object_handle<jobject> : std::true_type {};
-template<> struct is_object_handle<jclass> : std::true_type {};
-template<> struct is_object_handle<jthrowable> : std::true_type {};
-template<> struct is_object_handle<jstring> : std::true_type {};
-template<> struct is_object_handle<jarray> : std::true_type {};
-template<> struct is_object_handle<jbooleanArray> : std::true_type {};
-template<> struct is_object_handle<jbyteArray> : std::true_type {};
-template<> struct is_object_handle<jcharArray> : std::true_type {};
-template<> struct is_object_handle<jshortArray> : std::true_type {};
-template<> struct is_object_handle<jintArray> : std::true_type {};
-template<> struct is_object_handle<jlongArray> : std::true_type {};
-template<> struct is_object_handle<jfloatArray> : std::true_type {};
-template<> struct is_object_handle<jdoubleArray> : std::true_type {};
-template<> struct is_object_handle<jobjectArray> : std::true_type {};
-
-template<typename T>
-constexpr bool is_object_handle_v = is_object_handle<T>::value;
-
 // is_primitive
 
 template<class T>
@@ -96,14 +73,6 @@ template<> struct is_primitive<jdouble> : std::true_type {};
 
 template<typename T>
 constexpr bool is_primitive_v = is_primitive<T>::value;
-
-// is_value
-
-template<typename T>
-struct is_value : std::integral_constant<bool, is_object_handle_v<T> || is_primitive_v<T>> {};
-
-template<typename T>
-constexpr bool is_value_v = is_value<T>::value;
 
 // is_array
 

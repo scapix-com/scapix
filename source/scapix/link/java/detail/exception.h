@@ -69,7 +69,7 @@ inline T* check_exception(T* p)
 
 // to do: remove when all api calls return ref<>
 
-template <typename T, typename = std::enable_if_t<is_object_handle_v<T>>>
+template <typename T, typename = std::enable_if_t<std::is_convertible_v<T, jobject>>>
 inline T check_exception(T obj)
 {
 	if (BOOST_UNLIKELY(!obj))
