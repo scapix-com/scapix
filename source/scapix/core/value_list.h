@@ -1,7 +1,7 @@
 /*
 	scapix/core/value_list.h
 
-	Copyright (c) 2020 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_CORE_VALUE_LIST_H

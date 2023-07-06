@@ -1,7 +1,7 @@
 /*
 	scapix/link/cs/object.h
 
-	Copyright (c) 2020 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_CS_OBJECT_H

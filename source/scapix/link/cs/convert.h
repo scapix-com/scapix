@@ -1,7 +1,7 @@
 /*
 	scapix/link/cs/convert.h
 
-	Copyright (c) 2020 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_CS_CONVERT_H

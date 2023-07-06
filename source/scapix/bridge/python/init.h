@@ -1,7 +1,7 @@
 /*
 	scapix/bridge/python/init.h
 
-	Copyright (c) 2019 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_BRIDGE_PYTHON_INIT_H

@@ -1,7 +1,7 @@
 /*
 	scapix/core/remove_function_qualifiers.h
 
-	Copyright (c) 2021 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_CORE_REMOVE_FUNCTION_QUALIFIERS_H

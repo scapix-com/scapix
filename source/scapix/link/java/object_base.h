@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/object_base.h
 
-	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_OBJECT_BASE_H

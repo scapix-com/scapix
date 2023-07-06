@@ -1,7 +1,7 @@
 /*
 	scapix/meta/for_each.h
 
-	Copyright (c) 2020 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_META_FOR_EACH_H

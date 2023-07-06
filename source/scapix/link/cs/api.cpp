@@ -1,7 +1,7 @@
 /*
 	scapix/link/cs/api.cpp
 
-	Copyright (c) 2020 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 #include <scapix/link/cs/api.h>

@@ -1,7 +1,7 @@
 /*
 	scapix/link/java/detail/api/ref.h
 
-	Copyright (c) 2019-2022 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JAVA_DETAIL_API_REF_H

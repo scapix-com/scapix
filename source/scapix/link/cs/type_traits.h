@@ -1,7 +1,7 @@
 /*
 	scapix/link/cs/type_traits.h
 
-	Copyright (c) 2020 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_CS_TYPE_TRAITS_H
