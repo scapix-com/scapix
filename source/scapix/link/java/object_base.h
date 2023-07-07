@@ -72,6 +72,8 @@ protected:
 	using object_type::get_static_field;
 	using object_type::set_static_field;
 
+	using object_type::class_object;
+
 };
 
 } // namespace scapix::link::java
