@@ -20,6 +20,7 @@
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/string.h>
 #include <scapix/link/java/array.h>
+#include <scapix/link/java/function.h>
 #include <scapix/link/java/struct.h>
 
 namespace scapix::link::java {
@@ -449,9 +450,9 @@ struct convert<ref<function<ClassName, JniR(JniArgs...), Name>>, std::function<R
 		return std::function<R(Args...)>([i = global_ref<function<ClassName, JniR(JniArgs...), Name>>(i)](Args... args)
 		{
 			if constexpr (std::is_void_v<R>)
-				return i->template call_method<Name, JniR(JniArgs...)>(convert_jni<JniArgs>(args)...);
+				return i->call(convert_jni<JniArgs>(args)...);
 			else
-				return convert_cpp<R>(i->template call_method<Name, JniR(JniArgs...)>(convert_jni<JniArgs>(args)...));
+				return convert_cpp<R>(i->call(convert_jni<JniArgs>(args)...));
 		});
 	}
 

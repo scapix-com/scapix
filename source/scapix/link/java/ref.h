@@ -13,7 +13,6 @@
 #include <scapix/meta/string.h>
 #include <scapix/link/java/class_name.h>
 #include <scapix/link/java/type_traits.h>
-#include <scapix/link/java/function.h>
 #include <scapix/link/java/detail/api/ref.h>
 #include <scapix/link/java/detail/util.h>
 
@@ -140,12 +139,6 @@ template <typename T, typename Extends>
 struct element_type<generic<T, Extends>>
 {
 	using type = element_type_t<T>;
-};
-
-template <typename ClassName, typename Signature, typename Name>
-struct element_type<function<ClassName, Signature, Name>>
-{
-	using type = element_type_t<ClassName>;
 };
 
 template <typename T>
