@@ -9,7 +9,10 @@
 #pragma warning(disable: 4584) // 'class1' : base-class 'class2' is already a base-class of 'class3'
 #endif
 
-#if defined(__GNUG__) || defined(__clang__)
+// "-Winaccessible-base" can be disabled starting with GCC 10 and clang 3.7
+
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Winaccessible-base"
 #endif
