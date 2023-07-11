@@ -8,6 +8,7 @@
 #define SCAPIX_LINK_JAVA_FWD_REF_H
 
 #include <scapix/link/java/detail/api/ref.h>
+#include <scapix/link/java/fwd/object.h>
 
 namespace scapix::link::java {
 

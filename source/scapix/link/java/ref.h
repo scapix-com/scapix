@@ -503,36 +503,6 @@ inline bool operator !=(const ref<T1, S1>& a, const ref<T2, S2>& b)
 	return !(a == b);
 }
 
-template <typename T, typename Y, scope Scope>
-inline ref<T, Scope> static_pointer_cast(const ref<Y, Scope>& r)
-{
-	return ref<T, Scope>(ref<detail::cast<Y>, Scope>(r));
-}
-
-template <typename T, typename Y, scope Scope>
-inline ref<T, Scope> dynamic_pointer_cast(const ref<Y, Scope>& r)
-{
-	if (ref<object<>>(r)->template is_instance_of<T>())
-		return static_pointer_cast<T>(r);
-
-	return ref<T, Scope>();
-}
-
-template <typename T, typename Y, scope Scope>
-inline ref<T, Scope> static_pointer_cast(ref<Y, Scope>&& r)
-{
-	return ref<T, Scope>(ref<detail::cast<Y>, Scope>(std::move(r)));
-}
-
-template <typename T, typename Y, scope Scope>
-inline ref<T, Scope> dynamic_pointer_cast(ref<Y, Scope>&& r)
-{
-	if (ref<object<>>(r)->template is_instance_of<T>())
-		return static_pointer_cast<T>(std::move(r));
-
-	return ref<T, Scope>();
-}
-
 } // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_REF_H

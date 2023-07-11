@@ -7,6 +7,8 @@
 #ifndef SCAPIX_LINK_JAVA_FWD_OBJECT_H
 #define SCAPIX_LINK_JAVA_FWD_OBJECT_H
 
+#include <tuple>
+#include <scapix/meta/string.h>
 #include <scapix/link/java/object_traits.h>
 
 namespace scapix::link::java {

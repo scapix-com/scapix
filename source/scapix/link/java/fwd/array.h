@@ -7,6 +7,8 @@
 #ifndef SCAPIX_LINK_JAVA_FWD_ARRAY_H
 #define SCAPIX_LINK_JAVA_FWD_ARRAY_H
 
+#include <tuple>
+#include <scapix/link/java/object_traits.h>
 #include <scapix/link/java/fwd/object.h>
 #include <scapix/link/java/fwd/signature.h>
 

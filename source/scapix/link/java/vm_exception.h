@@ -11,6 +11,7 @@
 #include <exception>
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/throwable.h>
+#include <scapix/link/java/string.h>
 
 namespace scapix::link::java {
 

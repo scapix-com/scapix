@@ -11,9 +11,8 @@
 #include <type_traits>
 #include <scapix/meta/string.h>
 #include <scapix/link/java/type_traits.h>
-#include <scapix/link/java/ref.h>
-#include <scapix/link/java/detail/exception.h>
 #include <scapix/link/java/detail/api.h>
+#include <scapix/link/java/fwd/ref.h>
 #include <scapix/link/java/fwd/class.h>
 
 namespace scapix::link::java {
@@ -129,6 +128,7 @@ private:
 } // namespace scapix::link::java
 
 #include <scapix/link/java/class.h>
+#include <scapix/link/java/cast.h>
 
 #ifdef SCAPIX_CACHE_CLASS_LOADER
 #include <scapix/link/java/class_loader.h>
