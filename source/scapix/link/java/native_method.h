@@ -31,9 +31,9 @@ struct param
 template <typename T, typename Cpp>
 struct param<ref<T>, Cpp>
 {
-	static jobject jni(Cpp v)
+	static jobject jni(Cpp&& v)
 	{
-		auto res = convert_jni<ref<T>>(v);
+		auto res = convert_jni<ref<T>>(std::move(v));
 
 		assert(res.get_scope() == scope::local || res.get_scope() == scope::generic);
 

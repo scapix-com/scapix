@@ -447,12 +447,12 @@ struct convert<ref<function<ClassName, JniR(JniArgs...), Name>>, std::function<R
 {
 	static std::function<R(Args...)> cpp(ref<function<ClassName, JniR(JniArgs...), Name>> i)
 	{
-		return std::function<R(Args...)>([i = global_ref<function<ClassName, JniR(JniArgs...), Name>>(i)](Args... args)
+		return std::function<R(Args...)>([i = global_ref<function<ClassName, JniR(JniArgs...), Name>>(i)](Args&&... args)
 		{
 			if constexpr (std::is_void_v<R>)
-				return i->call(convert_jni<JniArgs>(args)...);
+				return i->call(convert_jni<JniArgs>(std::forward<Args>(args))...);
 			else
-				return convert_cpp<R>(i->call(convert_jni<JniArgs>(args)...));
+				return convert_cpp<R>(i->call(convert_jni<JniArgs>(std::forward<Args>(args))...));
 		});
 	}
 
