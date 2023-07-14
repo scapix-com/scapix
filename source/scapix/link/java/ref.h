@@ -476,6 +476,17 @@ private:
 
 };
 
+// C++20 Class Template Argument Deduction for Alias Templates
+//
+// MSVC - VS 2019 16.7
+// GCC - 10
+// Clang - not supported as of clang 17
+
+#if 0 // __cpp_deduction_guides >= 201907L
+template <typename T, scope Scope, scope Scope2>
+ref(ref<T, Scope>) -> ref<T, Scope2>;
+#endif
+
 template <typename T = object<>>
 using local_ref = ref<T, scope::local>;
 
