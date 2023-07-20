@@ -38,11 +38,10 @@ public:
 	using impl::set_static_field;
 	using impl::class_object;
 
-	handle_type handle() const { return static_cast<handle_type>(impl::handle()); }
-
 protected:
 
 	object(handle_type h) : impl(h), Bases(h)... {}
+	handle_type handle() const { return static_cast<handle_type>(impl::handle()); }
 
 };
 
