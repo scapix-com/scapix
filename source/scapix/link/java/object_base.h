@@ -20,6 +20,8 @@ namespace scapix::link::java {
 template <typename ClassName, typename ...Bases>
 class object_base : private object_impl<ClassName>, public Bases...
 {
+	using impl = object_impl<ClassName>;
+
 protected:
 
 	using class_name = ClassName;
@@ -27,35 +29,32 @@ protected:
 	using handle_type = handle_type_t<object_base>;
 
 	using base_ = object_base;
-	using object_type = object_impl<ClassName>;
 
-	object_base(handle_type h) : object_type(h), Bases(h)... {}
-
-	handle_type handle() const { return static_cast<handle_type>(object_type::handle()); }
+	object_base(handle_type h) : impl(h), Bases(h)... {}
 
 	template <typename ...Args>
 	static local_ref<ClassName> new_object(Args&&... args)
 	{
-		return object_type::template new_object<void(std::remove_reference_t<Args>...)>(std::forward<Args>(args)...);
+		return impl::template new_object<void(std::remove_reference_t<Args>...)>(std::forward<Args>(args)...);
 	}
 
 	template <typename Name, typename R, typename ...Args>
 	auto call_method(Args&&... args) const
 	{
-		return object_type::template call_method<Name, R(std::remove_reference_t<Args>...)>(std::forward<Args>(args)...);
+		return impl::template call_method<Name, R(std::remove_reference_t<Args>...)>(std::forward<Args>(args)...);
 	}
 
 	template <typename Name, typename R, typename ...Args>
 	static auto call_static_method(Args&&... args)
 	{
-		return object_type::template call_static_method<Name, R(std::remove_reference_t<Args>...)>(std::forward<Args>(args)...);
+		return impl::template call_static_method<Name, R(std::remove_reference_t<Args>...)>(std::forward<Args>(args)...);
 	}
 
-	using object_type::get_field;
-	using object_type::set_field;
-	using object_type::get_static_field;
-	using object_type::set_static_field;
-	using object_type::class_object;
+	using impl::get_field;
+	using impl::set_field;
+	using impl::get_static_field;
+	using impl::set_static_field;
+	using impl::class_object;
 
 };
 
