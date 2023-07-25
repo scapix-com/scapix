@@ -5,7 +5,6 @@ project(scapix CXX)
 find_package(ScapixBin REQUIRED)
 
 set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python, js, cs")
-set(SCAPIX_PLATFORM "generic" CACHE STRING "subfolder of 'platform' folder: generic, ios, android, macos, windows, linux, etc.")
 set(SCAPIX_JAVA_API "jdk-11.0.2" CACHE STRING "subfolder of 'scapix/java_api' folder: jdk-11.0.2, android-28, etc.")
 
 set(_SCAPIX_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
@@ -61,7 +60,7 @@ target_compile_features(scapix PUBLIC cxx_std_17)
 
 target_include_directories(scapix PUBLIC ${_SCAPIX_PATH}/source)
 target_include_directories(scapix PUBLIC ${_SCAPIX_PATH}/java_api/${SCAPIX_JAVA_API})
-target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE} SCAPIX_PLATFORM=${SCAPIX_PLATFORM})
+target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE})
 
 if(${SCAPIX_BRIDGE} STREQUAL java)
     find_package(Boost REQUIRED)
