@@ -19,7 +19,7 @@
 #include <scapix/link/cs/ref.h>
 #include <scapix/link/cs/struct.h>
 
-#ifdef __GNUC__
+#if __has_include(<cxxabi.h>)
 #include <cxxabi.h>
 #endif
 
@@ -198,7 +198,7 @@ struct cpp_api
 		}
 		catch (...)
 		{
-			#ifdef __GNUC__
+			#if __has_include(<cxxabi.h>)
 			auto str = abi::__cxa_current_exception_type()->name();
 			#else
 			auto str = "unknown";
