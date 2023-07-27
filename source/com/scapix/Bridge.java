@@ -1,7 +1,7 @@
 /*
 	com/scapix/Bridge.java
 
-	Copyright (c) 2018 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 package com.scapix;
@@ -12,6 +12,7 @@ public class Bridge
 	private long ptr;
 
 	@SuppressWarnings({"deprecation","removal"})
+	@Override
 	protected native void finalize();
 
 	protected static final class Nop {}

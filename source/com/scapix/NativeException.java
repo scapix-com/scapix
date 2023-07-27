@@ -1,12 +1,12 @@
 /*
 	com/scapix/NativeException.java
 
-	Copyright (c) 2018-2022 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
 package com.scapix;
 
-public class NativeException extends java.lang.RuntimeException
+public final class NativeException extends java.lang.RuntimeException
 {
 	private long ptr;
 
@@ -25,6 +25,7 @@ public class NativeException extends java.lang.RuntimeException
 	private static native void finalize(long p);
 
 	@SuppressWarnings({"deprecation","removal"})
+	@Override
 	protected void finalize()
 	{
 		if (ptr != 0)
