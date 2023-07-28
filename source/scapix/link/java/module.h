@@ -1,11 +1,11 @@
 /*
-	scapix/link/java/init.h
+	scapix/link/java/module.h
 
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_INIT_H
-#define SCAPIX_LINK_JAVA_INIT_H
+#ifndef SCAPIX_LINK_JAVA_MODULE_H
+#define SCAPIX_LINK_JAVA_MODULE_H
 
 #include <scapix/link/java/env.h>
 #include <scapix/link/java/detail/native_exception.h>
@@ -43,4 +43,4 @@ inline void on_unload(JavaVM *vm, void *reserved) noexcept
 
 } // namespace scapix::link::java
 
-#endif // SCAPIX_LINK_JAVA_INIT_H
+#endif // SCAPIX_LINK_JAVA_MODULE_H
