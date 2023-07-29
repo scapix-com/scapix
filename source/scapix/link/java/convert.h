@@ -24,9 +24,12 @@
 #include <scapix/link/java/struct.h>
 
 namespace scapix::link::java {
+namespace detail {
 
-template <typename T>
-struct function_impl;
+template <typename InterfaceClassName, typename Type, typename Name>
+class function_impl;
+
+} // namespace detail
 
 template <typename Jni, typename Cpp, typename = void>
 struct convert_shared;
@@ -458,7 +461,7 @@ struct convert<ref<function<ClassName, JniR(JniArgs...), Name>>, std::function<R
 
 	static ref<function<ClassName, JniR(JniArgs...), Name>> jni(std::function<R(Args...)> f)
 	{
-		return function_impl<function<ClassName, JniR(JniArgs...), Name>>::create(std::move(f));
+		return detail::function_impl<ClassName, JniR(JniArgs...), Name>::create(std::move(f));
 	}
 };
 
