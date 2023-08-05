@@ -50,8 +50,8 @@ struct call<R(Args...)>
 
 private:
 
-	template <typename T>
-	static jobject  arg(java::ref<T> v) { return v.handle(); }
+	template <typename T, scope Scope>
+	static jobject  arg(const java::ref<T, Scope>& v) { return v.handle(); }
 
 	static jboolean arg(jboolean v) { return v; }
 	static jbyte    arg(jbyte v)    { return v; }
