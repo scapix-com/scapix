@@ -98,8 +98,8 @@ struct class_name<detail::native_exception_cpp>
 	using type = detail::native_exception::class_name;
 };
 
-template <typename Jni>
-struct convert_this<Jni, detail::native_exception_cpp>
+template <>
+struct convert_this<detail::native_exception_cpp>
 {
 	static detail::native_exception_cpp& cpp(ref<detail::native_exception> v)
 	{

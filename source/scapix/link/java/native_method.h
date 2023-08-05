@@ -66,10 +66,10 @@ struct param_t<ref<T>>
 template <typename T>
 using param_type = typename param_t<T>::type;
 
-template <typename Class>
+template <typename T>
 inline decltype(auto) get_object(jobject thiz)
 {
-	return convert_this<ref<class_name_t<Class>>, Class>::cpp(ref<class_name_t<Class>>(thiz));
+	return convert_this<T>::cpp(ref<class_name_t<T>>(thiz));
 }
 
 template <typename Func>
