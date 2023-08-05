@@ -29,7 +29,8 @@ inline jint on_load(JavaVM *vm, void *reserved)
 	native_methods
 	<
 		detail::native_exception::class_name,
-		native_method<SCAPIX_META_STRING("finalize"), void(jlong), void(std::int64_t), &detail::native_exception::finalize>
+		native_method<SCAPIX_META_STRING("finalize"), void(), void(detail::native_exception_cpp::*)(), &detail::native_exception_cpp::finalize>,
+		native_method<SCAPIX_META_STRING("getMessage"), ref<string>(), ref<string>(detail::native_exception_cpp::*)() const, &detail::native_exception_cpp::message>
 	>
 	::register_();
 

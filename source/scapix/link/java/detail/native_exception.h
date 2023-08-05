@@ -10,29 +10,77 @@
 #include <memory>
 #include <exception>
 #include <scapix/link/java/throwable.h>
+#include <scapix/link/java/string.h>
 
-namespace scapix::link::java::detail {
+#if __has_include(<cxxabi.h>)
+#include <cxxabi.h>
+#endif
+
+namespace scapix::link::java {
+namespace detail {
+
+class native_exception_cpp final
+{
+public:
+
+	[[noreturn]] void rethrow()
+	{
+		std::rethrow_exception(ptr);
+	}
+
+	void finalize()
+	{
+		delete this;
+	}
+
+	ref<string> message() const
+	{
+		try
+		{
+			std::rethrow_exception(ptr);
+		}
+		catch (const std::exception& e)
+		{
+			return string::new_(e.what());
+		}
+		catch (...)
+		{
+		#if __has_include(<cxxabi.h>)
+			int status;
+			auto name = abi::__cxa_current_exception_type()->name();
+			auto demangled_name = abi::__cxa_demangle(name, nullptr, nullptr, &status);
+			auto ret = string::new_(demangled_name);
+			free(demangled_name);
+			return ret;
+		#else
+			return string::new_("unknown");
+		#endif
+		}
+	}
+
+private:
+
+	std::exception_ptr ptr = std::current_exception();
+
+};
 
 class native_exception : public object<SCAPIX_META_STRING("com/scapix/NativeException"), throwable>
 {
 public:
 
+	native_exception_cpp* cpp()
+	{
+		return reinterpret_cast<native_exception_cpp*>(get_field<SCAPIX_META_STRING("ptr"), jlong>());
+	}
+
 	static local_ref<native_exception> new_object()
 	{
-		return object::new_object<void(jlong)>(reinterpret_cast<jlong>(new std::exception_ptr(std::current_exception())));
+		return object::new_object<void(jlong)>(reinterpret_cast<jlong>(new native_exception_cpp));
 	}
 
 	[[noreturn]] void rethrow()
 	{
-		std::unique_ptr<std::exception_ptr> ptr(reinterpret_cast<std::exception_ptr*>(call_method<SCAPIX_META_STRING("release"), jlong()>()));
-		std::rethrow_exception(*ptr);
-	}
-
-	// native methods implementation
-
-	static void finalize(std::int64_t ptr)
-	{
-		delete reinterpret_cast<std::exception_ptr*>(ptr);
+		cpp()->rethrow();
 	}
 
 protected:
@@ -41,6 +89,25 @@ protected:
 
 };
 
-} // namespace scapix::link::java::detail
+} // namespace detail
+
+template <>
+struct class_name<detail::native_exception_cpp>
+{
+	using type = detail::native_exception::class_name;
+};
+
+// used to convert 'this'
+
+template <typename Jni>
+struct convert<Jni, detail::native_exception_cpp>
+{
+	static detail::native_exception_cpp& cpp(ref<detail::native_exception> v)
+	{
+		return *v->cpp();
+	}
+};
+
+} // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_NATIVE_EXCEPTION_H

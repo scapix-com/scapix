@@ -10,25 +10,12 @@ public final class NativeException extends java.lang.RuntimeException
 {
 	private long ptr;
 
-	private NativeException(long p)
-	{
-		ptr = p;
-	}
-
-	private long release()
-	{
-		long p = ptr;
-		ptr = 0;
-		return p;
-	}
-
-	private static native void finalize(long p);
+	private NativeException(long p) { ptr = p; }
 
 	@SuppressWarnings({"deprecation","removal"})
 	@Override
-	protected void finalize()
-	{
-		if (ptr != 0)
-			finalize(ptr);
-	}
+	protected native void finalize();
+
+	@Override
+	public native String getMessage();
 }
