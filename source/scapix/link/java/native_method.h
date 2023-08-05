@@ -33,7 +33,7 @@ struct param<ref<T>, Cpp>
 {
 	static jobject jni(Cpp&& v)
 	{
-		auto res = convert_jni<ref<T>>(std::move(v));
+		ref<T> res(std::move(v));
 
 		assert(res.get_scope() == scope::local || res.get_scope() == scope::generic);
 
@@ -45,7 +45,7 @@ struct param<ref<T>, Cpp>
 
 	static decltype(auto) cpp(jobject v)
 	{
-		return convert_cpp<Cpp>(ref<T>(v));
+		return ref<T>(v);
 	}
 };
 
@@ -69,7 +69,7 @@ using param_type = typename param_t<T>::type;
 template <typename Class>
 inline decltype(auto) get_object(jobject thiz)
 {
-	return param<ref<class_name_t<Class>>, Class&>::cpp(thiz);
+	return convert_cpp<Class>(ref<class_name_t<Class>>(thiz));
 }
 
 template <typename Func>
