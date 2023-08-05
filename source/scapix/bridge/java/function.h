@@ -108,10 +108,8 @@ struct class_name<bridge::java::function<T>>
 	using type = detail::function::class_name;
 };
 
-// used to convert 'this'
-
 template <typename Jni, typename T>
-struct convert<Jni, bridge::java::function<T>>
+struct convert_this<Jni, bridge::java::function<T>>
 {
 	static bridge::java::function<T>& cpp(ref<detail::function> v)
 	{
@@ -119,10 +117,8 @@ struct convert<Jni, bridge::java::function<T>>
 	}
 };
 
-// used to convert 'this'
-
 template <typename Jni>
-struct convert<Jni, bridge::java::function_base>
+struct convert_this<Jni, bridge::java::function_base>
 {
 	static bridge::java::function_base& cpp(ref<detail::function> v)
 	{

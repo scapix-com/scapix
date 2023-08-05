@@ -69,7 +69,7 @@ using param_type = typename param_t<T>::type;
 template <typename Class>
 inline decltype(auto) get_object(jobject thiz)
 {
-	return convert_cpp<Class>(ref<class_name_t<Class>>(thiz));
+	return convert_this<ref<class_name_t<Class>>, Class>::cpp(ref<class_name_t<Class>>(thiz));
 }
 
 template <typename Func>

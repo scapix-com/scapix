@@ -11,6 +11,7 @@
 #include <exception>
 #include <scapix/link/java/throwable.h>
 #include <scapix/link/java/string.h>
+#include <scapix/link/java/convert.h>
 
 #if __has_include(<cxxabi.h>)
 #include <cxxabi.h>
@@ -97,10 +98,8 @@ struct class_name<detail::native_exception_cpp>
 	using type = detail::native_exception::class_name;
 };
 
-// used to convert 'this'
-
 template <typename Jni>
-struct convert<Jni, detail::native_exception_cpp>
+struct convert_this<Jni, detail::native_exception_cpp>
 {
 	static detail::native_exception_cpp& cpp(ref<detail::native_exception> v)
 	{

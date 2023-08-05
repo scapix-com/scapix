@@ -176,10 +176,8 @@ struct class_name<bridge::java::init<T>>
 	using type = class_name_t<T>;
 };
 
-// used to convert 'this'
-
 template <typename Jni, typename T>
-struct convert<Jni, bridge::java::init<T>>
+struct convert_this<Jni, bridge::java::init<T>>
 {
 	static bridge::java::init<T> cpp(ref<bridge::java::detail::bridge_object<T>> v)
 	{
@@ -187,10 +185,8 @@ struct convert<Jni, bridge::java::init<T>>
 	}
 };
 
-// used to convert 'this'
-
 template <typename Jni, typename T>
-struct convert<Jni, T, std::enable_if_t<bridge::is_object<T>>>
+struct convert_this<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 {
 	static T& cpp(ref<bridge::java::detail::bridge_object<T>> v)
 	{
