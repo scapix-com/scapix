@@ -36,9 +36,10 @@ struct ref<scope::global>
 	static void delete_ref(jobject h) noexcept { detail::env()->DeleteGlobalRef(h); }
 };
 
-// Bug in some JVM implementations: according to JNI specification,
-// `NewWeakGlobalRef` should return null when passed null parameter.
+// Bug in JDK 17+: according to JNI specification,
+// `NewWeakGlobalRef` should return null when passed null argument.
 // But some JVM implementations throw `java.lang.OutOfMemoryError: C heap space`.
+// https://bugs.openjdk.org/browse/JDK-8313874
 
 template <>
 struct ref<scope::weak>
