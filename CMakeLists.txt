@@ -63,8 +63,8 @@ target_include_directories(scapix PUBLIC ${_SCAPIX_PATH}/java_api/${SCAPIX_JAVA_
 target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE})
 
 if(${SCAPIX_BRIDGE} STREQUAL java)
-    find_package(Boost REQUIRED)
-    target_link_libraries(scapix PUBLIC Boost::headers)
+    find_package(Boost REQUIRED config metaparse)
+    target_link_libraries(scapix PUBLIC Boost::config Boost::metaparse)
 endif()
 
 if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
