@@ -8,6 +8,8 @@ set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python, js, cs")
 set(SCAPIX_JAVA_API "jdk-11.0.2" CACHE STRING "subfolder of 'scapix/java_api' folder: jdk-11.0.2, android-28, etc.")
 
 set(_SCAPIX_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
+set(SCAPIX_EXE "${SCAPIX_EXE}" CACHE INTERNAL "")
+set(SCAPIX_JAVA_EXE "${SCAPIX_JAVA_EXE}" CACHE INTERNAL "")
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*)
 source_group(TREE ${_SCAPIX_PATH}/source PREFIX "source" FILES ${sources})
@@ -491,8 +493,8 @@ foreach(bridge_header ${bridge_headers})
 
     add_custom_command(
             OUTPUT ${generated_sources}
-            COMMAND "${SCAPIX_EXE_DIR}/${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_PROCESSOR}/scapix" -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=$<IF:$<IN_LIST:cxx_std_23,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++2b,$<IF:$<IN_LIST:cxx_std_20,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++20,c++17>> ${scapix_clang_config} "$<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>"
-            DEPENDS "${bridge_header_absolute}" # "${SCAPIX_EXE}"
+            COMMAND "${SCAPIX_EXE}" -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=$<IF:$<IN_LIST:cxx_std_23,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++2b,$<IF:$<IN_LIST:cxx_std_20,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++20,c++17>> ${scapix_clang_config} "$<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>"
+            DEPENDS "${bridge_header_absolute}" "${SCAPIX_EXE}"
             IMPLICIT_DEPENDS CXX "${bridge_header_absolute}"
             WORKING_DIRECTORY "${PROJECT_ROOT}"
             COMMENT "Running Scapix Bridge for ${bridge_header_relative}"
