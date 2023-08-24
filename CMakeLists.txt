@@ -502,9 +502,10 @@ foreach(bridge_header ${bridge_headers})
             VERBATIM
     )
 
-    # GENERATED property implicitly set for OUTPUT arguments of add_custom_command(), so we generally wouldn't need this.
+    # GENERATED property implicitly set for OUTPUT arguments of add_custom_command().
+    # Before CMake 3.18 GENERATED property visible only in the directory where it is set.
     # In CMake 3.18 we can make GENERATED property visible also in target directory.
-    # cmake_minimum_required(VERSION 3.20) makes GENERATED property visible in all directories.
+    # In CMake 3.20 GENERATED property visible in all directories.
     if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.18)
         set_source_files_properties(${generated_sources} TARGET_DIRECTORY ${target} PROPERTIES GENERATED TRUE)
     endif()
