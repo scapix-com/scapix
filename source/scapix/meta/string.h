@@ -55,7 +55,7 @@ struct string_type
 	using type = typename impl<std::make_index_sequence<S.size()>>::type;
 };
 
-#define SCAPIX_META_STRING(s) scapix::meta::string_type<s>::type
+#define SCAPIX_META_STRING(s) ::scapix::meta::string_type<s>::type
 
 } // namespace scapix::meta
 
