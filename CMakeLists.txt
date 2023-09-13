@@ -461,8 +461,7 @@ foreach(bridge_header ${bridge_headers})
         ${generated_sources_interface}
     )
 
-    # GENERATED property implicitly set for OUTPUT arguments of add_custom_command()
-    #set_source_files_properties(${generated_sources} PROPERTIES GENERATED TRUE)
+    # can add all generated_sources, but mark unused as HEADER_FILE_ONLY
 
     #set_source_files_properties(${generated_sources} PROPERTIES HEADER_FILE_ONLY TRUE)
     #set_source_files_properties(${generated_sources_${SCAPIX_BRIDGE}} PROPERTIES HEADER_FILE_ONLY FALSE)
