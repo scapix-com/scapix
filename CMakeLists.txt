@@ -60,6 +60,15 @@ endif()
 
 target_compile_features(scapix PUBLIC cxx_std_17)
 
+# scapix looks at COMPILE_FEATURES, not CXX_STANDARD
+
+get_target_property(scapix_cxx_standard scapix CXX_STANDARD)
+get_target_property(scapix_cxx_standard_required scapix CXX_STANDARD_REQUIRED)
+
+if(scapix_cxx_standard AND scapix_cxx_standard_required)
+    target_compile_features(scapix PUBLIC cxx_std_${scapix_cxx_standard})
+endif()
+
 target_include_directories(scapix PUBLIC ${_SCAPIX_PATH}/source)
 target_include_directories(scapix PUBLIC ${_SCAPIX_PATH}/java_api/${SCAPIX_JAVA_API})
 target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE})
