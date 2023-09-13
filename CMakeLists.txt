@@ -484,31 +484,37 @@ foreach(bridge_header ${bridge_headers})
     set(scapix_clang_config)
 
     if(MSVC)
-        set(scapix_clang_config ${scapix_clang_config} -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH)
+        list(APPEND scapix_clang_config -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH)
     endif()
 
     if(ANDROID)
-        set(scapix_clang_config ${scapix_clang_config} -DANDROID -target ${ANDROID_LLVM_TRIPLE} --sysroot "${ANDROID_TOOLCHAIN_ROOT}/sysroot")
+        list(APPEND scapix_clang_config -DANDROID -target ${ANDROID_LLVM_TRIPLE} --sysroot ${ANDROID_TOOLCHAIN_ROOT}/sysroot)
     elseif(APPLE)
         if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-            set(scapix_clang_config ${scapix_clang_config} -arch arm64)
+            list(APPEND scapix_clang_config -arch arm64)
         endif()
-        set(scapix_clang_config ${scapix_clang_config} --sysroot ${CMAKE_OSX_SYSROOT})
+        list(APPEND scapix_clang_config --sysroot ${CMAKE_OSX_SYSROOT})
     elseif(EMSCRIPTEN)
-        set(scapix_clang_config ${scapix_clang_config} -DEMSCRIPTEN -target wasm32-unknown-emscripten --sysroot ${EMSCRIPTEN_SYSROOT} -iwithsysroot /include/compat)
+        list(APPEND scapix_clang_config -DEMSCRIPTEN -target wasm32-unknown-emscripten --sysroot ${EMSCRIPTEN_SYSROOT} -iwithsysroot /include/compat)
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_TARGET)
-        set(scapix_clang_config ${scapix_clang_config} -target ${CMAKE_CXX_COMPILER_TARGET})
+        list(APPEND scapix_clang_config -target ${CMAKE_CXX_COMPILER_TARGET})
     endif()
 
+    list(APPEND scapix_clang_config -xc++)
+    list(APPEND scapix_clang_config -std=$<IF:$<IN_LIST:cxx_std_23,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++2b,$<IF:$<IN_LIST:cxx_std_20,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++20,c++17>>)
+    list(APPEND scapix_clang_config $<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>)
+    list(APPEND scapix_clang_config $<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>)
+
     add_custom_command(
-            OUTPUT ${generated_sources}
-            COMMAND "${SCAPIX_EXE}" -scapix-domain=${domain} ${bridge_header} -- -xc++ -std=$<IF:$<IN_LIST:cxx_std_23,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++2b,$<IF:$<IN_LIST:cxx_std_20,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++20,c++17>> ${scapix_clang_config} "$<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>" "$<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>"
-            DEPENDS "${bridge_header_absolute}" "${SCAPIX_EXE}"
-            IMPLICIT_DEPENDS CXX "${bridge_header_absolute}"
-            WORKING_DIRECTORY "${PROJECT_ROOT}"
-            COMMENT "Running Scapix Bridge for ${bridge_header_relative}"
-            COMMAND_EXPAND_LISTS
-            VERBATIM
+        OUTPUT ${generated_sources}
+        COMMAND ${SCAPIX_EXE} -scapix-domain=${domain} ${bridge_header} -- "${scapix_clang_config}"
+        MAIN_DEPENDENCY ${bridge_header_absolute}
+        IMPLICIT_DEPENDS CXX ${bridge_header_absolute}
+        DEPENDS ${SCAPIX_EXE}
+        WORKING_DIRECTORY ${PROJECT_ROOT}
+        COMMENT "Scapix Bridge: ${bridge_header_relative}"
+        COMMAND_EXPAND_LISTS
+        VERBATIM
     )
 
     # GENERATED property implicitly set for OUTPUT arguments of add_custom_command().
@@ -519,7 +525,7 @@ foreach(bridge_header ${bridge_headers})
         set_source_files_properties(${generated_sources} TARGET_DIRECTORY ${target} PROPERTIES GENERATED TRUE)
     endif()
 
-    set(all_generated_sources ${all_generated_sources} ${generated_sources})
+    list(APPEND all_generated_sources ${generated_sources})
 
 endforeach(bridge_header)
 
