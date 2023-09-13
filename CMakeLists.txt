@@ -405,14 +405,15 @@ set(all_generated_sources)
 
 foreach(bridge_header ${bridge_headers})
 
-    get_filename_component(bridge_header_name ${bridge_header} NAME_WLE)
-    if(IS_ABSOLUTE bridge_header)
+    if(IS_ABSOLUTE ${bridge_header})
         file(RELATIVE_PATH bridge_header_relative ${PROJECT_ROOT} ${bridge_header})
         set(bridge_header_absolute ${bridge_header})
     else()
         set(bridge_header_relative ${bridge_header})
         get_filename_component(bridge_header_absolute ${bridge_header} ABSOLUTE BASE_DIR ${PROJECT_ROOT})
     endif()
+
+    get_filename_component(bridge_header_name ${bridge_header} NAME_WLE)
     camel_case(${bridge_header_name} bridge_header_name_camel)
 
     set(generated_sources_java_private
