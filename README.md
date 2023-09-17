@@ -1,6 +1,6 @@
 ﻿# Scapix Language Bridge
 
-[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Automatic%20bindings%20from%20C%2B%2B%20to%20Java%2C%20Objective-C%2C%20Swift%2C%20Python%2C%20JavaScript%20%28WebAssembly%29%20and%20C%23&url=https://github.com/scapix-com/scapix)
+🇺🇦 If you like this project, please consider donating to one of the funds helping victims of russian aggression against Ukraine: [ukraine.ua](https://war.ukraine.ua/donate/)
 
 Automatic, on the fly bindings from C++ to `Java`, `Objective-C`, `Swift`, `Python`, `JavaScript` (WebAssembly) and `C#`.
 Bridge code automatically generated directly from C++ header files, no need to manually maintain IDL definitions or bindings.
