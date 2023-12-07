@@ -12,6 +12,7 @@
 #include <scapix/core/type_traits.h>
 #include <scapix/meta/string.h>
 #include <scapix/link/java/type_traits.h>
+#include <scapix/link/java/signature.h>
 #include <scapix/link/java/detail/api/ref.h>
 #include <scapix/link/java/detail/util.h>
 #include <scapix/link/java/fwd/object.h>
@@ -109,18 +110,6 @@ constexpr bool is_convertible_element =
 ;
 
 } // namespace detail
-
-template <typename T, typename ...Params>
-struct generic_type;
-
-template <typename T, typename Extends = object<>>
-struct generic;
-
-//template <typename T>
-//struct extends;
-
-//template <typename T>
-//struct super;
 
 template <typename T>
 struct element_type

@@ -17,6 +17,18 @@ using scope = detail::api::scope;
 template <typename T = object<>, scope Scope = scope::generic>
 class ref;
 
+template <typename T, typename ...Params>
+struct generic_type;
+
+template <typename T, typename Extends = object<>>
+struct generic;
+
+//template <typename T>
+//struct extends;
+
+//template <typename T>
+//struct super;
+
 } // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_FWD_REF_H
