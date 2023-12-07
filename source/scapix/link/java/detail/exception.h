@@ -67,17 +67,6 @@ inline T* check_exception(T* p)
 	return p;
 }
 
-// to do: remove when all api calls return ref<>
-
-template <typename T, typename = std::enable_if_t<std::is_convertible_v<T, jobject>>>
-inline T check_exception(T obj)
-{
-	if (BOOST_UNLIKELY(!obj))
-		throw_exception();
-
-	return obj;
-}
-
 template <typename T, scope Scope>
 inline ref<T, Scope> check_exception(ref<T, Scope> obj)
 {

@@ -132,7 +132,7 @@ inline jsize get_array_length(jarray array) noexcept
 template <typename T>
 inline local_ref<T[]> new_array(jsize len)
 {
-	return local_ref<T[]>(check_exception(type<T>::new_array(len)));
+	return check_exception(local_ref<T[]>(type<T>::new_array(len)));
 }
 
 template <typename T, lock Lock>
