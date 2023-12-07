@@ -121,12 +121,12 @@ public:
 
 	static local_ref<string> new_(const jchar* buf, jsize len)
 	{
-		return local_ref<string>(detail::api::new_string(buf, len));
+		return detail::api::new_string(buf, len);
 	}
 
 	static local_ref<string> new_(const char* buf)
 	{
-		return local_ref<string>(detail::api::new_string(buf));
+		return detail::api::new_string(buf);
 	}
 
 	template <typename Char = jchar>

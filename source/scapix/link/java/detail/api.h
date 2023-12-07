@@ -15,9 +15,6 @@
 
 namespace scapix::link::java::detail::api {
 
-// It is possible to allow creating ref<T> for incomplete T from jobject handle (but quite painfull).
-// This would allow moving all api calls using ref<class_>, ref<string>, ref<throwable>, etc. to "api.h".
-
 template <typename T>
 struct call;
 
@@ -185,14 +182,16 @@ inline void set_array_element(java::ref<T[]> obj, jsize index, java::ref<T> valu
 
 // string
 
-inline jstring new_string(const jchar* buf, jsize len) noexcept
+inline local_ref<java::string> new_string(const jchar* buf, jsize len)
 {
-	return env()->NewString(buf, len);
+	check_exception_on_destroy check;
+	return local_ref<java::string>(env()->NewString(buf, len));
 }
 
-inline jstring new_string(const char* buf) noexcept
+inline local_ref<java::string> new_string(const char* buf)
 {
-	return env()->NewStringUTF(buf);
+	check_exception_on_destroy check;
+	return local_ref<java::string>(env()->NewStringUTF(buf));
 }
 
 template <typename Char>
