@@ -17,7 +17,9 @@ public:
 
 	static local_ref<byte_buffer> new_direct(void* address, jlong capacity)
 	{
-		return local_ref<byte_buffer>(detail::env()->NewDirectByteBuffer(address, capacity));
+		jobject buf = detail::env()->NewDirectByteBuffer(address, capacity);
+		detail::check_exception();
+		return local_ref<byte_buffer>(buf);
 	}
 
 	void* direct_address() const

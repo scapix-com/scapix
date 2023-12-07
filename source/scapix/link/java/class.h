@@ -22,17 +22,23 @@ public:
 
 	static local_ref<class_> define_class(const char* name, ref<SCAPIX_META_STRING("java/lang/ClassLoader")> loader, const jbyte* buf, jsize size)
 	{
-		return detail::check_exception(local_ref<class_>(detail::env()->DefineClass(name, loader.handle(), buf, size)));
+		jclass cls = detail::env()->DefineClass(name, loader.handle(), buf, size);
+		detail::check_result(cls);
+		return local_ref<class_>(cls);
 	}
 
 	static local_ref<class_> find_class(const char* name)
 	{
-		return detail::check_exception(local_ref<class_>(detail::env()->FindClass(name)));
+		jclass cls = detail::env()->FindClass(name);
+		detail::check_result(cls);
+		return local_ref<class_>(cls);
 	}
 
 	local_ref<class_> get_super_class() const
 	{
-		return detail::check_exception(local_ref<class_>(detail::env()->GetSuperclass(handle())));
+		jclass cls = detail::env()->GetSuperclass(handle());
+		detail::check_result(cls);
+		return local_ref<class_>(cls);
 	}
 
 	jboolean is_assignable_from(ref<class_> source) const noexcept

@@ -25,11 +25,14 @@ struct type<java::ref<T>>
 	template <typename ...Args> static local_ref<T> call_method(jobject obj, jmethodID id, Args... args) noexcept { return local_ref<T>(env()->CallObjectMethod(obj, id, args...)); }
 	template <typename ...Args> static local_ref<T> call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return local_ref<T>(env()->CallNonvirtualObjectMethod(obj, cls, id, args...)); }
 	template <typename ...Args> static local_ref<T> call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return local_ref<T>(env()->CallStaticObjectMethod(cls, id, args...)); }
+};
 
-	template <typename ...Args> static local_ref<T> new_object(jclass cls, jmethodID id, Args... args) noexcept { return local_ref<T>(env()->NewObject(cls, id, args...)); }
-	static local_ref<java::array<T>> new_array(jsize len, java::ref<T> init) noexcept { return local_ref<java::array<T>>(env()->NewObjectArray(len, detail::befriend<T, type>::class_object().handle(), init.handle())); }
-	static local_ref<T> get_array_element(java::ref<java::array<T>> array, jsize index) noexcept { return local_ref<T>(env()->GetObjectArrayElement(array.handle(), index)); }
-	static void set_array_element(java::ref<java::array<T>> array, jsize index, java::ref<T> value) noexcept { env()->SetObjectArrayElement(array.handle(), index, value.handle()); }
+template <>
+struct type<void>
+{
+	template <typename ...Args> static void call_method(jobject obj, jmethodID id, Args... args) noexcept { env()->CallVoidMethod(obj, id, args...); }
+	template <typename ...Args> static void call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { env()->CallNonvirtualVoidMethod(obj, cls, id, args...); }
+	template <typename ...Args> static void call_static_method(jclass cls, jmethodID id, Args... args) noexcept { env()->CallStaticVoidMethod(cls, id, args...); }
 };
 
 template <>
@@ -182,14 +185,6 @@ struct type<jdouble>
 	static void release_array_elements(jdoubleArray array, jdouble* elems, jint mode) noexcept { env()->ReleaseDoubleArrayElements(array, elems, mode); }
 	static void get_array_region(jdoubleArray array, jsize start, jsize len, jdouble* buf) noexcept { env()->GetDoubleArrayRegion(array, start, len, buf); }
 	static void set_array_region(jdoubleArray array, jsize start, jsize len, const jdouble *buf) noexcept { env()->SetDoubleArrayRegion(array, start, len, buf); }
-};
-
-template <>
-struct type<void>
-{
-	template <typename ...Args> static void call_method(jobject obj, jmethodID id, Args... args) noexcept { env()->CallVoidMethod(obj, id, args...); }
-	template <typename ...Args> static void call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { env()->CallNonvirtualVoidMethod(obj, cls, id, args...); }
-	template <typename ...Args> static void call_static_method(jclass cls, jmethodID id, Args... args) noexcept { env()->CallStaticVoidMethod(cls, id, args...); }
 };
 
 } // namespace scapix::link::java::detail::api

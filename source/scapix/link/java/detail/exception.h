@@ -19,6 +19,7 @@ namespace scapix::link::java::detail {
 inline void check_exception()
 {
 	jthrowable e = env()->ExceptionOccurred();
+
 	if (BOOST_UNLIKELY(e != 0))
 		throw_exception(e);
 }
@@ -26,11 +27,12 @@ inline void check_exception()
 inline void check_exception_nested()
 {
 	jthrowable e = env()->ExceptionOccurred();
+
 	if (BOOST_UNLIKELY(e != 0))
 		throw_exception_nested(e);
 }
 
-inline jfieldID check_exception(jfieldID id)
+inline jfieldID check_result(jfieldID id)
 {
 	if (BOOST_UNLIKELY(!id))
 		throw_exception();
@@ -38,7 +40,7 @@ inline jfieldID check_exception(jfieldID id)
 	return id;
 }
 
-inline jmethodID check_exception(jmethodID id)
+inline jmethodID check_result(jmethodID id)
 {
 	if (BOOST_UNLIKELY(!id))
 		throw_exception();
@@ -48,7 +50,7 @@ inline jmethodID check_exception(jmethodID id)
 
 // RegisterNatives()
 
-inline jint check_exception(jint i)
+inline jint check_result(jint i)
 {
 	if (BOOST_UNLIKELY(i))
 		throw_exception();
@@ -59,7 +61,7 @@ inline jint check_exception(jint i)
 // Get<PrimitiveType>ArrayElements(), GetPrimitiveArrayCritical()
 
 template <typename T, typename = std::enable_if_t<is_primitive_v<T>>>
-inline T* check_exception(T* p)
+inline T* check_result(T* p)
 {
 	if (BOOST_UNLIKELY(!p))
 		throw_exception();
@@ -67,22 +69,16 @@ inline T* check_exception(T* p)
 	return p;
 }
 
-template <typename T, scope Scope>
-inline ref<T, Scope> check_exception(ref<T, Scope> obj)
+inline void check_result(jobject obj)
 {
-	if (BOOST_UNLIKELY(!obj.handle()))
+	if (BOOST_UNLIKELY(!obj))
 		throw_exception();
-
-	return obj;
 }
 
-template <typename T, scope Scope>
-inline ref<T, Scope> check_exception_nested(ref<T, Scope> obj)
+inline void check_result_nested(jobject obj)
 {
-	if (BOOST_UNLIKELY(!obj.handle()))
+	if (BOOST_UNLIKELY(!obj))
 		throw_exception_nested();
-
-	return obj;
 }
 
 struct check_exception_on_destroy

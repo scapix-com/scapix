@@ -12,6 +12,8 @@
 #include <scapix/link/java/detail/api/string.h>
 #include <scapix/link/java/detail/api/type.h>
 #include <scapix/link/java/detail/exception.h>
+#include <scapix/link/java/fwd/object_impl.h>
+#include <scapix/link/java/fwd/throwable.h>
 
 namespace scapix::link::java::detail::api {
 
@@ -40,9 +42,11 @@ struct call<R(Args...)>
 	}
 
 	template <typename T>
-	static java::ref<T> new_object(jclass cls, jmethodID id, Args... args)
+	static local_ref<T> new_object(jclass cls, jmethodID id, Args... args)
 	{
-		return check_exception_nested(type<java::ref<T>>::new_object(cls, id, arg(args)...));
+		jobject obj = env()->NewObject(cls, id, arg(args)...);
+		check_result_nested(obj);
+		return local_ref<T>(obj);
 	}
 
 private:
@@ -60,29 +64,33 @@ private:
 	static jdouble  arg(jdouble v)  { return v; }
 };
 
+// method and field id
+
 inline jfieldID get_field_id(jclass cls, const char* name, const char* sig)
 {
-	return check_exception(env()->GetFieldID(cls, name, sig));
+	return check_result(env()->GetFieldID(cls, name, sig));
 }
 
 inline jfieldID get_static_field_id(jclass cls, const char* name, const char* sig)
 {
-	return check_exception(env()->GetStaticFieldID(cls, name, sig));
+	return check_result(env()->GetStaticFieldID(cls, name, sig));
 }
 
 inline jmethodID get_method_id(jclass cls, const char* name, const char* sig)
 {
-	return check_exception(env()->GetMethodID(cls, name, sig));
+	return check_result(env()->GetMethodID(cls, name, sig));
 }
 
 inline jmethodID get_static_method_id(jclass cls, const char* name, const char* sig)
 {
-	return check_exception(env()->GetStaticMethodID(cls, name, sig));
+	return check_result(env()->GetStaticMethodID(cls, name, sig));
 }
+
+// native methods
 
 inline void register_natives(jclass cls, const JNINativeMethod* methods, jint count)
 {
-	check_exception(env()->RegisterNatives(cls, methods, count));
+	check_result(env()->RegisterNatives(cls, methods, count));
 }
 
 inline jint unregister_natives(jclass cls) noexcept
@@ -90,10 +98,19 @@ inline jint unregister_natives(jclass cls) noexcept
 	return env()->UnregisterNatives(cls);
 }
 
+// exception
+
 inline jint throw_new(jclass cls, const char* message) noexcept
 {
 	return env()->ThrowNew(cls, message);
 }
+
+inline local_ref<java::throwable> exception_occurred() noexcept
+{
+	return local_ref<java::throwable>(env()->ExceptionOccurred());
+}
+
+// field
 
 template <typename T>
 inline T get_field(jobject obj, jfieldID id) noexcept
@@ -119,6 +136,8 @@ inline void set_static_field(jclass cls, jfieldID id, T value) noexcept
 	type<T>::set_static_field(cls, id, value);
 }
 
+// array
+
 inline jsize get_array_length(jarray array) noexcept
 {
 	return env()->GetArrayLength(array);
@@ -129,13 +148,15 @@ inline jsize get_array_length(jarray array) noexcept
 template <typename T>
 inline local_ref<T[]> new_array(jsize len)
 {
-	return check_exception(type<T>::new_array(len));
+	local_ref<T[]> array = type<T>::new_array(len);
+	check_result(array.handle());
+	return array;
 }
 
 template <typename T, lock Lock>
 inline T* get_array_elements(java::ref<T[]> obj, jboolean* is_copy) noexcept
 {
-	return check_exception(array<T, Lock>::get_array_elements(obj.handle(), is_copy));
+	return check_result(array<T, Lock>::get_array_elements(obj.handle(), is_copy));
 }
 
 template <typename T, lock Lock>
@@ -163,20 +184,23 @@ inline void set_array_region(java::ref<T[]> obj, jsize start, jsize len, const T
 template <typename T>
 inline local_ref<T[]> new_array(jsize len, java::ref<T> init)
 {
-	return check_exception(type<java::ref<T>>::new_array(len, init));
+	jobjectArray array = env()->NewObjectArray(len, object_impl<class_name_t<T>>::class_object().handle(), init.handle());
+	check_result(array);
+	return local_ref<T[]>(array);
 }
 
 template <typename T>
-inline local_ref<T> get_array_element(java::ref<T[]> obj, jsize index)
+inline local_ref<T> get_array_element(java::ref<T[]> array, jsize index)
 {
-	check_exception_on_destroy check;
-	return type<java::ref<T>>::get_array_element(obj, index);
+	jobject element = env()->GetObjectArrayElement(array.handle(), index);
+	check_exception();
+	return local_ref<T>(element);
 }
 
 template <typename T>
-inline void set_array_element(java::ref<T[]> obj, jsize index, java::ref<T> value)
+inline void set_array_element(java::ref<T[]> array, jsize index, java::ref<T> value)
 {
-	type<java::ref<T>>::set_array_element(obj, index, value);
+	env()->SetObjectArrayElement(array.handle(), index, value.handle());
 	check_exception();
 }
 
@@ -184,14 +208,16 @@ inline void set_array_element(java::ref<T[]> obj, jsize index, java::ref<T> valu
 
 inline local_ref<java::string> new_string(const jchar* buf, jsize len)
 {
-	check_exception_on_destroy check;
-	return local_ref<java::string>(env()->NewString(buf, len));
+	jstring str = env()->NewString(buf, len);
+	check_exception();
+	return local_ref<java::string>(str);
 }
 
 inline local_ref<java::string> new_string(const char* buf)
 {
-	check_exception_on_destroy check;
-	return local_ref<java::string>(env()->NewStringUTF(buf));
+	jstring str = env()->NewStringUTF(buf);
+	check_exception();
+	return local_ref<java::string>(str);
 }
 
 template <typename Char>
