@@ -69,16 +69,22 @@ inline T* check_result(T* p)
 	return p;
 }
 
-inline void check_result(jobject obj)
+template <typename T>
+inline local_ref<T> check_result(jobject obj)
 {
 	if (BOOST_UNLIKELY(!obj))
 		throw_exception();
+
+	return local_ref<T>(obj);
 }
 
-inline void check_result_nested(jobject obj)
+template <typename T>
+inline local_ref<T> check_result_nested(jobject obj)
 {
 	if (BOOST_UNLIKELY(!obj))
 		throw_exception_nested();
+
+	return local_ref<T>(obj);
 }
 
 struct check_exception_on_destroy

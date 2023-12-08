@@ -47,7 +47,7 @@ struct type<jboolean>
 	template <typename ...Args> static jboolean call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return env()->CallNonvirtualBooleanMethod(obj, cls, id, args...); }
 	template <typename ...Args> static jboolean call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return env()->CallStaticBooleanMethod(cls, id, args...); }
 
-	static local_ref<java::array<jboolean>> new_array(jsize len) noexcept { return local_ref<java::array<jboolean>>(env()->NewBooleanArray(len)); }
+	static jbooleanArray new_array(jsize len) noexcept { return env()->NewBooleanArray(len); }
 	static jboolean* get_array_elements(jbooleanArray array, jboolean* isCopy) noexcept { return env()->GetBooleanArrayElements(array, isCopy); }
 	static void release_array_elements(jbooleanArray array, jboolean* elems, jint mode) noexcept { env()->ReleaseBooleanArrayElements(array, elems, mode); }
 	static void get_array_region(jbooleanArray array, jsize start, jsize len, jboolean* buf) noexcept { env()->GetBooleanArrayRegion(array, start, len, buf); }
@@ -66,7 +66,7 @@ struct type<jbyte>
 	template <typename ...Args> static jbyte call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return env()->CallNonvirtualByteMethod(obj, cls, id, args...); }
 	template <typename ...Args> static jbyte call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return env()->CallStaticByteMethod(cls, id, args...); }
 
-	static local_ref<java::array<jbyte>> new_array(jsize len) noexcept { return local_ref<java::array<jbyte>>(env()->NewByteArray(len)); }
+	static jbyteArray new_array(jsize len) noexcept { return env()->NewByteArray(len); }
 	static jbyte* get_array_elements(jbyteArray array, jboolean* isCopy) noexcept { return env()->GetByteArrayElements(array, isCopy); }
 	static void release_array_elements(jbyteArray array, jbyte* elems, jint mode) noexcept { env()->ReleaseByteArrayElements(array, elems, mode); }
 	static void get_array_region(jbyteArray array, jsize start, jsize len, jbyte* buf) noexcept { env()->GetByteArrayRegion(array, start, len, buf); }
@@ -85,7 +85,7 @@ struct type<jchar>
 	template <typename ...Args> static jchar call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return env()->CallNonvirtualCharMethod(obj, cls, id, args...); }
 	template <typename ...Args> static jchar call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return env()->CallStaticCharMethod(cls, id, args...); }
 
-	static local_ref<java::array<jchar>> new_array(jsize len) noexcept { return local_ref<java::array<jchar>>(env()->NewCharArray(len)); }
+	static jcharArray new_array(jsize len) noexcept { return env()->NewCharArray(len); }
 	static jchar* get_array_elements(jcharArray array, jboolean* isCopy) noexcept { return env()->GetCharArrayElements(array, isCopy); }
 	static void release_array_elements(jcharArray array, jchar* elems, jint mode) noexcept { env()->ReleaseCharArrayElements(array, elems, mode); }
 	static void get_array_region(jcharArray array, jsize start, jsize len, jchar* buf) noexcept { env()->GetCharArrayRegion(array, start, len, buf); }
@@ -104,7 +104,7 @@ struct type<jshort>
 	template <typename ...Args> static jshort call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return env()->CallNonvirtualShortMethod(obj, cls, id, args...); }
 	template <typename ...Args> static jshort call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return env()->CallStaticShortMethod(cls, id, args...); }
 
-	static local_ref<java::array<jshort>> new_array(jsize len) noexcept { return local_ref<java::array<jshort>>(env()->NewShortArray(len)); }
+	static jshortArray new_array(jsize len) noexcept { return env()->NewShortArray(len); }
 	static jshort* get_array_elements(jshortArray array, jboolean* isCopy) noexcept { return env()->GetShortArrayElements(array, isCopy); }
 	static void release_array_elements(jshortArray array, jshort* elems, jint mode) noexcept { env()->ReleaseShortArrayElements(array, elems, mode); }
 	static void get_array_region(jshortArray array, jsize start, jsize len, jshort* buf) noexcept { env()->GetShortArrayRegion(array, start, len, buf); }
@@ -123,7 +123,7 @@ struct type<jint>
 	template <typename ...Args> static jint call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return env()->CallNonvirtualIntMethod(obj, cls, id, args...); }
 	template <typename ...Args> static jint call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return env()->CallStaticIntMethod(cls, id, args...); }
 
-	static local_ref<java::array<jint>> new_array(jsize len) noexcept { return local_ref<java::array<jint>>(env()->NewIntArray(len)); }
+	static jintArray new_array(jsize len) noexcept { return env()->NewIntArray(len); }
 	static jint* get_array_elements(jintArray array, jboolean* isCopy) noexcept { return env()->GetIntArrayElements(array, isCopy); }
 	static void release_array_elements(jintArray array, jint* elems, jint mode) noexcept { env()->ReleaseIntArrayElements(array, elems, mode); }
 	static void get_array_region(jintArray array, jsize start, jsize len, jint* buf) noexcept { env()->GetIntArrayRegion(array, start, len, buf); }
@@ -142,7 +142,7 @@ struct type<jlong>
 	template <typename ...Args> static jlong call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return env()->CallNonvirtualLongMethod(obj, cls, id, args...); }
 	template <typename ...Args> static jlong call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return env()->CallStaticLongMethod(cls, id, args...); }
 
-	static local_ref<java::array<jlong>> new_array(jsize len) noexcept { return local_ref<java::array<jlong>>(env()->NewLongArray(len)); }
+	static jlongArray new_array(jsize len) noexcept { return env()->NewLongArray(len); }
 	static jlong* get_array_elements(jlongArray array, jboolean* isCopy) noexcept { return env()->GetLongArrayElements(array, isCopy); }
 	static void release_array_elements(jlongArray array, jlong* elems, jint mode) noexcept { env()->ReleaseLongArrayElements(array, elems, mode); }
 	static void get_array_region(jlongArray array, jsize start, jsize len, jlong* buf) noexcept { env()->GetLongArrayRegion(array, start, len, buf); }
@@ -161,7 +161,7 @@ struct type<jfloat>
 	template <typename ...Args> static jfloat call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return env()->CallNonvirtualFloatMethod(obj, cls, id, args...); }
 	template <typename ...Args> static jfloat call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return env()->CallStaticFloatMethod(cls, id, args...); }
 
-	static local_ref<java::array<jfloat>> new_array(jsize len) noexcept { return local_ref<java::array<jfloat>>(env()->NewFloatArray(len)); }
+	static jfloatArray new_array(jsize len) noexcept { return env()->NewFloatArray(len); }
 	static jfloat* get_array_elements(jfloatArray array, jboolean* isCopy) noexcept { return env()->GetFloatArrayElements(array, isCopy); }
 	static void release_array_elements(jfloatArray array, jfloat* elems, jint mode) noexcept { env()->ReleaseFloatArrayElements(array, elems, mode); }
 	static void get_array_region(jfloatArray array, jsize start, jsize len, jfloat* buf) noexcept { env()->GetFloatArrayRegion(array, start, len, buf); }
@@ -180,7 +180,7 @@ struct type<jdouble>
 	template <typename ...Args> static jdouble call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return env()->CallNonvirtualDoubleMethod(obj, cls, id, args...); }
 	template <typename ...Args> static jdouble call_static_method(jclass cls, jmethodID id, Args... args) noexcept { return env()->CallStaticDoubleMethod(cls, id, args...); }
 
-	static local_ref<java::array<jdouble>> new_array(jsize len) noexcept { return local_ref<java::array<jdouble>>(env()->NewDoubleArray(len)); }
+	static jdoubleArray new_array(jsize len) noexcept { return env()->NewDoubleArray(len); }
 	static jdouble* get_array_elements(jdoubleArray array, jboolean* isCopy) noexcept { return env()->GetDoubleArrayElements(array, isCopy); }
 	static void release_array_elements(jdoubleArray array, jdouble* elems, jint mode) noexcept { env()->ReleaseDoubleArrayElements(array, elems, mode); }
 	static void get_array_region(jdoubleArray array, jsize start, jsize len, jdouble* buf) noexcept { env()->GetDoubleArrayRegion(array, start, len, buf); }

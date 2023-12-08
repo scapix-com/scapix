@@ -44,9 +44,7 @@ struct call<R(Args...)>
 	template <typename T>
 	static local_ref<T> new_object(jclass cls, jmethodID id, Args... args)
 	{
-		jobject obj = env()->NewObject(cls, id, arg(args)...);
-		check_result_nested(obj);
-		return local_ref<T>(obj);
+		return check_result_nested<T>(env()->NewObject(cls, id, arg(args)...));
 	}
 
 private:
@@ -148,9 +146,7 @@ inline jsize get_array_length(jarray array) noexcept
 template <typename T>
 inline local_ref<T[]> new_array(jsize len)
 {
-	local_ref<T[]> array = type<T>::new_array(len);
-	check_result(array.handle());
-	return array;
+	return check_result<T[]>(type<T>::new_array(len));
 }
 
 template <typename T, lock Lock>
@@ -184,9 +180,7 @@ inline void set_array_region(java::ref<T[]> obj, jsize start, jsize len, const T
 template <typename T>
 inline local_ref<T[]> new_array(jsize len, java::ref<T> init)
 {
-	jobjectArray array = env()->NewObjectArray(len, object_impl<class_name_t<T>>::class_object().handle(), init.handle());
-	check_result(array);
-	return local_ref<T[]>(array);
+	return check_result<T[]>(env()->NewObjectArray(len, object_impl<class_name_t<T>>::class_object().handle(), init.handle()));
 }
 
 template <typename T>
