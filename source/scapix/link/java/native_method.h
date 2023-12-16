@@ -66,12 +66,6 @@ struct param_t<ref<T>>
 template <typename T>
 using param_type = typename param_t<T>::type;
 
-template <typename T>
-inline decltype(auto) get_object(jobject thiz)
-{
-	return convert_this<T>::cpp(ref<class_name_t<T>>(thiz));
-}
-
 template <typename Func>
 struct jni_native_method
 {
@@ -128,13 +122,15 @@ private:
 			{
 				using class_type = member_pointer_class_t<Type>;
 
+				decltype(auto) obj = convert_this<class_type>::cpp(ref<class_name_t<class_type>>(thiz));
+
 				if constexpr (std::is_void_v<R>)
 				{
-					return (get_object<class_type>(thiz).*Method)(param<JniArgs, Args>::cpp(args)...);
+					return (obj.*Method)(param<JniArgs, Args>::cpp(args)...);
 				}
 				else
 				{
-					return param<JniR, R>::jni((get_object<class_type>(thiz).*Method)(param<JniArgs, Args>::cpp(args)...));
+					return param<JniR, R>::jni((obj.*Method)(param<JniArgs, Args>::cpp(args)...));
 				}
 			}
 			catch (const vm_exception& e)
