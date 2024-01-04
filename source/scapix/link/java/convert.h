@@ -124,7 +124,9 @@ struct convert_string
 
 	static std::string cpp(ref<string> obj)
 	{
-//		return obj->chars<char>().data();
+//		std::string str(obj->length<char>(), char());
+//		obj->get_region(0, static_cast<jsize>(str.size()), str.data());
+//		return str;
 
 		auto bytes = obj->call_method<SCAPIX_META_STRING("getBytes"), ref<jbyte[]>(ref<charset>)>(utf8_charset());
 		std::string str(bytes->size(), char());

@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <iterator>
+#include <string_view>
 #include <scapix/link/java/object.h>
 #include <scapix/link/java/lock.h>
 #include <scapix/link/java/detail/api/string.h>
@@ -98,6 +99,11 @@ public:
 			detail::api::release_string_chars<Char, Lock>(string_, data_);
 			data_ = nullptr;
 		}
+	}
+
+	std::basic_string_view<Char> view() const
+	{
+		return std::basic_string_view<Char>(data(), size());
 	}
 
 private:

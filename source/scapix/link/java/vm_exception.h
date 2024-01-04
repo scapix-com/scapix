@@ -50,12 +50,12 @@ private:
 
 	void get_class_name() const
 	{
-		cls_name = exception->get_object_class()->call_method<SCAPIX_META_STRING("getName"), ref<string>()>()->chars<char>().data();
+		cls_name = exception->get_object_class()->call_method<SCAPIX_META_STRING("getName"), ref<string>()>();
 	}
 
 	void get_message() const
 	{
-		msg = exception->call_method<SCAPIX_META_STRING("getMessage"), ref<string>()>()->chars<char>().data();
+		msg = exception->call_method<SCAPIX_META_STRING("getMessage"), ref<string>()>();
 	}
 
 	local_ref<throwable> exception;
