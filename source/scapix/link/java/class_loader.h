@@ -32,7 +32,7 @@ public:
 		auto app_cls = class_::find_class("com/scapix/NativeException");
 		auto cls = app_cls->get_object_class();
 		auto get_class_loader_method = cls->get_method_id<SCAPIX_META_STRING("getClassLoader"), ref<SCAPIX_META_STRING("java/lang/ClassLoader")>()>();
-		loader.reset(global_ref<SCAPIX_META_STRING("java/lang/ClassLoader")>(app_cls->call_method<ref<SCAPIX_META_STRING("java/lang/ClassLoader")>()>(get_class_loader_method)).release());
+		loader = app_cls->call_method<ref<SCAPIX_META_STRING("java/lang/ClassLoader")>()>(get_class_loader_method);
 		auto loader_cls = loader->get_object_class();
 		load_class_method = loader_cls->get_method_id<SCAPIX_META_STRING("loadClass"), ref<SCAPIX_META_STRING("java/lang/Class")>(ref<SCAPIX_META_STRING("java/lang/String")>)>();
 	}
@@ -44,7 +44,7 @@ public:
 
 private:
 
-	inline static ref<SCAPIX_META_STRING("java/lang/ClassLoader")> loader;
+	inline static static_global_ref<SCAPIX_META_STRING("java/lang/ClassLoader")> loader;
 	inline static jmethodID load_class_method;
 
 };

@@ -503,6 +503,23 @@ inline bool operator !=(const ref<T1, S1>& a, const ref<T2, S2>& b)
 	return !(a == b);
 }
 
+// global_ref used as static object
+// Disable reset() in destructor, as it happens too late for JNI calls.
+// Could instead register ref in a global list to call reset() during OnUnload().
+
+template <typename T = object<>>
+class static_global_ref : public global_ref<T>
+{
+public:
+
+	using global_ref<T>::global_ref;
+
+	~static_global_ref()
+	{
+		global_ref<T>::release();
+	}
+};
+
 } // namespace scapix::link::java
 
 #endif // SCAPIX_LINK_JAVA_REF_H

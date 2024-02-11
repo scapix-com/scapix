@@ -175,13 +175,11 @@ inline void object_impl<ClassName>::set_static_field(Type value)
 template <typename ClassName>
 inline ref<class_> object_impl<ClassName>::class_object()
 {
-// Destructed after JNI_OnUnload, when JNI calls (like DeleteGlobalRef) do not work.
-//	static const global_ref<class_> cls(class_::find_class(meta::c_str_v<ClassName>));
 
 #ifdef SCAPIX_CACHE_CLASS_LOADER
-	static const ref<class_> cls(global_ref<class_>(class_loader::find_class(meta::c_str_v<mpv::replace<ClassName, '/', '.'>>)).release());
+	static const static_global_ref<class_> cls(class_loader::find_class(meta::c_str_v<mpv::replace<ClassName, '/', '.'>>));
 #else
-	static const ref<class_> cls(global_ref<class_>(class_::find_class(meta::c_str_v<ClassName>)).release());
+	static const static_global_ref<class_> cls(class_::find_class(meta::c_str_v<ClassName>));
 #endif
 
 	return cls;

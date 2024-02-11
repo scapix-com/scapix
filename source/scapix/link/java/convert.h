@@ -115,8 +115,7 @@ struct convert_string
 
 	static ref<charset> utf8_charset()
 	{
-//		static const global_ref<charset> ch = object<standard_charsets>::get_static_field<SCAPIX_META_STRING("UTF_8"), ref<charset>>();
-		static const ref<charset> ch (global_ref<charset>(object<standard_charsets>::get_static_field<SCAPIX_META_STRING("UTF_8"), ref<charset>>()).release());
+		static const static_global_ref<charset> ch = object<standard_charsets>::get_static_field<SCAPIX_META_STRING("UTF_8"), ref<charset>>();
 		return ch;
 	}
 
