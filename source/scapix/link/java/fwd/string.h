@@ -8,7 +8,7 @@
 #define SCAPIX_LINK_JAVA_FWD_STRING_H
 
 #include <tuple>
-#include <scapix/meta/string.h>
+#include <scapix/core/fixed_string.h>
 #include <scapix/link/java/object_traits.h>
 #include <scapix/link/java/fwd/object.h>
 
@@ -19,7 +19,7 @@ class string;
 template<>
 struct object_traits<string>
 {
-	using class_name = SCAPIX_META_STRING("java/lang/String");
+	static constexpr fixed_string class_name = "java/lang/String";
 	using base_classes = std::tuple<object<>>;
 };
 

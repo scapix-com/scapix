@@ -9,7 +9,7 @@
 
 #include <scapix/core/tuple.h>
 #include <scapix/core/remove_function_qualifiers.h>
-#include <scapix/meta/string.h>
+#include <scapix/core/fixed_string.h>
 #include <scapix/link/java/convert.h>
 #include <scapix/link/java/signature.h>
 #include <scapix/link/java/vm_exception.h>
@@ -87,14 +87,14 @@ private:
 template <typename Func>
 jni_native_method(const char*, const char*, Func) -> jni_native_method<Func>;
 
-template <typename ClassName, typename ...Methods>
+template <fixed_string ClassName, typename ...Methods>
 class native_methods
 {
 public:
 
 	static void register_()
 	{
-		class_::find_class(meta::c_str_v<ClassName>)->register_natives(reinterpret_cast<const JNINativeMethod*>(&methods), sizeof...(Methods));
+		class_::find_class(ClassName)->register_natives(reinterpret_cast<const JNINativeMethod*>(&methods), sizeof...(Methods));
 	}
 
 private:
@@ -108,13 +108,13 @@ private:
 // std::decay is a workaround for GCC bug (fixed in GCC 12):
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61355
 
-template <typename Name, typename JniType, typename Type, std::decay_t<Type> Method>
+template <fixed_string Name, typename JniType, typename Type, std::decay_t<Type> Method>
 struct native_method
 {
-	template <typename ClassName, typename JniType_, typename Type_>
+	template <fixed_string ClassName, typename JniType_, typename Type_>
 	struct impl;
 
-	template <typename ClassName, typename JniR, typename ...JniArgs, typename R, typename ...Args, typename Class>
+	template <fixed_string ClassName, typename JniR, typename ...JniArgs, typename R, typename ...Args, typename Class>
 	struct impl<ClassName, JniR(JniArgs...), R(Class::*)(Args...)>
 	{
 		static param_type<JniR> func(JNIEnv* env, jobject thiz, param_type<JniArgs>... args)
@@ -123,7 +123,7 @@ struct native_method
 
 			try
 			{
-				decltype(auto) obj = convert_this<Class>(ref<ClassName>(thiz));
+				decltype(auto) obj = convert_this<Class>(ref<object<ClassName>>(thiz));
 
 				if constexpr (std::is_void_v<R>)
 				{
@@ -148,7 +148,7 @@ struct native_method
 		}
 	};
 
-	template <typename ClassName, typename JniR, typename ...JniArgs, typename R, typename ...Args>
+	template <fixed_string ClassName, typename JniR, typename ...JniArgs, typename R, typename ...Args>
 	struct impl<ClassName, JniR(JniArgs...), R(Args...)>
 	{
 		static param_type<JniR> func(JNIEnv* env, jclass clazz, param_type<JniArgs>... args)
@@ -180,13 +180,13 @@ struct native_method
 		}
 	};
 
-	template <typename ClassName>
+	template <fixed_string ClassName>
 	static constexpr auto get()
 	{
 		return jni_native_method
 		{
-			meta::c_str_v<Name>,
-			meta::c_str_v<signature_t<JniType>>,
+			Name,
+			signature_v<JniType>,
 			impl<ClassName, JniType, remove_function_qualifiers_t<Type>>::func
 		};
 	}

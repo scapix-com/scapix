@@ -11,7 +11,7 @@
 
 namespace scapix::link::java {
 
-class throwable : public object<SCAPIX_META_STRING("java/lang/Throwable")>
+class throwable : public object<"java/lang/Throwable">
 {
 public:
 

@@ -13,10 +13,10 @@ namespace scapix::link::java {
 
 // represents java @FunctionalInterface
 
-template <typename ClassName, typename Type, typename Name = SCAPIX_META_STRING("call")>
+template <fixed_string ClassName, typename Type, fixed_string Name = "call">
 class function;
 
-template <typename ClassName, typename R, typename ...Args, typename Name>
+template <fixed_string ClassName, typename R, typename ...Args, fixed_string Name>
 class function<ClassName, R(Args...), Name> : public object<ClassName>
 {
 	using base = object<ClassName>;

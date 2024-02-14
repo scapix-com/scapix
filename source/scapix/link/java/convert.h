@@ -26,7 +26,7 @@
 namespace scapix::link::java {
 namespace detail {
 
-template <typename InterfaceClassName, typename Type, typename Name>
+template <fixed_string InterfaceClassName, typename Type, fixed_string Name>
 class function_impl;
 
 } // namespace detail
@@ -107,12 +107,12 @@ struct convert<Jni, std::shared_ptr<T>>
 
 struct convert_string
 {
-	using charset = SCAPIX_META_STRING("java/nio/charset/Charset");
-	using standard_charsets = SCAPIX_META_STRING("java/nio/charset/StandardCharsets");
+	using charset = object<"java/nio/charset/Charset">;
+	using standard_charsets = object<"java/nio/charset/StandardCharsets">;
 
 	static ref<charset> utf8_charset()
 	{
-		static const static_global_ref<charset> ch = object<standard_charsets>::get_static_field<SCAPIX_META_STRING("UTF_8"), ref<charset>>();
+		static const static_global_ref<charset> ch = standard_charsets::get_static_field<"UTF_8", ref<charset>>();
 		return ch;
 	}
 
@@ -124,7 +124,7 @@ struct convert_string
 //		obj->get_region(0, static_cast<jsize>(str.size()), str.data());
 //		return str;
 
-		auto bytes = obj->call_method<SCAPIX_META_STRING("getBytes"), ref<jbyte[]>(ref<charset>)>(utf8_charset());
+		auto bytes = obj->call_method<"getBytes", ref<jbyte[]>(ref<charset>)>(utf8_charset());
 		std::string str(bytes->size(), char());
 		bytes->get_region(0, static_cast<jsize>(str.size()), (jbyte*)str.data());
 
@@ -147,55 +147,55 @@ struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, s
 {
 };
 
-template <typename ClassName, typename CppPrimitive, typename JniPrimitive, typename MethodName>
+template <typename Object, typename CppPrimitive, typename JniPrimitive, fixed_string MethodName>
 struct convert_primitive_object
 {
-	static CppPrimitive cpp(ref<ClassName> obj)
+	static CppPrimitive cpp(ref<Object> obj)
 	{
 		return obj->template call_method<MethodName, JniPrimitive()>();
 	}
 
-	static ref<ClassName> jni(CppPrimitive value)
+	static ref<Object> jni(CppPrimitive value)
 	{
-		return object<ClassName>::template call_static_method<SCAPIX_META_STRING("valueOf"), ref<ClassName>(JniPrimitive)>(value);
+		return Object::template call_static_method<"valueOf", ref<Object>(JniPrimitive)>(value);
 	}
 };
 
-using boolean_class_name = SCAPIX_META_STRING("java/lang/Boolean");
-template <typename J> struct convert<ref<J>, bool, std::enable_if_t<detail::is_convertible_element<J, boolean_class_name>>> :
-convert_primitive_object<boolean_class_name, bool, jboolean, SCAPIX_META_STRING("booleanValue")> {};
+using java_lang_boolean = object<"java/lang/Boolean">;
+template <typename J> struct convert<ref<J>, bool, std::enable_if_t<detail::is_convertible_element<J, java_lang_boolean>>> :
+convert_primitive_object<java_lang_boolean, bool, jboolean, "booleanValue"> {};
 
-using byte_class_name = SCAPIX_META_STRING("java/lang/Byte");
-
-template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, byte_class_name> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int8_t)>> :
-convert_primitive_object<byte_class_name, Cpp, jbyte, SCAPIX_META_STRING("byteValue")> {};
-
-using short_class_name = SCAPIX_META_STRING("java/lang/Short");
+using java_lang_byte = object<"java/lang/Byte">;
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, short_class_name> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int16_t)>> :
-convert_primitive_object<short_class_name, Cpp, jshort, SCAPIX_META_STRING("shortValue")> {};
+struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, java_lang_byte> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int8_t)>> :
+convert_primitive_object<java_lang_byte, Cpp, jbyte, "byteValue"> {};
 
-using integer_class_name = SCAPIX_META_STRING("java/lang/Integer");
-
-template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, integer_class_name> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int32_t)>> :
-convert_primitive_object<integer_class_name, Cpp, jint, SCAPIX_META_STRING("intValue")> {};
-
-using long_class_name = SCAPIX_META_STRING("java/lang/Long");
+using java_lang_short = object<"java/lang/Short">;
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, long_class_name> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int64_t)>> :
-convert_primitive_object<long_class_name, Cpp, jlong, SCAPIX_META_STRING("longValue")> {};
+struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, java_lang_short> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int16_t)>> :
+convert_primitive_object<java_lang_short, Cpp, jshort, "shortValue"> {};
 
-using float_class_name = SCAPIX_META_STRING("java/lang/Float");
-template <typename J> struct convert<ref<J>, float, std::enable_if_t<detail::is_convertible_element<J, float_class_name>>> :
-convert_primitive_object<float_class_name, float, jfloat, SCAPIX_META_STRING("floatValue")> {};
+using java_lang_integer = object<"java/lang/Integer">;
 
-using double_class_name = SCAPIX_META_STRING("java/lang/Double");
-template <typename J> struct convert<ref<J>, double, std::enable_if_t<detail::is_convertible_element<J, double_class_name>>> :
-convert_primitive_object<double_class_name, double, jdouble, SCAPIX_META_STRING("doubleValue")> {};
+template <typename J, typename Cpp>
+struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, java_lang_integer> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int32_t)>> :
+convert_primitive_object<java_lang_integer, Cpp, jint, "intValue"> {};
+
+using java_lang_long = object<"java/lang/Long">;
+
+template <typename J, typename Cpp>
+struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, java_lang_long> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int64_t)>> :
+convert_primitive_object<java_lang_long, Cpp, jlong, "longValue"> {};
+
+using java_lang_float = object<"java/lang/Float">;
+template <typename J> struct convert<ref<J>, float, std::enable_if_t<detail::is_convertible_element<J, java_lang_float>>> :
+convert_primitive_object<java_lang_float, float, jfloat, "floatValue"> {};
+
+using java_lang_double = object<"java/lang/Double">;
+template <typename J> struct convert<ref<J>, double, std::enable_if_t<detail::is_convertible_element<J, java_lang_double>>> :
+convert_primitive_object<java_lang_double, double, jdouble, "doubleValue"> {};
 
 template <typename J, typename T, typename A>
 struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<is_primitive_v<J>>>
@@ -264,189 +264,189 @@ struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<!is_primitive_
 	}
 };
 
-using treemap_class_name = SCAPIX_META_STRING("java/util/TreeMap");
+using java_util_treemap = object<"java/util/TreeMap">;
 
 template <typename JK, typename JV, typename K, typename V, typename C, typename A>
-struct convert<ref<generic_type<treemap_class_name, JK, JV>>, std::map<K, V, C, A>>
+struct convert<ref<generic_type<java_util_treemap, JK, JV>>, std::map<K, V, C, A>>
 {
-	static std::map<K, V, C, A> cpp(ref<treemap_class_name> tm)
+	static std::map<K, V, C, A> cpp(ref<java_util_treemap> tm)
 	{
 		std::map<K, V, C, A> m;
 
-		auto set = tm->call_method<SCAPIX_META_STRING("entrySet"), ref<SCAPIX_META_STRING("java/util/Set")>()>();
-		auto i = set->call_method<SCAPIX_META_STRING("iterator"), ref<SCAPIX_META_STRING("java/util/Iterator")>()>();
+		auto set = tm->call_method<"entrySet", ref<object<"java/util/Set">>()>();
+		auto i = set->call_method<"iterator", ref<object<"java/util/Iterator">>()>();
 
-		while (i->call_method<SCAPIX_META_STRING("hasNext"), jboolean()>())
+		while (i->call_method<"hasNext", jboolean()>())
 		{
-			auto entry = i->call_method<SCAPIX_META_STRING("next"), ref<generic<SCAPIX_META_STRING("java/util/Map$Entry")>>()>();
+			auto entry = i->call_method<"next", ref<generic<object<"java/util/Map$Entry">>>()>();
 
 			m.emplace_hint
 			(
 				m.end(),
-				convert_cpp<K>(entry->call_method<SCAPIX_META_STRING("getKey"), ref<generic<JK>>()>()),
-				convert_cpp<V>(entry->call_method<SCAPIX_META_STRING("getValue"), ref<generic<JV>>()>())
+				convert_cpp<K>(entry->call_method<"getKey", ref<generic<JK>>()>()),
+				convert_cpp<V>(entry->call_method<"getValue", ref<generic<JV>>()>())
 			);
 		}
 
 		return m;
 	}
 
-	static ref<treemap_class_name> jni(const std::map<K, V, C, A>& m)
+	static ref<java_util_treemap> jni(const std::map<K, V, C, A>& m)
 	{
-		auto tm = object<treemap_class_name>::new_object<void()>();
+		auto tm = java_util_treemap::new_object<void()>();
 
 		for (auto& i : m)
-			tm->call_method<SCAPIX_META_STRING("put"), ref<generic<JV>>(ref<generic<JK>>, ref<generic<JV>>)>(convert_jni<ref<JK>>(i.first), convert_jni<ref<JV>>(i.second));
+			tm->call_method<"put", ref<generic<JV>>(ref<generic<JK>>, ref<generic<JV>>)>(convert_jni<ref<JK>>(i.first), convert_jni<ref<JV>>(i.second));
 
 		return tm;
 	}
 };
 
-using map_class_name = SCAPIX_META_STRING("java/util/Map");
+using java_util_map = object<"java/util/Map">;
 
 template <typename JK, typename JV, typename K, typename V, typename C, typename A>
-struct convert<ref<generic_type<map_class_name, JK, JV>>, std::map<K, V, C, A>>
+struct convert<ref<generic_type<java_util_map, JK, JV>>, std::map<K, V, C, A>>
 {
-	static std::map<K, V, C, A> cpp(ref<map_class_name> tm)
+	static std::map<K, V, C, A> cpp(ref<java_util_map> tm)
 	{
 		std::map<K, V, C, A> m;
 
-		auto set = tm->call_method<SCAPIX_META_STRING("entrySet"), ref<SCAPIX_META_STRING("java/util/Set")>()>();
-		auto i = set->call_method<SCAPIX_META_STRING("iterator"), ref<SCAPIX_META_STRING("java/util/Iterator")>()>();
+		auto set = tm->call_method<"entrySet", ref<object<"java/util/Set">>()>();
+		auto i = set->call_method<"iterator", ref<object<"java/util/Iterator">>()>();
 
-		while (i->call_method<SCAPIX_META_STRING("hasNext"), jboolean()>())
+		while (i->call_method<"hasNext", jboolean()>())
 		{
-			auto entry = i->call_method<SCAPIX_META_STRING("next"), ref<generic<SCAPIX_META_STRING("java/util/Map$Entry")>>()>();
+			auto entry = i->call_method<"next", ref<generic<object<"java/util/Map$Entry">>>()>();
 
 			m.emplace_hint
 			(
 				m.end(),
-				convert_cpp<K>(entry->call_method<SCAPIX_META_STRING("getKey"), ref<generic<JK>>()>()),
-				convert_cpp<V>(entry->call_method<SCAPIX_META_STRING("getValue"), ref<generic<JV>>()>())
+				convert_cpp<K>(entry->call_method<"getKey", ref<generic<JK>>()>()),
+				convert_cpp<V>(entry->call_method<"getValue", ref<generic<JV>>()>())
 			);
 		}
 
 		return m;
 	}
 
-	static ref<map_class_name> jni(const std::map<K, V, C, A>& m)
+	static ref<java_util_map> jni(const std::map<K, V, C, A>& m)
 	{
-		auto tm = object<treemap_class_name>::new_object<void()>();
+		auto tm = java_util_treemap::new_object<void()>();
 
 		for (auto& i : m)
-			tm->call_method<SCAPIX_META_STRING("put"), ref<generic<JV>>(ref<generic<JK>>, ref<generic<JV>>)>(convert_jni<ref<JK>>(i.first), convert_jni<ref<JV>>(i.second));
+			tm->call_method<"put", ref<generic<JV>>(ref<generic<JK>>, ref<generic<JV>>)>(convert_jni<ref<JK>>(i.first), convert_jni<ref<JV>>(i.second));
 
-		return static_pointer_cast<map_class_name>(tm);
+		return tm;
 	}
 };
 
-using treeset_class_name = SCAPIX_META_STRING("java/util/TreeSet");
+using java_util_treeset = object<"java/util/TreeSet">;
 
 template <typename JE, typename K, typename C, typename A>
-struct convert<ref<generic_type<treeset_class_name, JE>>, std::set<K, C, A>>
+struct convert<ref<generic_type<java_util_treeset, JE>>, std::set<K, C, A>>
 {
-	static std::set<K, C, A> cpp(ref<treeset_class_name> set)
+	static std::set<K, C, A> cpp(ref<java_util_treeset> set)
 	{
 		std::set<K, C, A> m;
 
-		auto i = set->call_method<SCAPIX_META_STRING("iterator"), ref<SCAPIX_META_STRING("java/util/Iterator")>()>();
+		auto i = set->call_method<"iterator", ref<object<"java/util/Iterator">>()>();
 
-		while (i->call_method<SCAPIX_META_STRING("hasNext"), jboolean()>())
+		while (i->call_method<"hasNext", jboolean()>())
 		{
 			m.emplace_hint
 			(
 				m.end(),
-				convert_cpp<K>(i->call_method<SCAPIX_META_STRING("next"), ref<generic<JE>>()>())
+				convert_cpp<K>(i->call_method<"next", ref<generic<JE>>()>())
 			);
 		}
 
 		return m;
 	}
 
-	static ref<treeset_class_name> jni(const std::set<K, C, A>& s)
+	static ref<java_util_treeset> jni(const std::set<K, C, A>& s)
 	{
-		auto set = object<treeset_class_name>::new_object<void()>();
+		auto set = java_util_treeset::new_object<void()>();
 
 		for (auto& i : s)
-			set->call_method<SCAPIX_META_STRING("add"), jboolean(ref<generic<JE>>)>(convert_jni<ref<JE>>(i));
+			set->call_method<"add", jboolean(ref<generic<JE>>)>(convert_jni<ref<JE>>(i));
 
 		return set;
 	}
 };
 
-using hashmap_class_name = SCAPIX_META_STRING("java/util/HashMap");
+using java_util_hashmap = object<"java/util/HashMap">;
 
 template <typename JK, typename JV, typename K, typename T, typename H, typename KE, typename A>
-struct convert<ref<generic_type<hashmap_class_name, JK, JV>>, std::unordered_map<K, T, H, KE, A>>
+struct convert<ref<generic_type<java_util_hashmap, JK, JV>>, std::unordered_map<K, T, H, KE, A>>
 {
-	static std::unordered_map<K, T, H, KE, A> cpp(ref<hashmap_class_name> tm)
+	static std::unordered_map<K, T, H, KE, A> cpp(ref<java_util_hashmap> tm)
 	{
 		std::unordered_map<K, T, H, KE, A> m;
 
-		auto set = tm->call_method<SCAPIX_META_STRING("entrySet"), ref<SCAPIX_META_STRING("java/util/Set")>()>();
-		auto i = set->call_method<SCAPIX_META_STRING("iterator"), ref<SCAPIX_META_STRING("java/util/Iterator")>()>();
+		auto set = tm->call_method<"entrySet", ref<object<"java/util/Set">>()>();
+		auto i = set->call_method<"iterator", ref<object<"java/util/Iterator">>()>();
 
-		while (i->call_method<SCAPIX_META_STRING("hasNext"), jboolean()>())
+		while (i->call_method<"hasNext", jboolean()>())
 		{
-			auto entry = i->call_method<SCAPIX_META_STRING("next"), ref<generic<SCAPIX_META_STRING("java/util/Map$Entry")>>()>();
+			auto entry = i->call_method<"next", ref<generic<object<"java/util/Map$Entry">>>()>();
 
 			m.emplace_hint
 			(
 				m.end(),
-				convert_cpp<K>(entry->call_method<SCAPIX_META_STRING("getKey"), ref<generic<JK>>()>()),
-				convert_cpp<T>(entry->call_method<SCAPIX_META_STRING("getValue"), ref<generic<JV>>()>())
+				convert_cpp<K>(entry->call_method<"getKey", ref<generic<JK>>()>()),
+				convert_cpp<T>(entry->call_method<"getValue", ref<generic<JV>>()>())
 			);
 		}
 
 		return m;
 	}
 
-	static ref<hashmap_class_name> jni(const std::unordered_map<K, T, H, KE, A>& m)
+	static ref<java_util_hashmap> jni(const std::unordered_map<K, T, H, KE, A>& m)
 	{
-		auto tm = object<hashmap_class_name>::new_object<void()>();
+		auto tm = java_util_hashmap::new_object<void()>();
 
 		for (auto& i : m)
-			tm->call_method<SCAPIX_META_STRING("put"), ref<generic<JV>>(ref<generic<JK>>, ref<generic<JV>>)>(convert_jni<ref<JK>>(i.first), convert_jni<ref<JV>>(i.second));
+			tm->call_method<"put", ref<generic<JV>>(ref<generic<JK>>, ref<generic<JV>>)>(convert_jni<ref<JK>>(i.first), convert_jni<ref<JV>>(i.second));
 
 		return tm;
 	}
 };
 
-using hashset_class_name = SCAPIX_META_STRING("java/util/HashSet");
+using java_util_hashset = object<"java/util/HashSet">;
 
 template <typename JE, typename K, typename H, typename KE, typename A>
-struct convert<ref<generic_type<hashset_class_name, JE>>, std::unordered_set<K, H, KE, A>>
+struct convert<ref<generic_type<java_util_hashset, JE>>, std::unordered_set<K, H, KE, A>>
 {
-	static std::unordered_set<K, H, KE, A> cpp(ref<hashset_class_name> set)
+	static std::unordered_set<K, H, KE, A> cpp(ref<java_util_hashset> set)
 	{
 		std::unordered_set<K, H, KE, A> m;
 
-		auto i = set->call_method<SCAPIX_META_STRING("iterator"), ref<SCAPIX_META_STRING("java/util/Iterator")>()>();
+		auto i = set->call_method<"iterator", ref<object<"java/util/Iterator">>()>();
 
-		while (i->call_method<SCAPIX_META_STRING("hasNext"), jboolean()>())
+		while (i->call_method<"hasNext", jboolean()>())
 		{
 			m.emplace_hint
 			(
 				m.end(),
-				convert_cpp<K>(i->call_method<SCAPIX_META_STRING("next"), ref<generic<JE>>()>())
+				convert_cpp<K>(i->call_method<"next", ref<generic<JE>>()>())
 			);
 		}
 
 		return m;
 	}
 
-	static ref<hashset_class_name> jni(const std::unordered_set<K, H, KE, A>& s)
+	static ref<java_util_hashset> jni(const std::unordered_set<K, H, KE, A>& s)
 	{
-		auto set = object<hashset_class_name>::new_object<void()>();
+		auto set = java_util_hashset::new_object<void()>();
 
 		for (auto& i : s)
-			set->call_method<SCAPIX_META_STRING("add"), jboolean(ref<generic<JE>>)>(convert_jni<ref<JE>>(i));
+			set->call_method<"add", jboolean(ref<generic<JE>>)>(convert_jni<ref<JE>>(i));
 
 		return set;
 	}
 };
 
-template <typename ClassName, typename JniR, typename ...JniArgs, typename Name, typename R, typename ...Args>
+template <fixed_string ClassName, typename JniR, typename ...JniArgs, fixed_string Name, typename R, typename ...Args>
 struct convert<ref<function<ClassName, JniR(JniArgs...), Name>>, std::function<R(Args...)>>
 {
 	static std::function<R(Args...)> cpp(ref<function<ClassName, JniR(JniArgs...), Name>> i)
@@ -475,30 +475,30 @@ struct convert<ref<function<ClassName, JniR(JniArgs...), Name>>, std::function<R
 template <typename Jni, typename Struct>
 struct convert<Jni, Struct, std::enable_if_t<is_struct_v<Struct>>>
 {
-	using class_name = typename struct_<Struct>::class_name;
+	using struct_object = object<struct_<Struct>::class_name>;
 	using fields = typename struct_<Struct>::fields;
 
-	static ref<class_name> jni(const Struct& value)
+	static ref<struct_object> jni(const Struct& value)
 	{
-		auto obj = object<class_name>::template new_object<void()>();
+		auto obj = struct_object::template new_object<void()>();
 
 		meta::for_each<fields>([&](auto f)
 		{
 			using field = decltype(f);
-			obj->template set_field<typename field::name, typename field::type>(convert_jni<typename field::type>(value.*field::ptr));
+			obj->template set_field<field::name, typename field::type>(convert_jni<typename field::type>(value.*field::ptr));
 		});
 
 		return obj;
 	}
 
-	static Struct cpp(ref<class_name> value)
+	static Struct cpp(ref<struct_object> value)
 	{
 		Struct obj;
 
 		meta::for_each<fields>([&](auto f)
 		{
 			using field = decltype(f);
-			obj.*field::ptr = convert_cpp<decltype(obj.*field::ptr)>(value->template get_field<typename field::name, typename field::type>());
+			obj.*field::ptr = convert_cpp<decltype(obj.*field::ptr)>(value->template get_field<field::name, typename field::type>());
 		});
 
 		return obj;

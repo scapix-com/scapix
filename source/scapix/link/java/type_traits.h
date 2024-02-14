@@ -8,8 +8,10 @@
 #define SCAPIX_LINK_JAVA_TYPE_TRAITS_H
 
 #include <type_traits>
-#include <scapix/meta/string.h>
+#include <scapix/core/fixed_string.h>
 #include <scapix/meta/any_of.h>
+#include <scapix/meta/for_each.h>
+#include <scapix/meta/iota.h>
 #include <scapix/link/java/env.h>
 #include <scapix/link/java/object_traits.h>
 #include <scapix/link/java/fwd/array.h>
@@ -36,74 +38,78 @@ constexpr bool is_primitive_v = is_primitive<T>::value;
 // is_array
 
 template <typename T>
-struct is_array : std::integral_constant<bool, meta::c_str_v<class_name_t<T>>[0] == '['> {};
+struct is_array : std::integral_constant<bool, class_name_v<T>[0] == '['> {};
 
 template <typename T>
 constexpr bool is_array_v = is_array<T>::value;
 
 template <typename T>
-struct is_object_array : std::integral_constant<bool, meta::c_str_v<class_name_t<T>>[0] == '[' && (meta::c_str_v<class_name_t<T>>[1] == 'L' || meta::c_str_v<class_name_t<T>>[1] == '[')> {};
+struct is_object_array : std::integral_constant<bool, class_name_v<T>[0] == '[' && (class_name_v<T>[1] == 'L' || class_name_v<T>[1] == '[')> {};
 
 template <typename T>
 constexpr bool is_object_array_v = is_object_array<T>::value;
 
+// handle_type
+
 namespace detail {
 
-// detail::handle_type_from_class_name
-
-template <typename ClassName>
-struct handle_type_from_class_name { using type = jobject; };
-
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("java/lang/Object")> { using type = jobject; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("java/lang/Class")> { using type = jclass; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("java/lang/String")> { using type = jstring; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("java/lang/Throwable")> { using type = jthrowable; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("[Z")> { using type = jbooleanArray; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("[B")> { using type = jbyteArray; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("[C")> { using type = jcharArray; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("[S")> { using type = jshortArray; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("[I")> { using type = jintArray; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("[J")> { using type = jlongArray; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("[F")> { using type = jfloatArray; };
-template<> struct handle_type_from_class_name<SCAPIX_META_STRING("[D")> { using type = jdoubleArray; };
-template <char... Cs> struct handle_type_from_class_name<meta::string<'[', Cs...>> { using type = jobjectArray; };
-
-template <typename ClassName>
-using handle_type_from_class_name_t = typename handle_type_from_class_name<ClassName>::type;
-
-// detail::select_handle_type
-
-template <typename ClassName, typename Bases>
-struct select_handle_type;
-
-template <typename ClassName>
-struct select_handle_type<ClassName, std::tuple<>>
+template <fixed_string ClassName, typename HandleType>
+struct handle_type_info
 {
-	using type = handle_type_from_class_name_t<ClassName>;
+	static constexpr auto class_name = ClassName;
+	using handle_type = HandleType;
 };
 
-template <typename ClassName, typename Base1, typename ...Bases>
-struct select_handle_type<ClassName, std::tuple<Base1, Bases...>>
+using handle_types = std::tuple
+<
+	handle_type_info<"java/lang/Object", jobject>, // must be first
+	handle_type_info<"java/lang/Class", jclass>,
+	handle_type_info<"java/lang/String", jstring>,
+	handle_type_info<"java/lang/Throwable", jthrowable>,
+	handle_type_info<"[Z", jbooleanArray>,
+	handle_type_info<"[B", jbyteArray>,
+	handle_type_info<"[C", jcharArray>,
+	handle_type_info<"[S", jshortArray>,
+	handle_type_info<"[I", jintArray>,
+	handle_type_info<"[J", jlongArray>,
+	handle_type_info<"[F", jfloatArray>,
+	handle_type_info<"[D", jdoubleArray>,
+	handle_type_info<"[", jobjectArray> // uses "begins_with" compare, must be last
+>;
+
+template <typename T>
+constexpr std::size_t handle_type()
 {
-	using base1_handle_type = typename select_handle_type<class_name_t<Base1>, base_classes_t<Base1>>::type;
-	using type = std::conditional_t<std::is_same_v<handle_type_from_class_name_t<ClassName>, jobject>, base1_handle_type, handle_type_from_class_name_t<ClassName>>;
-};
+	auto class_name = class_name_v<T>;
+	using bases = base_classes_t<T>;
+
+	std::size_t result = 0;
+
+	meta::for_each<meta::iota_c<std::tuple_size_v<handle_types>>>([&](auto index)
+	{
+		if (std::tuple_element_t<index, handle_types>::class_name == class_name)
+			result = index;
+	});
+
+	if (!result)
+	{
+		if (class_name[0] == '[')
+		{
+			result = std::tuple_size_v<handle_types> - 1;
+		}
+		else if constexpr (std::tuple_size_v<bases> != 0)
+		{
+			result = handle_type<std::tuple_element_t<0, bases>>();
+		}
+	}
+
+	return result;
+}
 
 } // namespace detail
 
-// handle_type
-
 template <typename T>
-struct handle_type;
-
-template <typename T>
-using handle_type_t = typename handle_type<T>::type;
-
-template <typename T>
-struct handle_type
-{
-	using type = typename detail::select_handle_type<class_name_t<T>, base_classes_t<T>>::type;
-};
+using handle_type_t = typename std::tuple_element_t<detail::handle_type<T>(), detail::handle_types>::handle_type;
 
 // is_convertible_object
 
@@ -120,7 +126,7 @@ struct is_convertible_object
 	struct is_convertible : is_convertible_object<T, To> {};
 
 	static constexpr bool value =
-		std::is_same_v<class_name_t<From>, class_name_t<To>> ||
+		class_name_v<From> == class_name_v<To> ||
 		meta::any_of_v<base_classes_t<From>, is_convertible>
 	;
 };

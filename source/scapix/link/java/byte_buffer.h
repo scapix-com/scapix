@@ -11,7 +11,7 @@
 
 namespace scapix::link::java {
 
-class byte_buffer : public object<SCAPIX_META_STRING("java/nio/ByteBuffer")>
+class byte_buffer : public object<"java/nio/ByteBuffer">
 {
 public:
 

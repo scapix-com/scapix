@@ -9,7 +9,7 @@
 
 #include <cassert>
 #include <type_traits>
-#include <scapix/meta/string.h>
+#include <scapix/core/fixed_string.h>
 #include <scapix/link/java/type_traits.h>
 #include <scapix/link/java/detail/api.h>
 #include <scapix/link/java/fwd/ref.h>
@@ -17,18 +17,18 @@
 
 namespace scapix::link::java {
 
-template <typename ClassName>
+template <fixed_string ClassName>
 class object_impl
 {
 public:
 
-	using class_name = ClassName;
+	static constexpr auto class_name = ClassName;
 	using base_classes = std::tuple<>;
 	using handle_type = jobject;
 
 	// call_method
 
-	template <typename Name, typename Type, typename ...Args>
+	template <fixed_string Name, typename Type, typename ...Args>
 	auto call_method(Args&&... args) const
 	{
 		return call_method<Type>(method_id<Name, Type>(), std::forward<Args>(args)...);
@@ -42,7 +42,7 @@ public:
 
 	// call_nonvirtual_method
 
-	template <typename Name, typename Type, typename ...Args>
+	template <fixed_string Name, typename Type, typename ...Args>
 	auto call_nonvirtual_method(Args&&... args) const
 	{
 		return call_nonvirtual_method<Type>(method_id<Name, Type>(), std::forward<Args>(args)...);
@@ -53,7 +53,7 @@ public:
 
 	// call_static_method
 
-	template <typename Name, typename Type, typename ...Args>
+	template <fixed_string Name, typename Type, typename ...Args>
 	static auto call_static_method(Args&&... args)
 	{
 		return call_static_method<Type>(static_method_id<Name, Type>(), std::forward<Args>(args)...);
@@ -67,7 +67,7 @@ public:
 	template <typename Type, typename ...Args>
 	static local_ref<object_impl> new_object(Args&&... args)
 	{
-		return new_object<Type>(method_id<SCAPIX_META_STRING("<init>"), Type>(), std::forward<Args>(args)...);
+		return new_object<Type>(method_id<"<init>", Type>(), std::forward<Args>(args)...);
 	}
 
 	template <typename Type, typename ...Args>
@@ -75,13 +75,13 @@ public:
 
 	// field
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	Type get_field() const
 	{
 		return detail::api::get_field<Type>(handle(), field_id<Name, Type>());
 	}
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	void set_field(Type value) const
 	{
 		detail::api::set_field<Type>(handle(), field_id<Name, Type>(), value);
@@ -89,10 +89,10 @@ public:
 
 	// static field
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	static Type get_static_field();
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	static void set_static_field(Type value);
 
 	//jmethodID FromReflectedMethod(jobject method);
@@ -109,16 +109,16 @@ protected:
 
 private:
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	static jmethodID method_id();
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	static jmethodID static_method_id();
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	static jfieldID field_id();
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	static jfieldID static_field_id();
 
 	handle_type handle_;
@@ -137,80 +137,80 @@ private:
 
 namespace scapix::link::java {
 
-template <typename ClassName>
+template <fixed_string ClassName>
 template <typename Type, typename ...Args>
 inline auto object_impl<ClassName>::call_nonvirtual_method(jmethodID id, Args&&... args) const
 {
 	return detail::api::call<Type>::nonvirtual_method(handle(), class_object().handle(), id, std::forward<Args>(args)...);
 }
 
-template <typename ClassName>
+template <fixed_string ClassName>
 template <typename Type, typename ...Args>
 inline auto object_impl<ClassName>::call_static_method(jmethodID id, Args&&... args)
 {
 	return detail::api::call<Type>::static_method(class_object().handle(), id, std::forward<Args>(args)...);
 }
 
-template <typename ClassName>
+template <fixed_string ClassName>
 template <typename Type, typename ...Args>
 inline local_ref<object_impl<ClassName>> object_impl<ClassName>::new_object(jmethodID id, Args&&... args)
 {
 	return detail::api::call<Type>::template new_object<object_impl>(class_object().handle(), id, std::forward<Args>(args)...);
 }
 
-template <typename ClassName>
-template <typename Name, typename Type>
+template <fixed_string ClassName>
+template <fixed_string Name, typename Type>
 inline Type object_impl<ClassName>::get_static_field()
 {
 	return detail::api::get_static_field<Type>(class_object().handle(), static_field_id<Name, Type>());
 }
 
-template <typename ClassName>
-template <typename Name, typename Type>
+template <fixed_string ClassName>
+template <fixed_string Name, typename Type>
 inline void object_impl<ClassName>::set_static_field(Type value)
 {
 	detail::api::set_static_field<Type>(class_object().handle(), static_field_id<Name, Type>(), value);
 }
 
-template <typename ClassName>
+template <fixed_string ClassName>
 inline ref<class_> object_impl<ClassName>::class_object()
 {
 
 #ifdef SCAPIX_CACHE_CLASS_LOADER
-	static const static_global_ref<class_> cls(class_loader::find_class(meta::c_str_v<mpv::replace<ClassName, '/', '.'>>));
+	static const static_global_ref<class_> cls(class_loader::find_class(ClassName.replace('/', '.')));
 #else
-	static const static_global_ref<class_> cls(class_::find_class(meta::c_str_v<ClassName>));
+	static const static_global_ref<class_> cls(class_::find_class(ClassName));
 #endif
 
 	return cls;
 }
 
-template <typename ClassName>
-template <typename Name, typename Type>
+template <fixed_string ClassName>
+template <fixed_string Name, typename Type>
 inline jmethodID object_impl<ClassName>::method_id()
 {
 	static const jmethodID id(class_object()->get_method_id<Name, Type>());
 	return id;
 }
 
-template <typename ClassName>
-template <typename Name, typename Type>
+template <fixed_string ClassName>
+template <fixed_string Name, typename Type>
 inline jmethodID object_impl<ClassName>::static_method_id()
 {
 	static const jmethodID id(class_object()->get_static_method_id<Name, Type>());
 	return id;
 }
 
-template <typename ClassName>
-template <typename Name, typename Type>
+template <fixed_string ClassName>
+template <fixed_string Name, typename Type>
 inline jfieldID object_impl<ClassName>::field_id()
 {
 	static const jfieldID id(class_object()->get_field_id<Name, Type>());
 	return id;
 }
 
-template <typename ClassName>
-template <typename Name, typename Type>
+template <fixed_string ClassName>
+template <fixed_string Name, typename Type>
 inline jfieldID object_impl<ClassName>::static_field_id()
 {
 	static const jfieldID id(class_object()->get_static_field_id<Name, Type>());

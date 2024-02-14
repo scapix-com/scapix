@@ -31,20 +31,20 @@ public:
 	{
 		auto app_cls = class_::find_class("com/scapix/NativeException");
 		auto cls = app_cls->get_object_class();
-		auto get_class_loader_method = cls->get_method_id<SCAPIX_META_STRING("getClassLoader"), ref<SCAPIX_META_STRING("java/lang/ClassLoader")>()>();
-		loader = app_cls->call_method<ref<SCAPIX_META_STRING("java/lang/ClassLoader")>()>(get_class_loader_method);
+		auto get_class_loader_method = cls->get_method_id<"getClassLoader", ref<object<"java/lang/ClassLoader">>()>();
+		loader = app_cls->call_method<ref<object<"java/lang/ClassLoader">>()>(get_class_loader_method);
 		auto loader_cls = loader->get_object_class();
-		load_class_method = loader_cls->get_method_id<SCAPIX_META_STRING("loadClass"), ref<SCAPIX_META_STRING("java/lang/Class")>(ref<SCAPIX_META_STRING("java/lang/String")>)>();
+		load_class_method = loader_cls->get_method_id<"loadClass", ref<object<"java/lang/Class">>(ref<object<"java/lang/String">>)>();
 	}
 
 	static local_ref<class_> find_class(const char* name)
 	{
-		return loader->call_method<ref<SCAPIX_META_STRING("java/lang/Class")>(ref<SCAPIX_META_STRING("java/lang/String")>)>(load_class_method, string::new_(name));
+		return loader->call_method<ref<object<"java/lang/Class">>(ref<object<"java/lang/String">>)>(load_class_method, string::new_(name));
 	}
 
 private:
 
-	inline static static_global_ref<SCAPIX_META_STRING("java/lang/ClassLoader")> loader;
+	inline static static_global_ref<object<"java/lang/ClassLoader">> loader;
 	inline static jmethodID load_class_method;
 
 };

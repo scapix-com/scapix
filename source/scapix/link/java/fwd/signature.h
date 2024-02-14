@@ -13,7 +13,7 @@ template <typename T>
 struct signature;
 
 template <typename T>
-using signature_t = typename signature<T>::type;
+constexpr auto signature_v = signature<T>::value;
 
 } // namespace scapix::link::java
 

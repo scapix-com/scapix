@@ -8,7 +8,7 @@
 #define SCAPIX_LINK_JAVA_FWD_BYTE_BUFFER_H
 
 #include <tuple>
-#include <scapix/meta/string.h>
+#include <scapix/core/fixed_string.h>
 #include <scapix/link/java/object_traits.h>
 #include <scapix/link/java/fwd/object.h>
 
@@ -19,7 +19,7 @@ class byte_buffer;
 template<>
 struct object_traits<byte_buffer>
 {
-	using class_name = SCAPIX_META_STRING("java/nio/ByteBuffer");
+	static constexpr auto class_name = "java/nio/ByteBuffer";
 	using base_classes = std::tuple<object<>>;
 };
 

@@ -16,11 +16,11 @@
 
 namespace scapix::link::java {
 
-class class_ : public object<SCAPIX_META_STRING("java/lang/Class")>
+class class_ : public object<"java/lang/Class">
 {
 public:
 
-	static local_ref<class_> define_class(const char* name, ref<SCAPIX_META_STRING("java/lang/ClassLoader")> loader, const jbyte* buf, jsize size)
+	static local_ref<class_> define_class(const char* name, ref<object<"java/lang/ClassLoader">> loader, const jbyte* buf, jsize size)
 	{
 		return detail::check_result<class_>(detail::env()->DefineClass(name, loader.handle(), buf, size));
 	}
@@ -40,28 +40,28 @@ public:
 		return detail::env()->IsAssignableFrom(source.handle(), handle());
 	}
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	jfieldID get_field_id() const
 	{
-		return get_field_id(meta::c_str_v<Name>, meta::c_str_v<signature_t<Type>>);
+		return get_field_id(Name, signature_v<Type>);
 	}
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	jfieldID get_static_field_id() const
 	{
-		return get_static_field_id(meta::c_str_v<Name>, meta::c_str_v<signature_t<Type>>);
+		return get_static_field_id(Name, signature_v<Type>);
 	}
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	jmethodID get_method_id() const
 	{
-		return get_method_id(meta::c_str_v<Name>, meta::c_str_v<signature_t<Type>>);
+		return get_method_id(Name, signature_v<Type>);
 	}
 
-	template <typename Name, typename Type>
+	template <fixed_string Name, typename Type>
 	jmethodID get_static_method_id() const
 	{
-		return get_static_method_id(meta::c_str_v<Name>, meta::c_str_v<signature_t<Type>>);
+		return get_static_method_id(Name, signature_v<Type>);
 	}
 
 	jfieldID get_field_id(const char* name, const char* sig) const

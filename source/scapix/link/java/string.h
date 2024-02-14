@@ -121,7 +121,7 @@ private:
 
 };
 
-class string : public object<SCAPIX_META_STRING("java/lang/String")>
+class string : public object<"java/lang/String">
 {
 public:
 

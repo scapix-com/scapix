@@ -17,14 +17,14 @@ namespace scapix::link::java {
 
 #include <scapix/detail/warning/inaccessible_base.h>
 
-template <typename ClassName, typename ...Bases>
+template <fixed_string ClassName, typename ...Bases>
 class object : private object_impl<ClassName>, public Bases...
 {
 	using impl = object_impl<ClassName>;
 
 public:
 
-	using class_name = ClassName;
+	static constexpr auto class_name = ClassName;
 	using base_classes = std::tuple<Bases...>;
 	using handle_type = handle_type_t<object>;
 
@@ -45,7 +45,7 @@ protected:
 
 };
 
-template <typename ClassName>
+template <fixed_string ClassName>
 class object<ClassName> : public object<ClassName, object<>>
 {
 public:
@@ -58,17 +58,17 @@ template <typename T>
 struct always_false : std::false_type {}; 
 
 template <typename Base1, typename ...Bases>
-class object<SCAPIX_META_STRING("java/lang/Object"), Base1, Bases...>
+class object<"java/lang/Object", Base1, Bases...>
 {
 	static_assert(always_false<Base1>::value, "java/lang/Object should not specify base classes");
 };
 
 template <>
-class object<SCAPIX_META_STRING("java/lang/Object")> : private object_impl<SCAPIX_META_STRING("java/lang/Object")>
+class object<"java/lang/Object"> : private object_impl<"java/lang/Object">
 {
 public:
 
-	using class_name = SCAPIX_META_STRING("java/lang/Object");
+	static constexpr fixed_string class_name = "java/lang/Object";
 	using base_classes = std::tuple<>;
 	using handle_type = handle_type_t<object>;
 

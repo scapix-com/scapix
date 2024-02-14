@@ -19,9 +19,9 @@
 namespace scapix::link::java {
 
 template <typename T>
-class array_base : public object<signature_t<T[]>>
+class array_base : public object<signature_v<T[]>>
 {
-	using base = object<signature_t<T[]>>;
+	using base = object<signature_v<T[]>>;
 
 public:
 

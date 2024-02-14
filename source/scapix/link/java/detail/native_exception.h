@@ -65,13 +65,13 @@ private:
 
 };
 
-class native_exception : public object<SCAPIX_META_STRING("com/scapix/NativeException"), throwable>
+class native_exception : public object<"com/scapix/NativeException", throwable>
 {
 public:
 
 	native_exception_cpp* cpp()
 	{
-		return reinterpret_cast<native_exception_cpp*>(get_field<SCAPIX_META_STRING("ptr"), jlong>());
+		return reinterpret_cast<native_exception_cpp*>(get_field<"ptr", jlong>());
 	}
 
 	static local_ref<native_exception> new_object()

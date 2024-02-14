@@ -10,7 +10,6 @@
 #include <utility>
 #include <experimental/type_traits>
 #include <scapix/core/type_traits.h>
-#include <scapix/meta/string.h>
 #include <scapix/link/java/type_traits.h>
 #include <scapix/link/java/signature.h>
 #include <scapix/link/java/detail/api/ref.h>
@@ -120,11 +119,11 @@ struct element_type
 template <typename T>
 using element_type_t = typename element_type<T>::type;
 
-template <char... Chars>
-struct element_type<meta::string<Chars...>>
-{
-	using type = object<meta::string<Chars...>>;
-};
+//template <char... Chars>
+//struct element_type<meta::string<Chars...>>
+//{
+//	using type = object<meta::string<Chars...>>;
+//};
 
 template <typename T>
 struct element_type<T[]>
@@ -202,7 +201,7 @@ class ref
 public:
 
 	using element_type = element_type_t<T>;
-	using class_name = class_name_t<element_type>;
+	static constexpr auto class_name = class_name_v<element_type>;
 
 	static_assert(!is_ref_v<T> && !is_ref_v<element_type>);
 
@@ -332,7 +331,7 @@ class ref<T, scope::generic>
 public:
 
 	using element_type = element_type_t<T>;
-	using class_name = class_name_t<element_type>;
+	static constexpr auto class_name = class_name_v<element_type>;
 
 	static_assert(!is_ref_v<T> && !is_ref_v<element_type>);
 

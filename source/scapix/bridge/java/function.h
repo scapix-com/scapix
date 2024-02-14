@@ -53,13 +53,11 @@ private:
 namespace scapix::link::java {
 namespace detail {
 
-class function : public object<SCAPIX_META_STRING("com/scapix/Function")>
+class function : public object<"com/scapix/Function">
 {
-	using ptr = SCAPIX_META_STRING("ptr");
-
 public:
 
-	bridge::java::function_base* get_ptr() { return reinterpret_cast<bridge::java::function_base*>(get_field<ptr, jlong>()); }
+	bridge::java::function_base* get_ptr() { return reinterpret_cast<bridge::java::function_base*>(get_field<"ptr", jlong>()); }
 
 protected:
 
@@ -67,15 +65,15 @@ protected:
 
 };
 
-template <typename InterfaceClassName, typename Type, typename Name>
+template <fixed_string InterfaceClassName, typename Type, fixed_string Name>
 class function_impl;
 
-template <typename InterfaceClassName, typename JniR, typename ...JniArgs, typename Name>
-class function_impl<InterfaceClassName, JniR(JniArgs...), Name> : public object<meta::concat_t<InterfaceClassName, SCAPIX_META_STRING("Impl")>,
+template <fixed_string InterfaceClassName, typename JniR, typename ...JniArgs, fixed_string Name>
+class function_impl<InterfaceClassName, JniR(JniArgs...), Name> : public object<InterfaceClassName + "Impl",
 	function,
 	java::function<InterfaceClassName, JniR(JniArgs...), Name>>
 {
-	using base = object<meta::concat_t<InterfaceClassName, SCAPIX_META_STRING("Impl")>,
+	using base = object<InterfaceClassName + "Impl",
 		function,
 		java::function<InterfaceClassName, JniR(JniArgs...), Name>>;
 

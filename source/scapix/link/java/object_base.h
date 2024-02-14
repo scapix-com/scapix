@@ -17,14 +17,14 @@ namespace scapix::link::java {
 
 #include <scapix/detail/warning/inaccessible_base.h>
 
-template <typename ClassName, typename ...Bases>
+template <fixed_string ClassName, typename ...Bases>
 class object_base : private object_impl<ClassName>, public Bases...
 {
 	using impl = object_impl<ClassName>;
 
 protected:
 
-	using class_name = ClassName;
+	static constexpr auto class_name = ClassName;
 	using base_classes = std::tuple<Bases...>;
 	using handle_type = handle_type_t<object_base>;
 
