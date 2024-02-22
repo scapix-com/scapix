@@ -49,6 +49,9 @@ struct tuple : detail::tuple_base<std::index_sequence_for<Types...>, Types...>
 	using detail::tuple_base<std::index_sequence_for<Types...>, Types...>::tuple_base;
 };
 
+template <typename... Ts>
+tuple(Ts...) -> tuple<Ts...>;
+
 // tuple_size
 
 template <typename Tuple>

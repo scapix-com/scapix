@@ -24,9 +24,6 @@ struct object_traits
 };
 
 // class_name
-//
-// Note: class_name currently also used by java::bridge for a somewhat different purpose:
-// specialized for C++ types to get class name of related java type.
 
 template <typename T>
 struct class_name

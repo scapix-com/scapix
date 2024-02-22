@@ -7,12 +7,29 @@
 #ifndef SCAPIX_CORE_REMOVE_FUNCTION_QUALIFIERS_H
 #define SCAPIX_CORE_REMOVE_FUNCTION_QUALIFIERS_H
 
+#include <scapix/core/type_traits.h>
+
 namespace scapix {
 
 template <typename T>
 struct remove_function_qualifiers
 {
 	using type = T;
+};
+
+template <typename T>
+using remove_function_qualifiers_t = typename remove_function_qualifiers<T>::type;
+
+template <function_pointer T>
+struct remove_function_qualifiers<T>
+{
+	using type = std::add_pointer_t<remove_function_qualifiers_t<std::remove_pointer_t<T>>>;
+};
+
+template <member_function_pointer T>
+struct remove_function_qualifiers<T>
+{
+	using type = remove_function_qualifiers_t<member_pointer_type_t<T>> member_pointer_class_t<T>::*;
 };
 
 // qualifiers: const volatile & && noexcept, 24 total
@@ -160,11 +177,6 @@ struct remove_function_qualifiers<R(Args...)const volatile&& noexcept>
 {
 	using type = R(Args...);
 };
-
-// remove_function_qualifiers_t
-
-template <typename T>
-using remove_function_qualifiers_t = typename remove_function_qualifiers<T>::type;
 
 } // namespace scapix
 

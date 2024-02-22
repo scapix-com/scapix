@@ -92,20 +92,11 @@ protected:
 
 } // namespace detail
 
-template <>
-struct class_name<detail::native_exception_cpp>
+template <std::same_as<detail::native_exception_cpp> T>
+detail::native_exception_cpp& convert_this(ref<detail::native_exception> v)
 {
-	using type = detail::native_exception::class_name;
-};
-
-template <>
-struct convert_this<detail::native_exception_cpp>
-{
-	static detail::native_exception_cpp& cpp(ref<detail::native_exception> v)
-	{
-		return *v->cpp();
-	}
-};
+	return *v->cpp();
+}
 
 } // namespace scapix::link::java
 

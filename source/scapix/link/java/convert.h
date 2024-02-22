@@ -31,9 +31,6 @@ class function_impl;
 
 } // namespace detail
 
-template <typename T, typename = void>
-struct convert_this;
-
 template <typename Jni, typename Cpp, typename = void>
 struct convert_shared;
 

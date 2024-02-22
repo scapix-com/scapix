@@ -96,35 +96,11 @@ protected:
 
 } // namespace detail
 
-template <>
-struct class_name<bridge::java::function_base>
+template <std::derived_from<bridge::java::function_base> T, typename J>
+T& convert_this(ref<J> x)
 {
-	using type = detail::function::class_name;
-};
-
-template <typename T>
-struct class_name<bridge::java::function<T>>
-{
-	using type = detail::function::class_name;
-};
-
-template <typename T>
-struct convert_this<bridge::java::function<T>>
-{
-	static bridge::java::function<T>& cpp(ref<detail::function> v)
-	{
-		return *static_cast<bridge::java::function<T>*>(v->get_ptr());
-	}
-};
-
-template <>
-struct convert_this<bridge::java::function_base>
-{
-	static bridge::java::function_base& cpp(ref<detail::function> v)
-	{
-		return *v->get_ptr();
-	}
-};
+	return *static_cast<T*>(static_pointer_cast<detail::function>(x)->get_ptr());
+}
 
 } // namespace scapix::link::java
 

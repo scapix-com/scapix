@@ -8,6 +8,7 @@
 #define SCAPIX_LINK_JAVA_NATIVE_METHOD_H
 
 #include <scapix/core/tuple.h>
+#include <scapix/core/remove_function_qualifiers.h>
 #include <scapix/meta/string.h>
 #include <scapix/link/java/convert.h>
 #include <scapix/link/java/signature.h>
@@ -69,8 +70,8 @@ using param_type = typename param_t<T>::type;
 template <typename Func>
 struct jni_native_method
 {
-	char* name;
-	char* signature;
+	const char* name;
+	const char* signature;
 	Func fnPtr;
 
 private:
@@ -81,6 +82,10 @@ private:
 	}
 
 };
+
+// for apple clang 15.0.0.15000100
+template <typename Func>
+jni_native_method(const char*, const char*, Func) -> jni_native_method<Func>;
 
 template <typename ClassName, typename ...Methods>
 class native_methods
@@ -96,7 +101,7 @@ private:
 
 	native_methods() = delete;
 
-	inline constexpr static tuple<decltype(Methods::get())...> methods = { Methods::get()... };
+	static constexpr tuple methods = { Methods::template get<ClassName>()... };
 
 };
 
@@ -104,15 +109,13 @@ private:
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61355
 
 template <typename Name, typename JniType, typename Type, std::decay_t<Type> Method>
-class native_method
+struct native_method
 {
-private:
+	template <typename ClassName, typename JniType_, typename Type_>
+	struct impl;
 
-	template <bool IsMember, typename JniType_, typename Type_>
-	struct type;
-
-	template <typename JniR, typename ...JniArgs, typename R, typename ...Args>
-	struct type<true, JniR(JniArgs...), R(Args...)>
+	template <typename ClassName, typename JniR, typename ...JniArgs, typename R, typename ...Args, typename Class>
+	struct impl<ClassName, JniR(JniArgs...), R(Class::*)(Args...)>
 	{
 		static param_type<JniR> func(JNIEnv* env, jobject thiz, param_type<JniArgs>... args)
 		{
@@ -120,9 +123,7 @@ private:
 
 			try
 			{
-				using class_type = member_pointer_class_t<Type>;
-
-				decltype(auto) obj = convert_this<class_type>::cpp(ref<class_name_t<class_type>>(thiz));
+				decltype(auto) obj = convert_this<Class>(ref<ClassName>(thiz));
 
 				if constexpr (std::is_void_v<R>)
 				{
@@ -147,8 +148,8 @@ private:
 		}
 	};
 
-	template <typename JniR, typename ...JniArgs, typename R, typename ...Args>
-	struct type<false, JniR(JniArgs...), R(Args...)>
+	template <typename ClassName, typename JniR, typename ...JniArgs, typename R, typename ...Args>
+	struct impl<ClassName, JniR(JniArgs...), R(Args...)>
 	{
 		static param_type<JniR> func(JNIEnv* env, jclass clazz, param_type<JniArgs>... args)
 		{
@@ -179,20 +180,16 @@ private:
 		}
 	};
 
-	inline static constexpr auto func = &type<std::is_member_pointer_v<Type>, JniType, remove_function_qualifiers_t<member_pointer_type_t<std::remove_pointer_t<Type>>>>::func;
-
-public:
-
-	static constexpr jni_native_method<decltype(func)> get()
+	template <typename ClassName>
+	static constexpr auto get()
 	{
-		return
+		return jni_native_method
 		{
-			const_cast<char*>(meta::c_str_v<Name>),
-			const_cast<char*>(meta::c_str_v<signature_t<JniType>>),
-			func
+			meta::c_str_v<Name>,
+			meta::c_str_v<signature_t<JniType>>,
+			impl<ClassName, JniType, remove_function_qualifiers_t<Type>>::func
 		};
 	}
-
 };
 
 } // namespace scapix::link::java

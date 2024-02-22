@@ -36,10 +36,10 @@ protected:
 
 };
 
-template <typename T>
-class bridge_object : public link::java::object<link::java::class_name_t<T>, bridge>
+template <typename ClassName, typename T>
+class bridge_object : public link::java::object<ClassName, bridge>
 {
-	using base = link::java::object<link::java::class_name_t<T>, bridge>;
+	using base = link::java::object<ClassName, bridge>;
 
 public:
 
@@ -48,7 +48,6 @@ public:
 		return base::template new_object<void(link::java::ref<typename base::nop>)>(nullptr);
 	}
 
-	void set_ptr(T* p) { base::set_ptr(p); }
 	T* get_ptr() { return static_cast<T*>(base::get_ptr()); }
 
 protected:
@@ -93,14 +92,14 @@ private:
 	// to do: with indirect inheritance support,
 	// wrappers should depend on actual object type.
 
-	template <typename T>
-	link::java::local_ref<detail::bridge_object<T>> get_ref(std::shared_ptr<T> shared_this)
+	template <typename ClassName, typename T>
+	link::java::local_ref<detail::bridge_object<ClassName, T>> get_ref(std::shared_ptr<T> shared_this)
 	{
-		link::java::local_ref<detail::bridge_object<T>> local(link::java::static_pointer_cast<detail::bridge_object<T>>(wrapper));
+		link::java::local_ref<detail::bridge_object<ClassName, T>> local(link::java::static_pointer_cast<detail::bridge_object<ClassName, T>>(wrapper));
 
 		if (!local)
 		{
-			local = detail::bridge_object<T>::create();
+			local = detail::bridge_object<ClassName, T>::create();
 			attach(local, std::move(shared_this));
 		}
 
@@ -144,7 +143,9 @@ class init
 {
 public:
 
-	init(link::java::ref<detail::bridge_object<T>>&& wrapper) : wrapper(std::move(wrapper)) {}
+	using type = T;
+
+	init(link::java::ref<detail::bridge>&& wrapper) : wrapper(std::move(wrapper)) {}
 
 	template <typename ...Args>
 	void create(Args... args)
@@ -156,7 +157,7 @@ public:
 
 private:
 
-	link::java::ref<detail::bridge_object<T>> wrapper;
+	link::java::ref<detail::bridge> wrapper;
 
 };
 
@@ -164,40 +165,22 @@ private:
 
 namespace scapix::link::java {
 
-template <>
-struct class_name<bridge::java::object_base>
+template <class_template<bridge::java::init> T, typename ClassName>
+T convert_this(ref<ClassName> x)
 {
-	using type = bridge::java::detail::bridge::class_name;
-};
+	return T(std::move(ref<bridge::java::detail::bridge_object<ClassName, typename T::type>>(x)));
+}
 
-template <typename T>
-struct class_name<bridge::java::init<T>>
+template <std::derived_from<bridge::java::object_base> T, typename ClassName>
+T& convert_this(ref<ClassName> x)
 {
-	using type = class_name_t<T>;
-};
+	return *ref<bridge::java::detail::bridge_object<ClassName, T>>(x)->get_ptr();
+}
 
-template <typename T>
-struct convert_this<bridge::java::init<T>>
+template <typename J, typename T>
+struct convert_shared<ref<J>, T, std::enable_if_t<bridge::is_object<T>>>
 {
-	static bridge::java::init<T> cpp(ref<bridge::java::detail::bridge_object<T>> v)
-	{
-		return bridge::java::init<T>(std::move(v));
-	}
-};
-
-template <typename T>
-struct convert_this<T, std::enable_if_t<bridge::is_object<T>>>
-{
-	static T& cpp(ref<bridge::java::detail::bridge_object<T>> v)
-	{
-		return *v->get_ptr();
-	}
-};
-
-template <typename Jni, typename T>
-struct convert_shared<Jni, T, std::enable_if_t<bridge::is_object<T>>>
-{
-	static std::shared_ptr<T> cpp(ref<bridge::java::detail::bridge_object<T>> v)
+	static std::shared_ptr<T> cpp(ref<bridge::java::detail::bridge_object<typename ref<J>::class_name, T>> v)
 	{
 		if (!v)
 			return nullptr;
@@ -205,13 +188,13 @@ struct convert_shared<Jni, T, std::enable_if_t<bridge::is_object<T>>>
 		return static_pointer_cast<T>(v->get_ptr()->scapix_shared());
 	}
 
-	static ref<bridge::java::detail::bridge_object<T>> jni(std::shared_ptr<T> v)
+	static ref<bridge::java::detail::bridge_object<typename ref<J>::class_name, T>> jni(std::shared_ptr<T> v)
 	{
 		if (!v)
 			return nullptr;
 
 		auto p = v.get();
-		return p->get_ref(std::move(v));
+		return p->template get_ref<typename ref<J>::class_name>(std::move(v));
 	}
 };
 
