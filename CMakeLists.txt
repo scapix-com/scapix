@@ -58,7 +58,7 @@ if(MSVC)
     target_compile_options(scapix PUBLIC /permissive-)
 endif()
 
-target_compile_features(scapix PUBLIC cxx_std_17)
+target_compile_features(scapix PUBLIC cxx_std_20)
 
 # scapix looks at COMPILE_FEATURES, not CXX_STANDARD
 
@@ -507,7 +507,7 @@ foreach(bridge_header ${bridge_headers})
     endif()
 
     list(APPEND scapix_clang_config -xc++)
-    list(APPEND scapix_clang_config -std=$<IF:$<IN_LIST:cxx_std_23,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++2b,$<IF:$<IN_LIST:cxx_std_20,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++20,c++17>>)
+    list(APPEND scapix_clang_config -std=$<IF:$<IN_LIST:cxx_std_26,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++2c,$<IF:$<IN_LIST:cxx_std_23,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++2b,c++20>>)
     list(APPEND scapix_clang_config $<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>)
     list(APPEND scapix_clang_config $<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>)
 
