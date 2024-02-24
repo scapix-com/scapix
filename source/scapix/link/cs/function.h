@@ -8,6 +8,7 @@
 #define SCAPIX_LINK_CS_FUNCTION_H
 
 #include <scapix/core/tuple.h>
+#include <scapix/core/remove_function_qualifiers.h>
 #include <scapix/link/cs/convert.h>
 #include <scapix/link/cs/exception.h>
 #include <scapix/link/cs/ref.h>
@@ -45,25 +46,25 @@ class function
 {
 private:
 
-	template <bool IsMember, typename Type_>
-	struct select;
+	template <typename Type_>
+	struct impl;
 
-	template <typename R, typename ...Args>
-	struct select<true, R(Args...)>
+	template <typename R, typename ...Args, typename Class>
+	struct impl<R(Class::*)(Args...)>
 	{
 		static param_t<R> func(bridge::cs::object_base* thiz, param_t<Args>... args)
 		{
 			try
 			{
-				using class_type = member_pointer_class_t<Type>;
+				auto obj = static_cast<Class*>(thiz);
 
 				if constexpr (std::is_void_v<R>)
 				{
-					return (static_cast<class_type*>(thiz)->*Func)(param_cpp<Args>(args)...);
+					return (obj->*Func)(param_cpp<Args>(args)...);
 				}
 				else
 				{
-					return param_cs<R>((static_cast<class_type*>(thiz)->*Func)(param_cpp<Args>(args)...));
+					return param_cs<R>((obj->*Func)(param_cpp<Args>(args)...));
 				}
 			}
 			catch (cs::exception& e)
@@ -81,7 +82,7 @@ private:
 	};
 
 	template <typename R, typename ...Args>
-	struct select<false, R(Args...)>
+	struct impl<R(Args...)>
 	{
 		static param_t<R> func(param_t<Args>... args)
 		{
@@ -122,7 +123,7 @@ private:
 
 public:
 
-	inline static constexpr auto value = select<std::is_member_pointer_v<Type>, remove_function_qualifiers_t<member_pointer_type_t<std::remove_pointer_t<Type>>>>::func;
+	static constexpr auto value = impl<remove_function_qualifiers_t<Type>>::func;
 
 };
 
