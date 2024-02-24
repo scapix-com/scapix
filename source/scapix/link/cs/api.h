@@ -42,7 +42,7 @@ struct cs_type
 };
 
 template <typename Cpp>
-using cs_type_t = typename cs_type<remove_cvref_t<Cpp>>::type;
+using cs_type_t = typename cs_type<std::remove_cvref_t<Cpp>>::type;
 
 template <typename Cpp>
 using cpp_struct_t = meta::transform<member_pointer_type_t, typename struct_<Cpp>::fields::type>;
@@ -79,7 +79,7 @@ struct param
 };
 
 template <typename T>
-using param_t = typename param<remove_cvref_t<T>>::type;
+using param_t = typename param<std::remove_cvref_t<T>>::type;
 
 template <typename Cpp>
 using wire_struct_t = meta::transform<param_t, cpp_struct_t<Cpp>>;

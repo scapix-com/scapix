@@ -32,20 +32,20 @@ struct convert;
 template <typename ObjC, typename Cpp>
 decltype(auto) convert_objc(Cpp&& cpp)
 {
-	return convert<remove_cvref_t<ObjC>, remove_cvref_t<Cpp>>::objc(std::forward<Cpp>(cpp));
+	return convert<std::remove_cvref_t<ObjC>, std::remove_cvref_t<Cpp>>::objc(std::forward<Cpp>(cpp));
 }
 
 template <typename Cpp, typename ObjC>
 decltype(auto) convert_cpp(ObjC&& objc)
 {
-	return convert<remove_cvref_t<ObjC>, remove_cvref_t<Cpp>>::cpp(std::forward<ObjC>(objc));
+	return convert<std::remove_cvref_t<ObjC>, std::remove_cvref_t<Cpp>>::cpp(std::forward<ObjC>(objc));
 }
 
 template<typename ObjC, typename Cpp>
-using has_convert_objc_t = decltype(std::declval<ObjC>() = convert<remove_cvref_t<ObjC>, remove_cvref_t<Cpp>>::objc(std::declval<Cpp>()));
+using has_convert_objc_t = decltype(std::declval<ObjC>() = convert<std::remove_cvref_t<ObjC>, std::remove_cvref_t<Cpp>>::objc(std::declval<Cpp>()));
 
 template<typename ObjC, typename Cpp>
-using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<remove_cvref_t<ObjC>, remove_cvref_t<Cpp>>::cpp(std::declval<ObjC>()));
+using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<std::remove_cvref_t<ObjC>, std::remove_cvref_t<Cpp>>::cpp(std::declval<ObjC>()));
 
 template <typename ObjC, typename Cpp>
 struct convert<ObjC, Cpp, std::enable_if_t<std::is_arithmetic_v<ObjC> && std::is_arithmetic_v<Cpp>>>

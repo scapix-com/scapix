@@ -35,25 +35,25 @@ struct convert;
 template <typename Cs, typename Cpp>
 decltype(auto) convert_cs(Cpp&& cpp)
 {
-	return convert<remove_cvref_t<Cs>, remove_cvref_t<Cpp>>::cs(std::forward<Cpp>(cpp));
+	return convert<std::remove_cvref_t<Cs>, std::remove_cvref_t<Cpp>>::cs(std::forward<Cpp>(cpp));
 }
 
 template <typename Cpp, typename Cs>
 decltype(auto) convert_cpp(Cs&& cs)
 {
-	return convert<remove_cvref_t<Cs>, remove_cvref_t<Cpp>>::cpp(std::forward<Cs>(cs));
+	return convert<std::remove_cvref_t<Cs>, std::remove_cvref_t<Cpp>>::cpp(std::forward<Cs>(cs));
 }
 
 template <typename Cpp>
 decltype(auto) param_cs(Cpp&& cpp)
 {
-	return param<remove_cvref_t<Cpp>>::cs(convert_cs<cs_type_t<Cpp>>(std::forward<Cpp>(cpp)));
+	return param<std::remove_cvref_t<Cpp>>::cs(convert_cs<cs_type_t<Cpp>>(std::forward<Cpp>(cpp)));
 }
 
 template <typename Cpp>
 decltype(auto) param_cpp(param_t<Cpp> cs)
 {
-	return convert_cpp<Cpp>(param<remove_cvref_t<Cpp>>::cpp(cs));
+	return convert_cpp<Cpp>(param<std::remove_cvref_t<Cpp>>::cpp(cs));
 }
 
 template <typename T>

@@ -174,20 +174,20 @@ struct convert;
 template <typename Jni, typename Cpp>
 decltype(auto) convert_jni(Cpp&& cpp)
 {
-	return convert<canonical_ref_t<remove_cvref_t<Jni>>, remove_cvref_t<Cpp>>::jni(std::forward<Cpp>(cpp));
+	return convert<canonical_ref_t<std::remove_cvref_t<Jni>>, std::remove_cvref_t<Cpp>>::jni(std::forward<Cpp>(cpp));
 }
 
 template <typename Cpp, typename Jni>
 decltype(auto) convert_cpp(Jni&& jni)
 {
-	return convert<canonical_ref_t<remove_cvref_t<Jni>>, remove_cvref_t<Cpp>>::cpp(std::forward<Jni>(jni));
+	return convert<canonical_ref_t<std::remove_cvref_t<Jni>>, std::remove_cvref_t<Cpp>>::cpp(std::forward<Jni>(jni));
 }
 
 template<typename Jni, typename Cpp>
-using has_convert_jni_t = decltype(std::declval<Jni>() = convert<canonical_ref_t<remove_cvref_t<Jni>>, remove_cvref_t<Cpp>>::jni(std::declval<Cpp>()));
+using has_convert_jni_t = decltype(std::declval<Jni>() = convert<canonical_ref_t<std::remove_cvref_t<Jni>>, std::remove_cvref_t<Cpp>>::jni(std::declval<Cpp>()));
 
 template<typename Jni, typename Cpp>
-using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<canonical_ref_t<remove_cvref_t<Jni>>, remove_cvref_t<Cpp>>::cpp(std::declval<Jni>()));
+using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<canonical_ref_t<std::remove_cvref_t<Jni>>, std::remove_cvref_t<Cpp>>::cpp(std::declval<Jni>()));
 
 /*
 

@@ -52,20 +52,20 @@ struct convert;
 template <typename Js, typename Cpp>
 decltype(auto) convert_js(Cpp&& cpp)
 {
-	return convert<remove_cvref_t<Js>, remove_cvref_t<Cpp>>::js(std::forward<Cpp>(cpp));
+	return convert<std::remove_cvref_t<Js>, std::remove_cvref_t<Cpp>>::js(std::forward<Cpp>(cpp));
 }
 
 template <typename Cpp, typename Js>
 decltype(auto) convert_cpp(Js&& js)
 {
-	return convert<remove_cvref_t<Js>, remove_cvref_t<Cpp>>::cpp(std::forward<Js>(js));
+	return convert<std::remove_cvref_t<Js>, std::remove_cvref_t<Cpp>>::cpp(std::forward<Js>(js));
 }
 
 template<typename Js, typename Cpp>
-using has_convert_js_t = decltype(std::declval<Js>() = convert<remove_cvref_t<Js>, remove_cvref_t<Cpp>>::js(std::declval<Cpp>()));
+using has_convert_js_t = decltype(std::declval<Js>() = convert<std::remove_cvref_t<Js>, std::remove_cvref_t<Cpp>>::js(std::declval<Cpp>()));
 
 template<typename Js, typename Cpp>
-using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<remove_cvref_t<Js>, remove_cvref_t<Cpp>>::cpp(std::declval<Js>()));
+using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<std::remove_cvref_t<Js>, std::remove_cvref_t<Cpp>>::cpp(std::declval<Js>()));
 
 template <typename T>
 struct convert<emscripten::val, T, std::enable_if_t<is_native_v<T>>>
