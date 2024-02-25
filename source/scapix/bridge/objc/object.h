@@ -10,6 +10,7 @@
 #include <utility>
 #include <cassert>
 #include <scapix/core/type_traits.h>
+#include <scapix/core/remove_function_qualifiers.h>
 #include <scapix/bridge/type_traits.h>
 #include <CoreFoundation/CFBase.h>
 
@@ -148,32 +149,30 @@ inline Wrapper* init(Wrapper* wrapper, ObjcArgs... args)
 template <auto Func>
 struct call_impl
 {
-	using func_type = decltype(Func);
-
-	template <bool IsMember = std::is_member_pointer_v<func_type>, typename Type = remove_function_qualifiers_t<member_pointer_type_t<std::remove_pointer_t<func_type>>>>
+	template <typename Type = remove_function_qualifiers_t<decltype(Func)>>
 	struct select;
 
-	template <typename R, typename ...Args>
-	struct select<true, R(Args...)>
+	template <typename R, typename ...Args, typename Class>
+	struct select<R(Class::*)(Args...)>
 	{
 		template <typename ObjcRet, typename Wrapper, typename ...ObjcArgs>
 		static ObjcRet call(Wrapper* wrapper, ObjcArgs... args)
 		{
-			using class_type = member_pointer_class_t<func_type>;
+			decltype(auto) obj = link::objc::convert_cpp<Class>(wrapper);
 
 			if constexpr (std::is_void_v<R>)
 			{
-				return (link::objc::convert_cpp<class_type>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
+				return (obj.*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...);
 			}
 			else
 			{
-				return link::objc::convert_objc<ObjcRet>((link::objc::convert_cpp<class_type>(wrapper).*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
+				return link::objc::convert_objc<ObjcRet>((obj.*Func)(link::objc::convert_cpp<Args>(std::forward<ObjcArgs>(args))...));
 			}
 		}
 	};
 
 	template <typename R, typename ...Args>
-	struct select<false, R(Args...)>
+	struct select<R(*)(Args...)>
 	{
 		template <typename ObjcRet, typename ...ObjcArgs>
 		static ObjcRet call(ObjcArgs... args)
