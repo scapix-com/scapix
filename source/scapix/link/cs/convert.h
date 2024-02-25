@@ -7,6 +7,7 @@
 #ifndef SCAPIX_LINK_CS_CONVERT_H
 #define SCAPIX_LINK_CS_CONVERT_H
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <map>
@@ -306,9 +307,11 @@ struct convert<ref<>, std::function<R(Args...)>>
 		};
 	}
 
-	//static ref<> cs(std::function<R(Args...)>&& value)
-	//{
-	//}
+	static ref<> cs(std::function<R(Args...)>&& value)
+	{
+//		static_assert(false, "unsupported: convert std::function<> to C# delegate");
+		throw std::logic_error("unsupported: convert std::function<> to C# delegate");
+	}
 };
 
 template <typename Cs, typename Struct>
