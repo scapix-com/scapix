@@ -80,7 +80,7 @@ namespace Scapix.Link
 
         protected static T ScapixCs<T>(T v) where T : struct { return v; }
         protected static T ScapixCs<T>(IntPtr v) where T : class { return FromNative<T>(v); }
-        protected static bool ScapixCs<T>(byte v) { return v != 0 ; }
+        protected static bool ScapixCs<T>(byte v) where T : IComparable<bool> { return v != 0 ; }
 
         protected static T ScapixCallback<T>(Func<T> func)
         {
