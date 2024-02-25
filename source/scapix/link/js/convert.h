@@ -7,6 +7,7 @@
 #ifndef SCAPIX_LINK_JS_CONVERT_H
 #define SCAPIX_LINK_JS_CONVERT_H
 
+#include <stdexcept>
 #include <memory>
 #include <string>
 #include <vector>
@@ -345,11 +346,14 @@ struct convert<emscripten::val, std::function<R(Args...)>>
 		});
 	}
 
-#if 0
-	// "BindingError", message: "_emval_take_value has unknown type NSt3__28functionIFvvEEE"
-
 	static emscripten::val js(const std::function<R(Args...)>& func)
 	{
+//		static_assert(false, "unsupported: convert std::function<> to JavaScript callback");
+		throw std::logic_error("unsupported: convert std::function<> to JavaScript callback");
+
+#if 0
+		// "BindingError", message: "_emval_take_value has unknown type NSt3__28functionIFvvEEE"
+
 		return emscripten::val(std::function<param_t<R>(param_t<Args>...)>([func](param_t<Args>... args)
 		{
 			if constexpr (std::is_void_v<R>)
@@ -357,8 +361,8 @@ struct convert<emscripten::val, std::function<R(Args...)>>
 			else
 				return convert_js<emscripten::val>(func(convert_cpp<Args>(std::forward<param_t<Args>>(args))...));
 		}));
-	}
 #endif
+	}
 };
 
 template <typename Struct>
