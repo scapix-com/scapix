@@ -7,7 +7,7 @@
 #include <scapix/link/java/detail/exception.h>
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/throwable.h>
-#include <scapix/link/java/detail/native_exception.h>
+#include <scapix/link/java/com/scapix/native_exception.h>
 #include <scapix/link/java/vm_exception.h>
 
 namespace scapix::link::java::detail {
@@ -39,7 +39,7 @@ which can throw any exception thrown by executed Java code:
 
 	local_ref<throwable> exception(e);
 
-	if (auto native = dynamic_pointer_cast<native_exception>(std::move(exception)))
+	if (auto native = dynamic_pointer_cast<com::scapix::native_exception>(std::move(exception)))
 		native->rethrow();
 
 	throw vm_exception(std::move(exception));

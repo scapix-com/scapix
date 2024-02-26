@@ -119,12 +119,6 @@ struct element_type
 template <typename T>
 using element_type_t = typename element_type<T>::type;
 
-//template <char... Chars>
-//struct element_type<meta::string<Chars...>>
-//{
-//	using type = object<meta::string<Chars...>>;
-//};
-
 template <typename T>
 struct element_type<T[]>
 {

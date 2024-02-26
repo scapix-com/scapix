@@ -7,196 +7,20 @@
 #ifndef SCAPIX_BRIDGE_JAVA_OBJECT_H
 #define SCAPIX_BRIDGE_JAVA_OBJECT_H
 
-#include <memory>
-#include <utility>
-#include <type_traits>
-#include <scapix/bridge/type_traits.h>
-#include <scapix/link/java/object.h>
-#include <scapix/link/java/convert.h>
+#include <scapix/link/java/com/scapix/bridge.h>
+#include <scapix/link/java/com/scapix/function.h>
 
 namespace scapix::bridge::java {
 
-class object_base;
-
-namespace detail {
-
-class bridge : public link::java::object<"com/scapix/Bridge">
-{
-public:
-
-	using nop = link::java::object<"com/scapix/Bridge$Nop">;
-
-	void set_ptr(object_base* p) { set_field<"ptr">(reinterpret_cast<jlong>(p)); }
-	object_base* get_ptr() { return reinterpret_cast<object_base*>(get_field<"ptr", jlong>()); }
-
-protected:
-
-	bridge(handle_type h) : object(h) {}
-
-};
-
-template <fixed_string ClassName, typename T>
-class bridge_object : public link::java::object<ClassName, bridge>
-{
-	using base = link::java::object<ClassName, bridge>;
-
-public:
-
-	static link::java::local_ref<bridge_object> create()
-	{
-		return base::template new_object<void(link::java::ref<typename base::nop>)>(nullptr);
-	}
-
-	T* get_ptr() { return static_cast<T*>(base::get_ptr()); }
-
-protected:
-
-	bridge_object(typename base::handle_type h) : base(h) {}
-
-};
-
-} // namespace detail
-
-class object_base
-{
-protected:
-
-	object_base() = default;
-	object_base(const object_base&) {}
-	object_base(object_base&&) = default;
-	object_base& operator =(const object_base&) { return *this; }
-	object_base& operator =(object_base&&) = default;
-
-private:
-
-	template <typename>
-	friend class init;
-
-	template <typename Jni, typename Cpp, typename>
-	friend struct link::java::convert_shared;
-
-	friend jint on_load(JavaVM *vm, void *reserved, void(*init)());
-
-	void attach(link::java::ref<detail::bridge> obj, std::shared_ptr<object_base> shared_this)
-	{
-		assert(!wrapper);
-		assert(!self);
-
-		wrapper = std::move(obj);
-		self = std::move(shared_this);
-
-		wrapper->set_ptr(this);
-	}
-
-	// to do: with indirect inheritance support,
-	// wrappers should depend on actual object type.
-
-	template <fixed_string ClassName, typename T>
-	link::java::local_ref<detail::bridge_object<ClassName, T>> get_ref(std::shared_ptr<T> shared_this)
-	{
-		link::java::local_ref<detail::bridge_object<ClassName, T>> local(link::java::static_pointer_cast<detail::bridge_object<ClassName, T>>(wrapper));
-
-		if (!local)
-		{
-			local = detail::bridge_object<ClassName, T>::create();
-			attach(local, std::move(shared_this));
-		}
-
-		return local;
-	}
-
-	const std::shared_ptr<object_base>& scapix_shared()
-	{
-		assert(self);
-		return self;
-	}
-
-	void finalize()
-	{
-		wrapper.reset();
-		self.reset(); // might destroy this object
-	}
-
-	link::java::weak_ref<detail::bridge> wrapper;
-	std::shared_ptr<object_base> self;
-
-};
-
-// to do: inheritance should be private
-
-template <typename>
-class object : public object_base
-{
-protected:
-
-	object() = default;
-	object(const object&) = default;
-	object(object&&) = default;
-	object& operator =(const object&) = default;
-	object& operator =(object&&) = default;
-
-};
+template <typename T>
+using object = link::java::com::scapix::cpp::object<T>;
 
 template <typename T>
-class init
-{
-public:
+using init = link::java::com::scapix::cpp::init<T>;
 
-	using type = T;
-
-	init(link::java::ref<detail::bridge>&& wrapper) : wrapper(std::move(wrapper)) {}
-
-	template <typename ...Args>
-	void create(Args... args)
-	{
-		std::shared_ptr<object_base> obj = std::make_shared<T>(std::forward<Args>(args)...);
-		object_base* ptr = obj.get();
-		ptr->attach(std::move(wrapper), std::move(obj));
-	}
-
-private:
-
-	link::java::ref<detail::bridge> wrapper;
-
-};
+template <typename T>
+using function = link::java::com::scapix::cpp::function_impl<T>;
 
 } // namespace scapix::bridge::java
-
-namespace scapix::link::java {
-
-template <class_template<bridge::java::init> T, fixed_string ClassName>
-T convert_this(ref<object<ClassName>> x)
-{
-	return T(std::move(ref<bridge::java::detail::bridge_object<ClassName, typename T::type>>(x)));
-}
-
-template <std::derived_from<bridge::java::object_base> T, fixed_string ClassName>
-T& convert_this(ref<object<ClassName>> x)
-{
-	return *ref<bridge::java::detail::bridge_object<ClassName, T>>(x)->get_ptr();
-}
-
-template <typename J, typename T>
-struct convert_shared<ref<J>, T, std::enable_if_t<bridge::is_object<T>>>
-{
-	static std::shared_ptr<T> cpp(ref<bridge::java::detail::bridge_object<ref<J>::class_name, T>> v)
-	{
-		if (!v)
-			return nullptr;
-
-		return static_pointer_cast<T>(v->get_ptr()->scapix_shared());
-	}
-
-	static ref<bridge::java::detail::bridge_object<ref<J>::class_name, T>> jni(std::shared_ptr<T> v)
-	{
-		if (!v)
-			return nullptr;
-
-		auto p = v.get();
-		return p->template get_ref<ref<J>::class_name>(std::move(v));
-	}
-};
-
-} // namespace scapix::link::java
 
 #endif // SCAPIX_BRIDGE_JAVA_OBJECT_H

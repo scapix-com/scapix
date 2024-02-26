@@ -12,6 +12,7 @@
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/throwable.h>
 #include <scapix/link/java/string.h>
+#include <scapix/link/java/convert.h>
 
 namespace scapix::link::java {
 

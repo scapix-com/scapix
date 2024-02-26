@@ -22,6 +22,7 @@
 #include <scapix/link/java/array.h>
 #include <scapix/link/java/function.h>
 #include <scapix/link/java/struct.h>
+#include <scapix/link/java/com/scapix/function.h>
 
 namespace scapix::link::java {
 namespace detail {
@@ -470,7 +471,7 @@ struct convert<ref<function<ClassName, JniR(JniArgs...), Name>>, std::function<R
 		if (!f)
 			return nullptr;
 
-		return detail::function_impl<ClassName, JniR(JniArgs...), Name>::create(std::move(f));
+		return com::scapix::function_impl<ClassName, JniR(JniArgs...), Name>::create(std::move(f));
 	}
 };
 

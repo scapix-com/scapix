@@ -1,24 +1,27 @@
 /*
-	scapix/bridge/java/function.h
+	scapix/jni/com/scapix/function.h
 
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_BRIDGE_JAVA_FUNCTION_H
-#define SCAPIX_BRIDGE_JAVA_FUNCTION_H
+#ifndef SCAPIX_JNI_COM_SCAPIX_FUNCTION_H
+#define SCAPIX_JNI_COM_SCAPIX_FUNCTION_H
 
 #include <functional>
 #include <utility>
 #include <scapix/link/java/object.h>
-#include <scapix/link/java/convert.h>
+#include <scapix/link/java/function.h>
+#include <scapix/link/java/fwd/native_method.h>
 
-namespace scapix::bridge::java {
+namespace scapix::link::java {
+namespace com::scapix {
+namespace cpp {
 
-class function_base
+class function
 {
 public:
 
-	virtual ~function_base() = default;
+	virtual ~function() = default;
 
 	void finalize()
 	{
@@ -28,14 +31,14 @@ public:
 };
 
 template <typename T>
-class function;
+class function_impl;
 
 template <typename R, typename ...Args>
-class function<R(Args...)> : public function_base
+class function_impl<R(Args...)> : public function
 {
 public:
 
-	function(std::function<R(Args...)>&& f) : func(std::move(f)) {}
+	function_impl(std::function<R(Args...)>&& f) : func(std::move(f)) {}
 
 	R call(Args... args)
 	{
@@ -48,16 +51,19 @@ private:
 
 };
 
-} // namespace scapix::bridge::java
-
-namespace scapix::link::java {
-namespace detail {
+} // namespace cpp
 
 class function : public object<"com/scapix/Function">
 {
 public:
 
-	bridge::java::function_base* get_ptr() { return reinterpret_cast<bridge::java::function_base*>(get_field<"ptr", jlong>()); }
+	using native_methods = link::java::native_methods
+	<
+		class_name,
+		native_method<"finalize", void(), void(cpp::function::*)(), &cpp::function::finalize>
+	>;
+
+	cpp::function* get_ptr() const { return reinterpret_cast<cpp::function*>(get_field<"ptr", jlong>()); }
 
 protected:
 
@@ -80,9 +86,9 @@ class function_impl<InterfaceClassName, JniR(JniArgs...), Name> : public object<
 public:
 
 	template <typename R, typename ...Args>
-	static link::java::local_ref<function_impl> create(std::function<R(Args...)>&& func)
+	static local_ref<function_impl> create(std::function<R(Args...)>&& func)
 	{
-		bridge::java::function_base* ptr = new bridge::java::function<R(Args...)>(std::move(func));
+		cpp::function* ptr = new cpp::function_impl<R(Args...)>(std::move(func));
 		return base::template new_object<void(jlong)>(reinterpret_cast<jlong>(ptr));
 	}
 
@@ -92,14 +98,14 @@ protected:
 
 };
 
-} // namespace detail
+} // namespace com::scapix
 
-template <std::derived_from<bridge::java::function_base> T, typename J>
+template <std::derived_from<com::scapix::cpp::function> T, typename J>
 T& convert_this(ref<J> x)
 {
-	return *static_cast<T*>(static_pointer_cast<detail::function>(x)->get_ptr());
+	return *static_cast<T*>(static_pointer_cast<com::scapix::function>(x)->get_ptr());
 }
 
 } // namespace scapix::link::java
 
-#endif // SCAPIX_BRIDGE_JAVA_FUNCTION_H
+#endif // SCAPIX_JNI_COM_SCAPIX_FUNCTION_H

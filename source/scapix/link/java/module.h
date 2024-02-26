@@ -8,8 +8,11 @@
 #define SCAPIX_LINK_JAVA_MODULE_H
 
 #include <scapix/link/java/env.h>
-#include <scapix/link/java/detail/native_exception.h>
+#include <scapix/link/java/vm_exception.h>
 #include <scapix/link/java/native_method.h>
+#include <scapix/link/java/com/scapix/native_exception.h>
+#include <scapix/link/java/com/scapix/bridge.h>
+#include <scapix/link/java/com/scapix/function.h>
 
 #ifdef SCAPIX_CACHE_CLASS_LOADER
 #include <scapix/link/java/class_loader.h>
@@ -17,24 +20,37 @@
 
 namespace scapix::link::java {
 
-inline jint on_load(JavaVM *vm, void *reserved)
+inline jint on_load(JavaVM* vm, void* reserved, void(*init)() = []{})
 {
-	detail::jvm_ptr = vm;
-	get_env();
+	try
+	{
+		detail::jvm_ptr = vm;
+		get_env();
 
-#ifdef SCAPIX_CACHE_CLASS_LOADER
-	class_loader::init();
-#endif
+		com::scapix::native_exception::native_methods::register_();
+		com::scapix::bridge_::native_methods::register_();
+		com::scapix::function::native_methods::register_();
 
-	native_methods
-	<
-		detail::native_exception::class_name,
-		native_method<"finalize", void(), void(detail::native_exception_cpp::*)(), &detail::native_exception_cpp::finalize>,
-		native_method<"getMessage", ref<string>(), ref<string>(detail::native_exception_cpp::*)() const, &detail::native_exception_cpp::message>
-	>
-	::register_();
+		#ifdef SCAPIX_CACHE_CLASS_LOADER
+		class_loader::init();
+		#endif
 
-	return JNI_VERSION_1_6;
+		init();
+
+		return JNI_VERSION_1_6;
+	}
+	catch (const vm_exception& e)
+	{
+		e.get()->throw_();
+
+		// Android doesn't check exception after calling JNI_OnLoad()
+		#ifdef ANDROID
+		detail::env()->ExceptionDescribe();
+		detail::env()->ExceptionClear();
+		#endif
+	}
+
+	return JNI_ERR;
 }
 
 inline void on_unload(JavaVM *vm, void *reserved) noexcept

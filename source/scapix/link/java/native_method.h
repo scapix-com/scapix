@@ -7,13 +7,14 @@
 #ifndef SCAPIX_LINK_JAVA_NATIVE_METHOD_H
 #define SCAPIX_LINK_JAVA_NATIVE_METHOD_H
 
+#include <scapix/link/java/fwd/native_method.h>
 #include <scapix/core/tuple.h>
 #include <scapix/core/remove_function_qualifiers.h>
 #include <scapix/core/fixed_string.h>
 #include <scapix/link/java/convert.h>
 #include <scapix/link/java/signature.h>
 #include <scapix/link/java/vm_exception.h>
-#include <scapix/link/java/detail/native_exception.h>
+#include <scapix/link/java/com/scapix/native_exception.h>
 #include <scapix/link/java/class.h>
 
 namespace scapix::link::java {
@@ -140,7 +141,7 @@ struct native_method
 			}
 			catch (...)
 			{
-				detail::native_exception::new_object()->throw_();
+				com::scapix::native_exception::new_object()->throw_();
 			}
 
 			if constexpr (!std::is_void_v<R>)
@@ -172,7 +173,7 @@ struct native_method
 			}
 			catch (...)
 			{
-				detail::native_exception::new_object()->throw_();
+				com::scapix::native_exception::new_object()->throw_();
 			}
 
 			if constexpr (!std::is_void_v<R>)
