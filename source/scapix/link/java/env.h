@@ -8,7 +8,6 @@
 #define SCAPIX_LINK_JAVA_ENV_H
 
 #include <jni.h>
-#include <boost/config.hpp>
 #include <scapix/core/function_traits.h>
 
 namespace scapix::link::java {
@@ -84,7 +83,7 @@ inline JNIEnv* env() noexcept
 {
 #ifdef SCAPIX_JAVA_AUTO_ATTACH_THREAD
 
-	if (BOOST_UNLIKELY(!env_.ptr))
+	if (!env_.ptr) [[unlikely]]
 		attach_current_thread();
 
 #endif

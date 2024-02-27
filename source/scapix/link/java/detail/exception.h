@@ -7,7 +7,6 @@
 #ifndef SCAPIX_LINK_JAVA_DETAIL_EXCEPTION_H
 #define SCAPIX_LINK_JAVA_DETAIL_EXCEPTION_H
 
-#include <boost/config.hpp>
 #include <scapix/link/java/type_traits.h>
 #include <scapix/link/java/ref.h>
 
@@ -20,7 +19,7 @@ inline void check_exception()
 {
 	jthrowable e = env()->ExceptionOccurred();
 
-	if (BOOST_UNLIKELY(e != 0))
+	if (e != 0) [[unlikely]]
 		throw_exception(e);
 }
 
@@ -28,13 +27,13 @@ inline void check_exception_nested()
 {
 	jthrowable e = env()->ExceptionOccurred();
 
-	if (BOOST_UNLIKELY(e != 0))
+	if (e != 0) [[unlikely]]
 		throw_exception_nested(e);
 }
 
 inline jfieldID check_result(jfieldID id)
 {
-	if (BOOST_UNLIKELY(!id))
+	if (!id) [[unlikely]]
 		throw_exception();
 
 	return id;
@@ -42,7 +41,7 @@ inline jfieldID check_result(jfieldID id)
 
 inline jmethodID check_result(jmethodID id)
 {
-	if (BOOST_UNLIKELY(!id))
+	if (!id) [[unlikely]]
 		throw_exception();
 
 	return id;
@@ -52,7 +51,7 @@ inline jmethodID check_result(jmethodID id)
 
 inline jint check_result(jint i)
 {
-	if (BOOST_UNLIKELY(i))
+	if (i) [[unlikely]]
 		throw_exception();
 
 	return i;
@@ -63,7 +62,7 @@ inline jint check_result(jint i)
 template <typename T, typename = std::enable_if_t<is_primitive_v<T>>>
 inline T* check_result(T* p)
 {
-	if (BOOST_UNLIKELY(!p))
+	if (!p) [[unlikely]]
 		throw_exception();
 
 	return p;
@@ -72,7 +71,7 @@ inline T* check_result(T* p)
 template <typename T>
 inline local_ref<T> check_result(jobject obj)
 {
-	if (BOOST_UNLIKELY(!obj))
+	if (!obj) [[unlikely]]
 		throw_exception();
 
 	return local_ref<T>(obj);
@@ -81,7 +80,7 @@ inline local_ref<T> check_result(jobject obj)
 template <typename T>
 inline local_ref<T> check_result_nested(jobject obj)
 {
-	if (BOOST_UNLIKELY(!obj))
+	if (!obj) [[unlikely]]
 		throw_exception_nested();
 
 	return local_ref<T>(obj);
