@@ -25,12 +25,6 @@
 #include <scapix/link/java/com/scapix/function.h>
 
 namespace scapix::link::java {
-namespace detail {
-
-template <fixed_string InterfaceClassName, typename Type, fixed_string Name>
-class function_impl;
-
-} // namespace detail
 
 template <typename Jni, typename Cpp, typename = void>
 struct convert_shared;
