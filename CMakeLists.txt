@@ -73,11 +73,6 @@ target_include_directories(scapix PUBLIC ${_SCAPIX_PATH}/source)
 target_include_directories(scapix PUBLIC ${_SCAPIX_PATH}/java_api/${SCAPIX_JAVA_API})
 target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE})
 
-if(${SCAPIX_BRIDGE} STREQUAL java)
-    find_package(Boost REQUIRED config metaparse)
-    target_link_libraries(scapix PUBLIC Boost::config Boost::metaparse)
-endif()
-
 if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
     # Save CMAKE_FIND_FRAMEWORK
     if(DEFINED CMAKE_FIND_FRAMEWORK)
