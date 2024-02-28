@@ -22,36 +22,6 @@
 
 namespace scapix::jni {
 
-#if 0 // __cpp_concepts >= 201907L
-
-template <typename T>
-concept Object =
-	CopyConstructible<T> &&
-	CopyAssignable<T> &&
-	Destructible<T> &&
-	requires
-{
-	typename T::class_name;
-	typename T::handle_type;
-	{ Object{T::handle_type()} };
-};
-
-//static_assert(Object<T>);
-
-template <typename T>
-concept Ref =
-	CopyConstructible<T> &&
-	CopyAssignable<T> &&
-	Destructible<T> &&
-	requires
-{
-	typename T::class_name;
-	typename T::handle_type;
-	{ Object{T::handle_type()} };
-};
-
-#endif // __cpp_concepts
-
 template <typename T>
 class redirector
 {
