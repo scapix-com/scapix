@@ -1,7 +1,7 @@
 /*
 	scapix/jni/object_traits.h
 
-	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_JNI_OBJECT_TRAITS_H

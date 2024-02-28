@@ -1,7 +1,7 @@
 /*
 	scapix/meta/any_of.h
 
-	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_META_ANY_OF_H

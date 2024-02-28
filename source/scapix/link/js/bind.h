@@ -1,7 +1,7 @@
 /*
 	scapix/link/js/bind.h
 
-	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_LINK_JS_BIND_H

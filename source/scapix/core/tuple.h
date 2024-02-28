@@ -1,7 +1,7 @@
 /*
 	scapix/core/tuple.h
 
-	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
 
 	Tuple with preserved order of elements.
 */
