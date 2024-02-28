@@ -17,7 +17,7 @@
 #include <scapix/link/java/com/scapix/native_exception.h>
 #include <scapix/link/java/class.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <typename Jni, typename Cpp>
 struct param
@@ -193,6 +193,6 @@ struct native_method
 	}
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_NATIVE_METHOD_H

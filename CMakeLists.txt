@@ -219,7 +219,7 @@ endforeach(filename)
 file(APPEND "${generated_java_cpp}" "
 jint scapix_JNI_OnLoad(JavaVM* vm, void* reserved)
 {
-\treturn scapix::link::java::on_load(vm, reserved, []
+\treturn scapix::jni::on_load(vm, reserved, []
 \t{
 ")
 foreach(filename ${bridge_headers})

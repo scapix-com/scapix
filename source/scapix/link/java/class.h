@@ -14,7 +14,7 @@
 #include <scapix/link/java/signature.h>
 #include <scapix/link/java/detail/exception.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 class class_ : public object<"java/lang/Class">
 {
@@ -111,6 +111,6 @@ protected:
 
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_CLASS_H

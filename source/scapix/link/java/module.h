@@ -18,7 +18,7 @@
 #include <scapix/link/java/class_loader.h>
 #endif
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 inline jint on_load(JavaVM* vm, void* reserved, void(*init)() = []{})
 {
@@ -58,6 +58,6 @@ inline void on_unload(JavaVM *vm, void *reserved) noexcept
 	detail::jvm_ptr = nullptr;
 }
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_MODULE_H

@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <scapix/core/fixed_string.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <typename Struct>
 struct struct_;
@@ -32,6 +32,6 @@ struct field
 	static constexpr auto ptr = Ptr;
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_STRUCT_H

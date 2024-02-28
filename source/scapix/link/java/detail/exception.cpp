@@ -10,7 +10,7 @@
 #include <scapix/link/java/com/scapix/native_exception.h>
 #include <scapix/link/java/vm_exception.h>
 
-namespace scapix::link::java::detail {
+namespace scapix::jni::detail {
 
 [[noreturn]] void throw_exception(jthrowable e)
 {
@@ -45,4 +45,4 @@ which can throw any exception thrown by executed Java code:
 	throw vm_exception(std::move(exception));
 }
 
-} // namespace scapix::link::java::detail
+} // namespace scapix::jni::detail

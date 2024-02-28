@@ -10,7 +10,7 @@
 #include <utility>
 #include <scapix/link/java/env.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 class local_frame
 {
@@ -70,6 +70,6 @@ inline void swap(local_frame& a, local_frame& b)
 	a.swap(b);
 }
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_LOCAL_FRAME_H

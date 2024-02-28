@@ -14,7 +14,7 @@
 #include <scapix/link/java/string.h>
 #include <scapix/link/java/convert.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 class vm_exception : public std::exception
 {
@@ -71,6 +71,6 @@ inline bool operator == (const std::string& cls_name, const vm_exception& e) { r
 inline bool operator == (const vm_exception& e, const char* cls_name) { return e.class_name() == cls_name; }
 inline bool operator == (const char* cls_name, const vm_exception& e) { return e.class_name() == cls_name; }
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_VM_EXCEPTION_H

@@ -13,7 +13,7 @@
 #include <scapix/link/java/fwd/array.h>
 #include <scapix/link/java/fwd/signature.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <typename T>
 struct signature
@@ -67,6 +67,6 @@ struct signature<R(Args...)>
 	static constexpr auto value = ("(" + ... + signature_v<Args>) + (")" + signature_v<R>);
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_SIGNATURE_H

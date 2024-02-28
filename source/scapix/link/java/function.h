@@ -9,7 +9,7 @@
 
 #include <scapix/link/java/object.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 // represents java @FunctionalInterface
 
@@ -34,6 +34,6 @@ protected:
 
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_FUNCTION_H

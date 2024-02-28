@@ -12,7 +12,7 @@
 #include <scapix/link/java/ref.h>
 #include <scapix/link/java/object.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 // static_pointer_cast
 
@@ -48,6 +48,6 @@ inline ref<T, Scope> dynamic_pointer_cast(ref<Y, Scope>&& r)
 	return nullptr;
 }
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_CAST_H

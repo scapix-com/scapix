@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <scapix/core/fixed_string.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <fixed_string ClassName, typename ...Methods>
 class native_methods;
@@ -18,6 +18,6 @@ class native_methods;
 template <fixed_string Name, typename JniType, typename Type, std::decay_t<Type> Method>
 struct native_method;
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_FWD_NATIVE_METHOD_H

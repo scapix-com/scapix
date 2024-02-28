@@ -9,7 +9,7 @@
 
 #include <scapix/link/java/env.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 enum class lock
 {
@@ -23,6 +23,6 @@ enum class release_mode
 	abort = JNI_ABORT,
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_LOCK_H

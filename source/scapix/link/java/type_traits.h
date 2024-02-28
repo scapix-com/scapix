@@ -16,7 +16,7 @@
 #include <scapix/link/java/object_traits.h>
 #include <scapix/link/java/fwd/array.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 // is_primitive
 
@@ -137,6 +137,6 @@ struct is_convertible_object<array<From, std::enable_if_t<!is_primitive_v<From>>
 	static constexpr bool value = is_convertible_object_v<typename array<From>::element_type, typename array<To>::element_type>;
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_TYPE_TRAITS_H

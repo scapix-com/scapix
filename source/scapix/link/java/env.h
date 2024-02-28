@@ -10,7 +10,7 @@
 #include <jni.h>
 #include <scapix/core/function_traits.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 namespace detail {
 
 /*
@@ -92,6 +92,6 @@ inline JNIEnv* env() noexcept
 }
 
 } // namespace detail
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_ENV_H

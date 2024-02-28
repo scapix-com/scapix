@@ -15,7 +15,7 @@
 #include <scapix/link/java/fwd/ref.h>
 #include <scapix/link/java/fwd/class.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <fixed_string ClassName>
 class object_impl
@@ -125,7 +125,7 @@ private:
 
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #include <scapix/link/java/class.h>
 #include <scapix/link/java/cast.h>
@@ -135,7 +135,7 @@ private:
 #include <scapix/mpv/replace.h>
 #endif
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <fixed_string ClassName>
 template <typename Type, typename ...Args>
@@ -217,6 +217,6 @@ inline jfieldID object_impl<ClassName>::static_field_id()
 	return id;
 }
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_OBJECT_IMPL_H

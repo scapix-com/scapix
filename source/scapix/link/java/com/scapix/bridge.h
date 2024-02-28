@@ -15,7 +15,7 @@
 #include <scapix/link/java/convert.h>
 #include <scapix/link/java/fwd/native_method.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 namespace com::scapix {
 
 namespace cpp { class object_base; }
@@ -75,7 +75,7 @@ private:
 	friend class init;
 
 	template <typename Jni, typename Cpp, typename>
-	friend struct link::java::convert_shared;
+	friend struct jni::convert_shared;
 
 	friend class com::scapix::bridge_;
 
@@ -168,7 +168,7 @@ class bridge_
 {
 public:
 
-	using native_methods = link::java::native_methods
+	using native_methods = jni::native_methods
 	<
 		bridge::class_name,
 		native_method<"finalize", void(), void(cpp::object_base::*)(), &cpp::object_base::finalize>
@@ -211,6 +211,6 @@ struct convert_shared<ref<J>, T, std::enable_if_t<std::is_base_of_v<com::scapix:
 	}
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_JNI_COM_SCAPIX_BRIDGE_H

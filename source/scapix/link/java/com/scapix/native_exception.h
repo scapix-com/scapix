@@ -18,7 +18,7 @@
 #include <cxxabi.h>
 #endif
 
-namespace scapix::link::java {
+namespace scapix::jni {
 namespace com::scapix {
 namespace cpp {
 
@@ -73,7 +73,7 @@ class native_exception : public object<"com/scapix/NativeException", throwable>
 {
 public:
 
-	using native_methods = link::java::native_methods
+	using native_methods = jni::native_methods
 	<
 		class_name,
 		native_method<"finalize", void(), void(cpp::native_exception::*)(), &cpp::native_exception::finalize>,
@@ -109,6 +109,6 @@ com::scapix::cpp::native_exception& convert_this(ref<com::scapix::native_excepti
 	return *v->cpp();
 }
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_JNI_COM_SCAPIX_NATIVE_EXCEPTION_H

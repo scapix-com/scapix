@@ -11,7 +11,7 @@
 #include <scapix/core/fixed_string.h>
 #include <scapix/link/java/object_traits.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <fixed_string ClassName = "java/lang/Object", typename ...Bases>
 class object;
@@ -23,6 +23,6 @@ struct object_traits<object<ClassName, Bases...>>
 	using base_classes = std::tuple<Bases...>;
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_FWD_OBJECT_H

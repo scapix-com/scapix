@@ -9,7 +9,7 @@
 
 #include <scapix/link/java/env.h>
 
-namespace scapix::link::java::detail::api {
+namespace scapix::jni::detail::api {
 
 enum class scope
 {
@@ -49,6 +49,6 @@ struct ref<scope::weak>
 	static void delete_ref(jobject h) noexcept { detail::env()->DeleteWeakGlobalRef(h); }
 };
 
-} // namespace scapix::link::java::detail::api
+} // namespace scapix::jni::detail::api
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_API_REF_H

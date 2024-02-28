@@ -13,7 +13,7 @@
 #include <scapix/link/java/fwd/object_base.h>
 #include <scapix/link/java/object_impl.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 #include <scapix/detail/warning/inaccessible_base.h>
 
@@ -60,6 +60,6 @@ protected:
 
 #include <scapix/detail/warning/pop.h>
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_OBJECT_BASE_H

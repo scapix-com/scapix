@@ -12,9 +12,9 @@
 
 namespace scapix::java_api {
 
-using link::java::object_base;
-using link::java::ref;
-using link::java::generic;
+using jni::object_base;
+using jni::ref;
+using jni::generic;
 
 } // namespace scapix::java_api
 

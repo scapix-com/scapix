@@ -10,7 +10,7 @@
 #include <scapix/link/java/detail/api/ref.h>
 #include <scapix/link/java/fwd/object.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 using scope = detail::api::scope;
 
@@ -29,6 +29,6 @@ struct generic;
 //template <typename T>
 //struct super;
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_FWD_REF_H

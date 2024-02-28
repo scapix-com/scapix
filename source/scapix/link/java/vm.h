@@ -9,7 +9,7 @@
 
 #include <scapix/link/java/env.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 inline bool init_created_vm() noexcept
 {
@@ -39,6 +39,6 @@ inline jint destroy_vm() noexcept
 	return r;
 }
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_VM_H

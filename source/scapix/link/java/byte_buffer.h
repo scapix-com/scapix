@@ -9,7 +9,7 @@
 
 #include <scapix/link/java/object.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 class byte_buffer : public object<"java/nio/ByteBuffer">
 {
@@ -38,6 +38,6 @@ protected:
 
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_BYTE_BUFFER_H

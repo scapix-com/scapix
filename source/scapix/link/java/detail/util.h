@@ -7,7 +7,7 @@
 #ifndef SCAPIX_LINK_JAVA_DETAIL_UTIL_H
 #define SCAPIX_LINK_JAVA_DETAIL_UTIL_H
 
-namespace scapix::link::java::detail {
+namespace scapix::jni::detail {
 
 template <typename T, typename>
 class tag : public T
@@ -28,6 +28,6 @@ class befriend : public T
 #define protected public
 #endif
 
-} // namespace scapix::link::java::detail
+} // namespace scapix::jni::detail
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_UTIL_H

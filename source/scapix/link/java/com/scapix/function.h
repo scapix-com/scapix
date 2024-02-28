@@ -13,7 +13,7 @@
 #include <scapix/link/java/function.h>
 #include <scapix/link/java/fwd/native_method.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 namespace com::scapix {
 namespace cpp {
 
@@ -57,7 +57,7 @@ class function : public object<"com/scapix/Function">
 {
 public:
 
-	using native_methods = link::java::native_methods
+	using native_methods = jni::native_methods
 	<
 		class_name,
 		native_method<"finalize", void(), void(cpp::function::*)(), &cpp::function::finalize>
@@ -77,11 +77,11 @@ class function_impl;
 template <fixed_string InterfaceClassName, typename JniR, typename ...JniArgs, fixed_string Name>
 class function_impl<InterfaceClassName, JniR(JniArgs...), Name> : public object<InterfaceClassName + "Impl",
 	function,
-	java::function<InterfaceClassName, JniR(JniArgs...), Name>>
+	jni::function<InterfaceClassName, JniR(JniArgs...), Name>>
 {
 	using base = object<InterfaceClassName + "Impl",
 		function,
-		java::function<InterfaceClassName, JniR(JniArgs...), Name>>;
+		jni::function<InterfaceClassName, JniR(JniArgs...), Name>>;
 
 public:
 
@@ -106,6 +106,6 @@ T& convert_this(ref<J> x)
 	return *static_cast<T*>(static_pointer_cast<com::scapix::function>(x)->get_ptr());
 }
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_JNI_COM_SCAPIX_FUNCTION_H

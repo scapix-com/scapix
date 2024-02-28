@@ -9,18 +9,18 @@
 
 #include <scapix/link/java/ref.h>
 
-namespace scapix::link::java::detail::api {
+namespace scapix::jni::detail::api {
 
 template <typename T>
 struct type;
 
 template <typename T>
-struct type<java::ref<T>>
+struct type<jni::ref<T>>
 {
 	static local_ref<T> get_field(jobject obj, jfieldID id) noexcept { return local_ref<T>(env()->GetObjectField(obj, id)); }
-	static void set_field(jobject obj, jfieldID id, java::ref<T> value) noexcept { env()->SetObjectField(obj, id, value.handle()); }
+	static void set_field(jobject obj, jfieldID id, jni::ref<T> value) noexcept { env()->SetObjectField(obj, id, value.handle()); }
 	static local_ref<T> get_static_field(jclass cls, jfieldID id) noexcept { return local_ref<T>(env()->GetStaticObjectField(cls, id)); }
-	static void set_static_field(jclass cls, jfieldID id, java::ref<T> value) noexcept { env()->SetStaticObjectField(cls, id, value.handle()); }
+	static void set_static_field(jclass cls, jfieldID id, jni::ref<T> value) noexcept { env()->SetStaticObjectField(cls, id, value.handle()); }
 
 	template <typename ...Args> static local_ref<T> call_method(jobject obj, jmethodID id, Args... args) noexcept { return local_ref<T>(env()->CallObjectMethod(obj, id, args...)); }
 	template <typename ...Args> static local_ref<T> call_nonvirtual_method(jobject obj, jclass cls, jmethodID id, Args... args) noexcept { return local_ref<T>(env()->CallNonvirtualObjectMethod(obj, cls, id, args...)); }
@@ -187,6 +187,6 @@ struct type<jdouble>
 	static void set_array_region(jdoubleArray array, jsize start, jsize len, const jdouble *buf) noexcept { env()->SetDoubleArrayRegion(array, start, len, buf); }
 };
 
-} // namespace scapix::link::java::detail::api
+} // namespace scapix::jni::detail::api
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_API_TYPE_H

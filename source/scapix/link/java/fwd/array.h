@@ -12,7 +12,7 @@
 #include <scapix/link/java/fwd/object.h>
 #include <scapix/link/java/fwd/signature.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <typename T, typename = void>
 class array;
@@ -29,6 +29,6 @@ struct object_traits<T[]> : object_traits<array<T>>
 {
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_FWD_ARRAY_H

@@ -12,7 +12,7 @@
 #include <scapix/link/java/object_traits.h>
 #include <scapix/link/java/fwd/object.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 class byte_buffer;
 
@@ -23,6 +23,6 @@ struct object_traits<byte_buffer>
 	using base_classes = std::tuple<object<>>;
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_FWD_BYTE_BUFFER_H

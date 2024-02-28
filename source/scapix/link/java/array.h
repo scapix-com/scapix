@@ -16,7 +16,7 @@
 #include <scapix/link/java/detail/api/type.h>
 #include <scapix/link/java/detail/api/array.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <typename T>
 class array_base : public object<signature_v<T[]>>
@@ -450,6 +450,6 @@ protected:
 
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_ARRAY_H

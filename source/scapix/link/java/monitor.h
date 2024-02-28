@@ -11,7 +11,7 @@
 #include <cassert>
 #include <scapix/link/java/ref.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <typename T>
 class monitor
@@ -80,6 +80,6 @@ inline void swap(monitor<T>& a, monitor<T>& b)
 	a.swap(b);
 }
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_MONITOR_H

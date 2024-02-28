@@ -10,7 +10,7 @@
 #include <scapix/link/java/lock.h>
 #include <scapix/link/java/detail/api/type.h>
 
-namespace scapix::link::java::detail::api {
+namespace scapix::jni::detail::api {
 
 template <typename T, lock Lock>
 struct array;
@@ -29,6 +29,6 @@ struct array<T, lock::critical>
 	static void release_array_elements(handle_type_t<T[]> obj, T* elems, jint mode) { env()->ReleasePrimitiveArrayCritical(obj, elems, mode); }
 };
 
-} // namespace scapix::link::java::detail::api
+} // namespace scapix::jni::detail::api
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_API_ARRAY_H

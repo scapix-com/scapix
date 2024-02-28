@@ -15,7 +15,7 @@
 #include <scapix/link/java/fwd/object_impl.h>
 #include <scapix/link/java/fwd/throwable.h>
 
-namespace scapix::link::java::detail::api {
+namespace scapix::jni::detail::api {
 
 template <typename T>
 struct call;
@@ -50,7 +50,7 @@ struct call<R(Args...)>
 private:
 
 	template <typename T, scope Scope>
-	static jobject  arg(const java::ref<T, Scope>& v) { return v.handle(); }
+	static jobject  arg(const jni::ref<T, Scope>& v) { return v.handle(); }
 
 	static jboolean arg(jboolean v) { return v; }
 	static jbyte    arg(jbyte v)    { return v; }
@@ -103,9 +103,9 @@ inline jint throw_new(jclass cls, const char* message) noexcept
 	return env()->ThrowNew(cls, message);
 }
 
-inline local_ref<java::throwable> exception_occurred() noexcept
+inline local_ref<jni::throwable> exception_occurred() noexcept
 {
-	return local_ref<java::throwable>(env()->ExceptionOccurred());
+	return local_ref<jni::throwable>(env()->ExceptionOccurred());
 }
 
 // field
@@ -150,26 +150,26 @@ inline local_ref<T[]> new_array(jsize len)
 }
 
 template <typename T, lock Lock>
-inline T* get_array_elements(java::ref<T[]> obj, jboolean* is_copy) noexcept
+inline T* get_array_elements(jni::ref<T[]> obj, jboolean* is_copy) noexcept
 {
 	return check_result(array<T, Lock>::get_array_elements(obj.handle(), is_copy));
 }
 
 template <typename T, lock Lock>
-inline void release_array_elements(java::ref<T[]> obj, T* elems, jint mode) noexcept
+inline void release_array_elements(jni::ref<T[]> obj, T* elems, jint mode) noexcept
 {
 	array<T, Lock>::release_array_elements(obj.handle(), elems, mode);
 }
 
 template <typename T>
-inline void get_array_region(java::ref<T[]> obj, jsize start, jsize len, T* buf)
+inline void get_array_region(jni::ref<T[]> obj, jsize start, jsize len, T* buf)
 {
 	type<T>::get_array_region(obj.handle(), start, len, buf);
 	check_exception();
 }
 
 template <typename T>
-inline void set_array_region(java::ref<T[]> obj, jsize start, jsize len, const T* buf)
+inline void set_array_region(jni::ref<T[]> obj, jsize start, jsize len, const T* buf)
 {
 	type<T>::set_array_region(obj.handle(), start, len, buf);
 	check_exception();
@@ -178,13 +178,13 @@ inline void set_array_region(java::ref<T[]> obj, jsize start, jsize len, const T
 // object array
 
 template <typename T>
-inline local_ref<T[]> new_array(jsize len, java::ref<T> init)
+inline local_ref<T[]> new_array(jsize len, jni::ref<T> init)
 {
 	return check_result<T[]>(env()->NewObjectArray(len, object_impl<class_name_v<T>>::class_object().handle(), init.handle()));
 }
 
 template <typename T>
-inline local_ref<T> get_array_element(java::ref<T[]> array, jsize index)
+inline local_ref<T> get_array_element(jni::ref<T[]> array, jsize index)
 {
 	jobject element = env()->GetObjectArrayElement(array.handle(), index);
 	check_exception();
@@ -192,7 +192,7 @@ inline local_ref<T> get_array_element(java::ref<T[]> array, jsize index)
 }
 
 template <typename T>
-inline void set_array_element(java::ref<T[]> array, jsize index, java::ref<T> value)
+inline void set_array_element(jni::ref<T[]> array, jsize index, jni::ref<T> value)
 {
 	env()->SetObjectArrayElement(array.handle(), index, value.handle());
 	check_exception();
@@ -200,18 +200,18 @@ inline void set_array_element(java::ref<T[]> array, jsize index, java::ref<T> va
 
 // string
 
-inline local_ref<java::string> new_string(const jchar* buf, jsize len)
+inline local_ref<jni::string> new_string(const jchar* buf, jsize len)
 {
 	jstring str = env()->NewString(buf, len);
 	check_exception();
-	return local_ref<java::string>(str);
+	return local_ref<jni::string>(str);
 }
 
-inline local_ref<java::string> new_string(const char* buf)
+inline local_ref<jni::string> new_string(const char* buf)
 {
 	jstring str = env()->NewStringUTF(buf);
 	check_exception();
-	return local_ref<java::string>(str);
+	return local_ref<jni::string>(str);
 }
 
 template <typename Char>
@@ -239,6 +239,6 @@ inline void get_string_region(jstring str, jsize start, jsize len, Char* buf)
 	check_exception();
 }
 
-} // namespace scapix::link::java::detail::api
+} // namespace scapix::jni::detail::api
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_API_H

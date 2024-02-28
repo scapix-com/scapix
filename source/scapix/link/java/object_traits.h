@@ -9,7 +9,7 @@
 
 #include <scapix/link/java/detail/util.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 // object_traits
 // Specialized to provide traits for incomplete object type.
@@ -28,6 +28,6 @@ constexpr auto class_name_v = object_traits<T>::class_name;
 template <typename T>
 using base_classes_t = typename object_traits<T>::base_classes;
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_OBJECT_TRAITS_H

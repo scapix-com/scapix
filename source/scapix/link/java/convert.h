@@ -24,7 +24,7 @@
 #include <scapix/link/java/struct.h>
 #include <scapix/link/java/com/scapix/function.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <typename Jni, typename Cpp, typename = void>
 struct convert_shared;
@@ -502,6 +502,6 @@ struct convert<Jni, Struct, std::enable_if_t<is_struct_v<Struct>>>
 	}
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_CONVERT_H

@@ -8,18 +8,11 @@
 #define SCAPIX_BRIDGE_JAVA_OBJECT_H
 
 #include <scapix/link/java/com/scapix/bridge.h>
-#include <scapix/link/java/com/scapix/function.h>
 
 namespace scapix::bridge::java {
 
 template <typename T>
-using object = link::java::com::scapix::cpp::object<T>;
-
-template <typename T>
-using init = link::java::com::scapix::cpp::init<T>;
-
-template <typename T>
-using function = link::java::com::scapix::cpp::function_impl<T>;
+using object = jni::com::scapix::cpp::object<T>;
 
 } // namespace scapix::bridge::java
 

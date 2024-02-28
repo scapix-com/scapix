@@ -13,7 +13,7 @@
 #include <scapix/link/java/class.h>
 #include <scapix/link/java/string.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 /*
 
@@ -49,6 +49,6 @@ private:
 
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_CLASS_LOADER_H

@@ -20,7 +20,7 @@
 #include <scapix/link/java/fwd/array.h>
 #include <scapix/link/java/fwd/ref.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 #if 0 // __cpp_concepts >= 201907L
 
@@ -513,6 +513,6 @@ public:
 	}
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_REF_H

@@ -10,7 +10,7 @@
 #include <scapix/link/java/type_traits.h>
 #include <scapix/link/java/ref.h>
 
-namespace scapix::link::java::detail {
+namespace scapix::jni::detail {
 
 [[noreturn]] void throw_exception(jthrowable e = env()->ExceptionOccurred());
 [[noreturn]] void throw_exception_nested(jthrowable e = env()->ExceptionOccurred());
@@ -108,6 +108,6 @@ struct check_exception_nested_on_destroy
 	check_exception_nested_on_destroy& operator = (check_exception_nested_on_destroy&&) = delete;
 };
 
-} // namespace scapix::link::java::detail
+} // namespace scapix::jni::detail
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_EXCEPTION_H

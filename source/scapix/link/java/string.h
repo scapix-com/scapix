@@ -18,7 +18,7 @@
 #include <scapix/link/java/lock.h>
 #include <scapix/link/java/detail/api/string.h>
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <typename Char, lock Lock>
 class string_chars
@@ -168,6 +168,6 @@ protected:
 
 };
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_STRING_H

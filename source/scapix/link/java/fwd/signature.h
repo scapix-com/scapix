@@ -7,7 +7,7 @@
 #ifndef SCAPIX_LINK_JAVA_FWD_SIGNATURE_H
 #define SCAPIX_LINK_JAVA_FWD_SIGNATURE_H
 
-namespace scapix::link::java {
+namespace scapix::jni {
 
 template <typename T>
 struct signature;
@@ -15,6 +15,6 @@ struct signature;
 template <typename T>
 constexpr auto signature_v = signature<T>::value;
 
-} // namespace scapix::link::java
+} // namespace scapix::jni
 
 #endif // SCAPIX_LINK_JAVA_FWD_SIGNATURE_H

@@ -10,7 +10,7 @@
 #include <scapix/link/java/env.h>
 #include <scapix/link/java/lock.h>
 
-namespace scapix::link::java::detail::api {
+namespace scapix::jni::detail::api {
 
 template <typename Char, lock Lock = lock::noncritical>
 struct string;
@@ -40,6 +40,6 @@ struct string<char, lock::noncritical>
 	static void get_region(jstring str, jsize start, jsize len, char* buf) noexcept { env()->GetStringUTFRegion(str, start, len, buf); }
 };
 
-} // namespace scapix::link::java::detail::api
+} // namespace scapix::jni::detail::api
 
 #endif // SCAPIX_LINK_JAVA_DETAIL_API_STRING_H
