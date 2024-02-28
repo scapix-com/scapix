@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_DETAIL_API_REF_H
-#define SCAPIX_LINK_JAVA_DETAIL_API_REF_H
+#ifndef SCAPIX_JNI_DETAIL_API_REF_H
+#define SCAPIX_JNI_DETAIL_API_REF_H
 
 #include <scapix/jni/env.h>
 
@@ -51,4 +51,4 @@ struct ref<scope::weak>
 
 } // namespace scapix::jni::detail::api
 
-#endif // SCAPIX_LINK_JAVA_DETAIL_API_REF_H
+#endif // SCAPIX_JNI_DETAIL_API_REF_H

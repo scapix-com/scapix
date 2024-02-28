@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_CAST_H
-#define SCAPIX_LINK_JAVA_CAST_H
+#ifndef SCAPIX_JNI_CAST_H
+#define SCAPIX_JNI_CAST_H
 
 #include <utility>
 #include <scapix/jni/detail/util.h>
@@ -50,4 +50,4 @@ inline ref<T, Scope> dynamic_pointer_cast(ref<Y, Scope>&& r)
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_CAST_H
+#endif // SCAPIX_JNI_CAST_H

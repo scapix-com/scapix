@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_VM_EXCEPTION_H
-#define SCAPIX_LINK_JAVA_VM_EXCEPTION_H
+#ifndef SCAPIX_JNI_VM_EXCEPTION_H
+#define SCAPIX_JNI_VM_EXCEPTION_H
 
 #include <string>
 #include <exception>
@@ -73,4 +73,4 @@ inline bool operator == (const char* cls_name, const vm_exception& e) { return e
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_VM_EXCEPTION_H
+#endif // SCAPIX_JNI_VM_EXCEPTION_H

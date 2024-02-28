@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_FWD_STRING_H
-#define SCAPIX_LINK_JAVA_FWD_STRING_H
+#ifndef SCAPIX_JNI_FWD_STRING_H
+#define SCAPIX_JNI_FWD_STRING_H
 
 #include <tuple>
 #include <scapix/core/fixed_string.h>
@@ -25,4 +25,4 @@ struct object_traits<string>
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_FWD_STRING_H
+#endif // SCAPIX_JNI_FWD_STRING_H

@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_DETAIL_API_TYPE_H
-#define SCAPIX_LINK_JAVA_DETAIL_API_TYPE_H
+#ifndef SCAPIX_JNI_DETAIL_API_TYPE_H
+#define SCAPIX_JNI_DETAIL_API_TYPE_H
 
 #include <scapix/jni/ref.h>
 
@@ -189,4 +189,4 @@ struct type<jdouble>
 
 } // namespace scapix::jni::detail::api
 
-#endif // SCAPIX_LINK_JAVA_DETAIL_API_TYPE_H
+#endif // SCAPIX_JNI_DETAIL_API_TYPE_H

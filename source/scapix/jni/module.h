@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_MODULE_H
-#define SCAPIX_LINK_JAVA_MODULE_H
+#ifndef SCAPIX_JNI_MODULE_H
+#define SCAPIX_JNI_MODULE_H
 
 #include <scapix/jni/env.h>
 #include <scapix/jni/vm_exception.h>
@@ -60,4 +60,4 @@ inline void on_unload(JavaVM *vm, void *reserved) noexcept
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_MODULE_H
+#endif // SCAPIX_JNI_MODULE_H

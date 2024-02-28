@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_BYTE_BUFFER_H
-#define SCAPIX_LINK_JAVA_BYTE_BUFFER_H
+#ifndef SCAPIX_JNI_BYTE_BUFFER_H
+#define SCAPIX_JNI_BYTE_BUFFER_H
 
 #include <scapix/jni/object.h>
 
@@ -40,4 +40,4 @@ protected:
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_BYTE_BUFFER_H
+#endif // SCAPIX_JNI_BYTE_BUFFER_H

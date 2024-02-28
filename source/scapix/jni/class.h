@@ -7,8 +7,8 @@
 // outside of include guard
 #include <scapix/jni/object_impl.h>
 
-#ifndef SCAPIX_LINK_JAVA_CLASS_H
-#define SCAPIX_LINK_JAVA_CLASS_H
+#ifndef SCAPIX_JNI_CLASS_H
+#define SCAPIX_JNI_CLASS_H
 
 #include <scapix/jni/object.h>
 #include <scapix/jni/signature.h>
@@ -113,4 +113,4 @@ protected:
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_CLASS_H
+#endif // SCAPIX_JNI_CLASS_H

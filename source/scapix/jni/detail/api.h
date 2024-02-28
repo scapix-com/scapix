@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_DETAIL_API_H
-#define SCAPIX_LINK_JAVA_DETAIL_API_H
+#ifndef SCAPIX_JNI_DETAIL_API_H
+#define SCAPIX_JNI_DETAIL_API_H
 
 #include <scapix/jni/detail/api/array.h>
 #include <scapix/jni/detail/api/ref.h>
@@ -241,4 +241,4 @@ inline void get_string_region(jstring str, jsize start, jsize len, Char* buf)
 
 } // namespace scapix::jni::detail::api
 
-#endif // SCAPIX_LINK_JAVA_DETAIL_API_H
+#endif // SCAPIX_JNI_DETAIL_API_H

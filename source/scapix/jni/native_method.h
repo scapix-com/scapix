@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_NATIVE_METHOD_H
-#define SCAPIX_LINK_JAVA_NATIVE_METHOD_H
+#ifndef SCAPIX_JNI_NATIVE_METHOD_H
+#define SCAPIX_JNI_NATIVE_METHOD_H
 
 #include <scapix/jni/fwd/native_method.h>
 #include <scapix/core/tuple.h>
@@ -195,4 +195,4 @@ struct native_method
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_NATIVE_METHOD_H
+#endif // SCAPIX_JNI_NATIVE_METHOD_H

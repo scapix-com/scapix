@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_LOCAL_FRAME_H
-#define SCAPIX_LINK_JAVA_LOCAL_FRAME_H
+#ifndef SCAPIX_JNI_LOCAL_FRAME_H
+#define SCAPIX_JNI_LOCAL_FRAME_H
 
 #include <utility>
 #include <scapix/jni/env.h>
@@ -72,4 +72,4 @@ inline void swap(local_frame& a, local_frame& b)
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_LOCAL_FRAME_H
+#endif // SCAPIX_JNI_LOCAL_FRAME_H

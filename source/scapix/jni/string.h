@@ -7,8 +7,8 @@
 // outside of include guard
 #include <scapix/jni/object_impl.h>
 
-#ifndef SCAPIX_LINK_JAVA_STRING_H
-#define SCAPIX_LINK_JAVA_STRING_H
+#ifndef SCAPIX_JNI_STRING_H
+#define SCAPIX_JNI_STRING_H
 
 #include <stdexcept>
 #include <type_traits>
@@ -170,4 +170,4 @@ protected:
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_STRING_H
+#endif // SCAPIX_JNI_STRING_H

@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_FWD_REF_H
-#define SCAPIX_LINK_JAVA_FWD_REF_H
+#ifndef SCAPIX_JNI_FWD_REF_H
+#define SCAPIX_JNI_FWD_REF_H
 
 #include <scapix/jni/detail/api/ref.h>
 #include <scapix/jni/fwd/object.h>
@@ -31,4 +31,4 @@ struct generic;
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_FWD_REF_H
+#endif // SCAPIX_JNI_FWD_REF_H

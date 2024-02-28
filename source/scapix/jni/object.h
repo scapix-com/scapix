@@ -7,8 +7,8 @@
 // outside of include guard
 #include <scapix/jni/object_impl.h>
 
-#ifndef SCAPIX_LINK_JAVA_OBJECT_H
-#define SCAPIX_LINK_JAVA_OBJECT_H
+#ifndef SCAPIX_JNI_OBJECT_H
+#define SCAPIX_JNI_OBJECT_H
 
 #include <scapix/jni/fwd/object.h>
 #include <scapix/jni/object_impl.h>
@@ -108,4 +108,4 @@ protected:
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_OBJECT_H
+#endif // SCAPIX_JNI_OBJECT_H

@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_FWD_ARRAY_H
-#define SCAPIX_LINK_JAVA_FWD_ARRAY_H
+#ifndef SCAPIX_JNI_FWD_ARRAY_H
+#define SCAPIX_JNI_FWD_ARRAY_H
 
 #include <tuple>
 #include <scapix/jni/object_traits.h>
@@ -31,4 +31,4 @@ struct object_traits<T[]> : object_traits<array<T>>
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_FWD_ARRAY_H
+#endif // SCAPIX_JNI_FWD_ARRAY_H

@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_OBJECT_IMPL_H
-#define SCAPIX_LINK_JAVA_OBJECT_IMPL_H
+#ifndef SCAPIX_JNI_OBJECT_IMPL_H
+#define SCAPIX_JNI_OBJECT_IMPL_H
 
 #include <cassert>
 #include <type_traits>
@@ -219,4 +219,4 @@ inline jfieldID object_impl<ClassName>::static_field_id()
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_OBJECT_IMPL_H
+#endif // SCAPIX_JNI_OBJECT_IMPL_H

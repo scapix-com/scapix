@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_MONITOR_H
-#define SCAPIX_LINK_JAVA_MONITOR_H
+#ifndef SCAPIX_JNI_MONITOR_H
+#define SCAPIX_JNI_MONITOR_H
 
 #include <utility>
 #include <cassert>
@@ -82,4 +82,4 @@ inline void swap(monitor<T>& a, monitor<T>& b)
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_MONITOR_H
+#endif // SCAPIX_JNI_MONITOR_H

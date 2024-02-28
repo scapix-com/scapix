@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_STRUCT_H
-#define SCAPIX_LINK_JAVA_STRUCT_H
+#ifndef SCAPIX_JNI_STRUCT_H
+#define SCAPIX_JNI_STRUCT_H
 
 #include <type_traits>
 #include <scapix/core/fixed_string.h>
@@ -34,4 +34,4 @@ struct field
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_STRUCT_H
+#endif // SCAPIX_JNI_STRUCT_H

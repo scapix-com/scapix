@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_CONVERT_H
-#define SCAPIX_LINK_JAVA_CONVERT_H
+#ifndef SCAPIX_JNI_CONVERT_H
+#define SCAPIX_JNI_CONVERT_H
 
 #include <memory>
 #include <string>
@@ -504,4 +504,4 @@ struct convert<Jni, Struct, std::enable_if_t<is_struct_v<Struct>>>
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_CONVERT_H
+#endif // SCAPIX_JNI_CONVERT_H

@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_TYPE_TRAITS_H
-#define SCAPIX_LINK_JAVA_TYPE_TRAITS_H
+#ifndef SCAPIX_JNI_TYPE_TRAITS_H
+#define SCAPIX_JNI_TYPE_TRAITS_H
 
 #include <type_traits>
 #include <scapix/core/fixed_string.h>
@@ -139,4 +139,4 @@ struct is_convertible_object<array<From, std::enable_if_t<!is_primitive_v<From>>
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_TYPE_TRAITS_H
+#endif // SCAPIX_JNI_TYPE_TRAITS_H

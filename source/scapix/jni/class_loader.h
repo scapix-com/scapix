@@ -7,8 +7,8 @@
 // outside of include guard
 #include <scapix/jni/object_impl.h>
 
-#ifndef SCAPIX_LINK_JAVA_CLASS_LOADER_H
-#define SCAPIX_LINK_JAVA_CLASS_LOADER_H
+#ifndef SCAPIX_JNI_CLASS_LOADER_H
+#define SCAPIX_JNI_CLASS_LOADER_H
 
 #include <scapix/jni/class.h>
 #include <scapix/jni/string.h>
@@ -51,4 +51,4 @@ private:
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_CLASS_LOADER_H
+#endif // SCAPIX_JNI_CLASS_LOADER_H

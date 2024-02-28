@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_DETAIL_UTIL_H
-#define SCAPIX_LINK_JAVA_DETAIL_UTIL_H
+#ifndef SCAPIX_JNI_DETAIL_UTIL_H
+#define SCAPIX_JNI_DETAIL_UTIL_H
 
 namespace scapix::jni::detail {
 
@@ -30,4 +30,4 @@ class befriend : public T
 
 } // namespace scapix::jni::detail
 
-#endif // SCAPIX_LINK_JAVA_DETAIL_UTIL_H
+#endif // SCAPIX_JNI_DETAIL_UTIL_H

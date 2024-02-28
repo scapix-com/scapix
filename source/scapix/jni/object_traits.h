@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_OBJECT_TRAITS_H
-#define SCAPIX_LINK_JAVA_OBJECT_TRAITS_H
+#ifndef SCAPIX_JNI_OBJECT_TRAITS_H
+#define SCAPIX_JNI_OBJECT_TRAITS_H
 
 #include <scapix/jni/detail/util.h>
 
@@ -30,4 +30,4 @@ using base_classes_t = typename object_traits<T>::base_classes;
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_OBJECT_TRAITS_H
+#endif // SCAPIX_JNI_OBJECT_TRAITS_H

@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_ENV_H
-#define SCAPIX_LINK_JAVA_ENV_H
+#ifndef SCAPIX_JNI_ENV_H
+#define SCAPIX_JNI_ENV_H
 
 #include <jni.h>
 #include <scapix/core/function_traits.h>
@@ -94,4 +94,4 @@ inline JNIEnv* env() noexcept
 } // namespace detail
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_ENV_H
+#endif // SCAPIX_JNI_ENV_H

@@ -4,8 +4,8 @@
 	Copyright (c) 2019-2023 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_LINK_JAVA_SIGNATURE_H
-#define SCAPIX_LINK_JAVA_SIGNATURE_H
+#ifndef SCAPIX_JNI_SIGNATURE_H
+#define SCAPIX_JNI_SIGNATURE_H
 
 #include <scapix/core/fixed_string.h>
 #include <scapix/jni/type_traits.h>
@@ -69,4 +69,4 @@ struct signature<R(Args...)>
 
 } // namespace scapix::jni
 
-#endif // SCAPIX_LINK_JAVA_SIGNATURE_H
+#endif // SCAPIX_JNI_SIGNATURE_H
