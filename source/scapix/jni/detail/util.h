@@ -22,12 +22,6 @@ class befriend : public T
 	friend Friend;
 };
 
-// MSC bug: befriend doesn't work on _MSC_VER < 1927 (vs2019 16.7.0) in C++17 mode
-
-#if defined(_MSC_VER) && _MSC_VER < 1927 && !defined(__clang__)
-#define protected public
-#endif
-
 } // namespace scapix::jni::detail
 
 #endif // SCAPIX_JNI_DETAIL_UTIL_H
