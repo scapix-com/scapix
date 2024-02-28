@@ -297,7 +297,8 @@ struct convert<ref<generic_type<java_util_treemap, JK, JV>>, std::map<K, V, C, A
 	}
 };
 
-#if 0
+// currently used only manually, not in generated bindings
+
 using java_util_map = object<"java/util/Map">;
 
 template <typename JK, typename JV, typename K, typename V, typename C, typename A>
@@ -335,7 +336,6 @@ struct convert<ref<generic_type<java_util_map, JK, JV>>, std::map<K, V, C, A>>
 		return static_pointer_cast<java_util_map>(tm);
 	}
 };
-#endif
 
 using java_util_treeset = object<"java/util/TreeSet">;
 
