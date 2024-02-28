@@ -7,7 +7,7 @@
 #ifndef SCAPIX_BRIDGE_JAVA_OBJECT_H
 #define SCAPIX_BRIDGE_JAVA_OBJECT_H
 
-#include <scapix/link/java/com/scapix/bridge.h>
+#include <scapix/jni/com/scapix/bridge.h>
 
 namespace scapix::bridge::java {
 

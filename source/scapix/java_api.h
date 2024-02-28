@@ -7,8 +7,8 @@
 #ifndef SCAPIX_JAVA_API_H
 #define SCAPIX_JAVA_API_H
 
-#include <scapix/link/java/object_base.h>
-#include <scapix/link/java/convert.h>
+#include <scapix/jni/object_base.h>
+#include <scapix/jni/convert.h>
 
 namespace scapix::java_api {
 

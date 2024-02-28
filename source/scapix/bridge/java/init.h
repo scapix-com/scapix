@@ -7,7 +7,7 @@
 #ifndef SCAPIX_BRIDGE_JAVA_INIT_H
 #define SCAPIX_BRIDGE_JAVA_INIT_H
 
-#include <scapix/link/java/com/scapix/function.h>
-#include <scapix/link/java/native_method.h>
+#include <scapix/jni/com/scapix/function.h>
+#include <scapix/jni/native_method.h>
 
 #endif // SCAPIX_BRIDGE_JAVA_INIT_H
