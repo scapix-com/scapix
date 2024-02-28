@@ -49,6 +49,13 @@ foreach(bridge ${bridges})
     endif()
 endforeach()
 
+if(NOT ${SCAPIX_BRIDGE} STREQUAL java)
+    file(GLOB_RECURSE jni_sources CONFIGURE_DEPENDS
+        ${_SCAPIX_PATH}/source/scapix/jni/*.*
+    )
+    set_source_files_properties(${jni_sources} PROPERTIES HEADER_FILE_ONLY TRUE)
+endif()
+
 if(${SCAPIX_BRIDGE} STREQUAL objc)
     target_compile_options(scapix PUBLIC "-fobjc-arc")
     set_source_files_properties(${_SCAPIX_PATH}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_OPTIONS "-fno-objc-arc")
