@@ -33,18 +33,18 @@ protected:
 	object_base(handle_type h) : impl(h), Bases(h)... {}
 
 	template <typename ...Args>
-	static local_ref<ClassName> new_object(Args&&... args)
+	static local_ref<object<ClassName>> new_object(Args&&... args)
 	{
 		return impl::template new_object<void(std::remove_reference_t<Args>...)>(std::forward<Args>(args)...);
 	}
 
-	template <typename Name, typename R, typename ...Args>
+	template <fixed_string Name, typename R, typename ...Args>
 	auto call_method(Args&&... args) const
 	{
 		return impl::template call_method<Name, R(std::remove_reference_t<Args>...)>(std::forward<Args>(args)...);
 	}
 
-	template <typename Name, typename R, typename ...Args>
+	template <fixed_string Name, typename R, typename ...Args>
 	static auto call_static_method(Args&&... args)
 	{
 		return impl::template call_static_method<Name, R(std::remove_reference_t<Args>...)>(std::forward<Args>(args)...);
