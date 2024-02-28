@@ -9,12 +9,6 @@
 
 namespace scapix::jni::detail {
 
-template <typename T, typename>
-class tag : public T
-{
-	using T::T;
-};
-
 template <typename T, typename Friend>
 class befriend : public T
 {
