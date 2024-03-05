@@ -61,58 +61,6 @@ struct is_ref<ref<T, Scope>> : std::true_type {};
 template<typename T>
 constexpr bool is_ref_v = is_ref<T>::value;
 
-namespace detail {
-
-template <typename T>
-struct cast;
-
-template <typename T>
-struct is_cast : std::false_type {};
-
-template <typename T>
-struct is_cast<cast<T>> : std::true_type {};
-
-template <typename From, typename To>
-constexpr bool is_convertible_element =
-	is_convertible_object_v<typename ref<From>::element_type, typename ref<To>::element_type> ||
-	is_cast<From>::value
-;
-
-} // namespace detail
-
-template <typename T>
-struct element_type
-{
-	using type = T;
-};
-
-template <typename T>
-using element_type_t = typename element_type<T>::type;
-
-template <typename T>
-struct element_type<T[]>
-{
-	using type = array<T>;
-};
-
-template <typename T, typename ...Params>
-struct element_type<generic_type<T, Params...>>
-{
-	using type = element_type_t<T>;
-};
-
-template <typename T, typename Extends>
-struct element_type<generic<T, Extends>>
-{
-	using type = element_type_t<T>;
-};
-
-template <typename T>
-struct element_type<detail::cast<T>>
-{
-	using type = element_type_t<T>;
-};
-
 // canonical_ref
 
 template <typename T>
@@ -173,14 +121,15 @@ public:
 
 	ref(std::nullptr_t = nullptr) : object(nullptr) {}
 	explicit ref(jobject h) : object(h) {}
+
 	ref(const ref& r) : object(new_ref(r)) {}
 
-	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
+	template <convertible_object<element_type> Y, scope S>
 	ref(const ref<Y, S>& r) : object(new_ref(r)) {}
 
 	ref(ref&& r) noexcept : object(r.release()) {}
 
-	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
+	template <convertible_object<element_type> Y, scope S>
 	ref(ref<Y, S>&& r) : object(nullptr)
 	{
 		if (get_scope() == r.get_scope())
@@ -205,7 +154,7 @@ public:
 		return *this;
 	}
 
-	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
+	template <convertible_object<element_type> Y, scope S>
 	ref& operator = (const ref<Y, S>& r)
 	{
 		ref(r).swap(*this);
@@ -218,7 +167,7 @@ public:
 		return *this;
 	}
 
-	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
+	template <convertible_object<element_type> Y, scope S>
 	ref& operator = (ref<Y, S>&& r)
 	{
 		ref(std::move(r)).swap(*this);
@@ -314,12 +263,12 @@ public:
 
 	ref(const ref& r) : object(r.handle()), scp(scope::generic) {}
 
-	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
+	template <convertible_object<element_type> Y, scope S>
 	ref(const ref<Y, S>& r) : object(r.handle()), scp(scope::generic) {}
 
 	ref(ref&& r) noexcept : object(r.release()), scp(r.get_scope()) {}
 
-	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
+	template <convertible_object<element_type> Y, scope S>
 	ref(ref<Y, S>&& r) : object(r.release()), scp(r.get_scope()) {}
 
 	template <typename X, typename = std::enable_if_t<std::experimental::is_detected_v<has_convert_jni_t, ref, X>>>
@@ -359,7 +308,7 @@ public:
 		return *this;
 	}
 
-	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
+	template <convertible_object<element_type> Y, scope S>
 	ref& operator = (const ref<Y, S>& r)
 	{
 		ref(r).swap(*this);
@@ -372,7 +321,7 @@ public:
 		return *this;
 	}
 
-	template <typename Y, scope S, typename = std::enable_if_t<detail::is_convertible_element<Y, element_type>>>
+	template <convertible_object<element_type> Y, scope S>
 	ref& operator = (ref<Y, S>&& r)
 	{
 		ref(std::move(r)).swap(*this);

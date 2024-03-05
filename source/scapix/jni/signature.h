@@ -8,7 +8,7 @@
 #define SCAPIX_JNI_SIGNATURE_H
 
 #include <scapix/core/fixed_string.h>
-#include <scapix/jni/type_traits.h>
+#include <scapix/jni/element.h>
 #include <scapix/jni/fwd/ref.h>
 #include <scapix/jni/fwd/array.h>
 #include <scapix/jni/fwd/signature.h>

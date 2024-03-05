@@ -14,7 +14,7 @@
 
 namespace scapix::jni {
 
-template <typename T, typename = void>
+template <typename T>
 class array;
 
 template <typename T>
@@ -22,11 +22,6 @@ struct object_traits<array<T>>
 {
 	static constexpr auto class_name = signature_v<array<T>>;
 	using base_classes = std::tuple<object<>>;
-};
-
-template <typename T>
-struct object_traits<T[]> : object_traits<array<T>>
-{
 };
 
 } // namespace scapix::jni

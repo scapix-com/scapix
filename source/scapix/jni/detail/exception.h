@@ -59,7 +59,7 @@ inline jint check_result(jint i)
 
 // Get<PrimitiveType>ArrayElements(), GetPrimitiveArrayCritical()
 
-template <typename T, typename = std::enable_if_t<is_primitive_v<T>>>
+template <primitive T>
 inline T* check_result(T* p)
 {
 	if (!p) [[unlikely]]

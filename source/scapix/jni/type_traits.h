@@ -14,26 +14,44 @@
 #include <scapix/meta/iota.h>
 #include <scapix/jni/env.h>
 #include <scapix/jni/object_traits.h>
+#include <scapix/jni/fwd/element.h>
 #include <scapix/jni/fwd/array.h>
+#include <scapix/jni/fwd/object.h>
+#include <scapix/jni/fwd/object_base.h>
+#include <scapix/jni/fwd/object_impl.h>
 
 namespace scapix::jni {
 
-// is_primitive
+// reference
 
 template <typename T>
-struct is_primitive : std::false_type {};
+concept reference = requires
+{
+	requires std::is_class_v<element_type_t<T>>;
+	class_name_v<element_type_t<T>>;
+	typename base_classes_t<element_type_t<T>>;
+};
 
-template<> struct is_primitive<jboolean> : std::true_type {};
-template<> struct is_primitive<jbyte> : std::true_type {};
-template<> struct is_primitive<jchar> : std::true_type {};
-template<> struct is_primitive<jshort> : std::true_type {};
-template<> struct is_primitive<jint> : std::true_type {};
-template<> struct is_primitive<jlong> : std::true_type {};
-template<> struct is_primitive<jfloat> : std::true_type {};
-template<> struct is_primitive<jdouble> : std::true_type {};
+// primitive
 
 template <typename T>
-constexpr bool is_primitive_v = is_primitive<T>::value;
+concept integral =
+	std::same_as<T, jbyte> ||
+	std::same_as<T, jshort> ||
+	std::same_as<T, jint> ||
+	std::same_as<T, jlong> ||
+	std::same_as<T, jchar>;
+
+template <typename T>
+concept floating_point =
+	std::same_as<T, jfloat> ||
+	std::same_as<T, jdouble>;
+
+template <typename T>
+concept numeric = integral<T> || floating_point<T>;
+
+template <typename T>
+concept primitive = numeric<T> || std::same_as<T, jboolean>;
 
 // is_array
 
@@ -48,6 +66,9 @@ struct is_object_array : std::integral_constant<bool, class_name_v<T>[0] == '[' 
 
 template <typename T>
 constexpr bool is_object_array_v = is_object_array<T>::value;
+
+template <typename T>
+concept object_array = is_object_array_v<T>;
 
 // handle_type
 
@@ -77,7 +98,7 @@ using handle_types = std::tuple
 	handle_type_info<"[", jobjectArray> // uses "begins_with" compare, must be last
 >;
 
-template <typename T>
+template <reference T>
 constexpr std::size_t handle_type()
 {
 	auto class_name = class_name_v<T>;
@@ -108,8 +129,8 @@ constexpr std::size_t handle_type()
 
 } // namespace detail
 
-template <typename T>
-using handle_type_t = typename std::tuple_element_t<detail::handle_type<T>(), detail::handle_types>::handle_type;
+template <reference T>
+using handle_type_t = typename std::tuple_element_t<detail::handle_type<element_type_t<T>>(), detail::handle_types>::handle_type;
 
 // is_convertible_object
 
@@ -117,7 +138,10 @@ template <typename From, typename To>
 struct is_convertible_object;
 
 template <typename From, typename To>
-constexpr bool is_convertible_object_v = is_convertible_object<From, To>::value;
+constexpr bool is_convertible_object_v = is_convertible_object<element_type_t<From>, element_type_t<To>>::value;
+
+template <typename From, typename To>
+concept convertible_object = is_convertible_object_v<From, To>;
 
 template <typename From, typename To>
 struct is_convertible_object
@@ -131,10 +155,10 @@ struct is_convertible_object
 	;
 };
 
-template <typename From, typename To>
-struct is_convertible_object<array<From, std::enable_if_t<!is_primitive_v<From>>>, array<To, std::enable_if_t<!is_primitive_v<To>>>>
+template <object_array From, object_array To>
+struct is_convertible_object<From, To>
 {
-	static constexpr bool value = is_convertible_object_v<typename array<From>::element_type, typename array<To>::element_type>;
+	static constexpr bool value = is_convertible_object_v<typename From::element_type, typename To::element_type>;
 };
 
 } // namespace scapix::jni

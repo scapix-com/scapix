@@ -19,13 +19,13 @@ namespace scapix::jni {
 template <typename T, typename Y, scope Scope>
 inline ref<T, Scope> static_pointer_cast(const ref<Y, Scope>& r)
 {
-	return ref<T, Scope>(ref<detail::cast<Y>, Scope>(r));
+	return ref<T, Scope>(ref<Y, Scope>(r).release());
 }
 
 template <typename T, typename Y, scope Scope>
 inline ref<T, Scope> static_pointer_cast(ref<Y, Scope>&& r)
 {
-	return ref<T, Scope>(ref<detail::cast<Y>, Scope>(std::move(r)));
+	return ref<T, Scope>(r.release());
 }
 
 // dynamic_pointer_cast

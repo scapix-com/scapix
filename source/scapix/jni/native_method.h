@@ -20,10 +20,11 @@
 namespace scapix::jni {
 
 template <typename Jni, typename Cpp>
-struct param
-{
-	static_assert(is_primitive_v<Jni>);
+struct param;
 
+template <primitive Jni, typename Cpp>
+struct param<Jni, Cpp>
+{
 	using Cpv = std::remove_reference_t<Cpp>;
 
 	static Jni jni(Cpp v) { return convert_jni<Jni>(v); }
@@ -52,10 +53,12 @@ struct param<ref<T>, Cpp>
 };
 
 template <typename Jni>
-struct param_t
-{
-	static_assert(is_primitive_v<Jni> || std::is_void_v<Jni>);
+struct param_t;
 
+template <typename Jni>
+	requires (primitive<Jni> || std::is_void_v<Jni>)
+struct param_t<Jni>
+{
 	using type = Jni;
 };
 

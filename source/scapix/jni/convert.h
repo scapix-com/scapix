@@ -32,8 +32,8 @@ struct convert_shared;
 template<typename Jni, typename Cpp>
 using has_convert_shared_t = decltype(convert_shared<Jni, Cpp>::jni(std::declval<std::shared_ptr<Cpp>>()));
 
-template <typename Jni, typename Cpp>
-struct convert<Jni, Cpp, std::enable_if_t<is_primitive_v<Jni> && std::is_arithmetic_v<Cpp>>>
+template <primitive Jni, typename Cpp>
+struct convert<Jni, Cpp, std::enable_if_t<std::is_arithmetic_v<Cpp>>>
 {
 	static_assert((std::is_integral_v<Jni> && std::is_integral_v<Cpp> && sizeof(Jni) == sizeof(Cpp)) || std::is_same_v<Jni, Cpp>);
 
@@ -138,7 +138,7 @@ struct convert_string
 };
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, string> && std::is_convertible_v<Cpp, std::string> && !is_ref_v<Cpp>>> : convert_string
+struct convert<ref<J>, Cpp, std::enable_if_t<is_convertible_object_v<J, string> && std::is_convertible_v<Cpp, std::string> && !is_ref_v<Cpp>>> : convert_string
 {
 };
 
@@ -157,43 +157,43 @@ struct convert_primitive_object
 };
 
 using java_lang_boolean = object<"java/lang/Boolean">;
-template <typename J> struct convert<ref<J>, bool, std::enable_if_t<detail::is_convertible_element<J, java_lang_boolean>>> :
+template <typename J> struct convert<ref<J>, bool, std::enable_if_t<is_convertible_object_v<J, java_lang_boolean>>> :
 convert_primitive_object<java_lang_boolean, bool, jboolean, "booleanValue"> {};
 
 using java_lang_byte = object<"java/lang/Byte">;
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, java_lang_byte> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int8_t)>> :
+struct convert<ref<J>, Cpp, std::enable_if_t<is_convertible_object_v<J, java_lang_byte> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int8_t)>> :
 convert_primitive_object<java_lang_byte, Cpp, jbyte, "byteValue"> {};
 
 using java_lang_short = object<"java/lang/Short">;
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, java_lang_short> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int16_t)>> :
+struct convert<ref<J>, Cpp, std::enable_if_t<is_convertible_object_v<J, java_lang_short> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int16_t)>> :
 convert_primitive_object<java_lang_short, Cpp, jshort, "shortValue"> {};
 
 using java_lang_integer = object<"java/lang/Integer">;
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, java_lang_integer> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int32_t)>> :
+struct convert<ref<J>, Cpp, std::enable_if_t<is_convertible_object_v<J, java_lang_integer> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int32_t)>> :
 convert_primitive_object<java_lang_integer, Cpp, jint, "intValue"> {};
 
 using java_lang_long = object<"java/lang/Long">;
 
 template <typename J, typename Cpp>
-struct convert<ref<J>, Cpp, std::enable_if_t<detail::is_convertible_element<J, java_lang_long> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int64_t)>> :
+struct convert<ref<J>, Cpp, std::enable_if_t<is_convertible_object_v<J, java_lang_long> && std::is_integral_v<Cpp> && sizeof(Cpp) == sizeof(std::int64_t)>> :
 convert_primitive_object<java_lang_long, Cpp, jlong, "longValue"> {};
 
 using java_lang_float = object<"java/lang/Float">;
-template <typename J> struct convert<ref<J>, float, std::enable_if_t<detail::is_convertible_element<J, java_lang_float>>> :
+template <typename J> struct convert<ref<J>, float, std::enable_if_t<is_convertible_object_v<J, java_lang_float>>> :
 convert_primitive_object<java_lang_float, float, jfloat, "floatValue"> {};
 
 using java_lang_double = object<"java/lang/Double">;
-template <typename J> struct convert<ref<J>, double, std::enable_if_t<detail::is_convertible_element<J, java_lang_double>>> :
+template <typename J> struct convert<ref<J>, double, std::enable_if_t<is_convertible_object_v<J, java_lang_double>>> :
 convert_primitive_object<java_lang_double, double, jdouble, "doubleValue"> {};
 
-template <typename J, typename T, typename A>
-struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<is_primitive_v<J>>>
+template <primitive J, typename T, typename A>
+struct convert<ref<array<J>>, std::vector<T, A>>
 {
 	static_assert(sizeof(J) == sizeof(T));
 
@@ -233,8 +233,8 @@ struct convert<ref<array<jboolean>>, std::vector<bool, A>>
 	}
 };
 
-template <typename J, typename T, typename A>
-struct convert<ref<array<J>>, std::vector<T, A>, std::enable_if_t<!is_primitive_v<J>>>
+template <reference J, typename T, typename A>
+struct convert<ref<array<J>>, std::vector<T, A>>
 {
 	static std::vector<T, A> cpp(ref<array<J>> a)
 	{

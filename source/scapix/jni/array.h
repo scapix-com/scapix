@@ -35,8 +35,8 @@ protected:
 
 // object array
 
-template <typename T>
-class array<T, std::enable_if_t<!is_primitive_v<T>>> : public array_base<T>
+template <reference T>
+class array<T> : public array_base<T>
 {
 	using base = array_base<T>;
 
@@ -293,7 +293,7 @@ private:
 
 // primitive array
 
-template <typename T, lock Lock, release_mode Mode>
+template <primitive T, lock Lock, release_mode Mode>
 class array_elements
 {
 public:
@@ -414,8 +414,8 @@ private:
 
 };
 
-template <typename T>
-class array<T, std::enable_if_t<is_primitive_v<T>>> : public array_base<T>
+template <primitive T>
+class array<T> : public array_base<T>
 {
 	using base = array_base<T>;
 
