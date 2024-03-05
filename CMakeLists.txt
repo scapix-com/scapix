@@ -176,7 +176,7 @@ if(XCODE)
         "\n"
         "HEADER_SEARCH_PATHS = $(inherited) \"${PROJECT_ROOT}/generated/bridge/objc\" \"${_SCAPIX_PATH}/source\"\n"
         "OTHER_LDFLAGS = $(inherited) -l${scapix_output_name} -lscapix -lc++\n"
-        "LIBRARY_SEARCH_PATHS = $(inherited) \"${target_binary_dir}/$(CONFIGURATION)\" \"${scapix_binary_dir}/$(CONFIGURATION)\"\n"
+        "LIBRARY_SEARCH_PATHS = $(inherited) \"${target_binary_dir}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\" \"${scapix_binary_dir}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"\n"
 	)
 endif()
 
