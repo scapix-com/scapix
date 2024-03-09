@@ -179,8 +179,7 @@ public:
 	element_type operator * () { return make_element(); }
 	const element_type operator * () const { return make_element(); }
 
-	template <typename Y = element_type, typename = std::enable_if_t<is_object_array_v<Y>>>
-	auto operator [] (jsize i) { return get()[i]; }
+	auto operator [] (jsize i) requires object_array<T> { return get()[i]; }
 
 	explicit operator bool() const { return handle() != nullptr; }
 	element_type get() const { return make_element(); }
@@ -333,8 +332,7 @@ public:
 	element_type operator * () { return make_element(); }
 	const element_type operator * () const { return make_element(); }
 
-	template <typename Y = element_type, typename = std::enable_if_t<is_object_array_v<Y>>>
-	auto operator [] (jsize i) { return get()[i]; }
+	auto operator [] (jsize i) requires object_array<T> { return get()[i]; }
 
 	explicit operator bool() const { return handle() != nullptr; }
 	element_type get() const { return make_element(); }
