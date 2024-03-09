@@ -251,14 +251,7 @@ public:
 
 	ref(std::nullptr_t = nullptr) : object(nullptr), scp(scope::generic) {}
 
-	// ref<> (aka ref<object<>, generic>) can be constructed from handle implicitly.
-	// all other refs can only be constructed from handle explicitly.
-
-	template <typename Ref = ref<T>, std::enable_if_t<std::is_same_v<Ref, ref<>>, bool> = false>
-	ref(jobject h) : object(h), scp(scope::generic) {}
-
-	template <typename Ref = ref<T>, std::enable_if_t<!std::is_same_v<Ref, ref<>>, bool> = false>
-	explicit ref(jobject h) : object(h), scp(scope::generic) {}
+	explicit(!std::is_same_v<ref, ref<>>) ref(jobject h) : object(h), scp(scope::generic) {}
 
 	ref(const ref& r) : object(r.handle()), scp(scope::generic) {}
 
