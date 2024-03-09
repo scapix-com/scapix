@@ -125,6 +125,12 @@ private:
 
 };
 
+template <reference T>
+inline ref<class_> class_object()
+{
+	return object_impl<class_name_v<element_type_t<T>>>::class_object();
+}
+
 } // namespace scapix::jni
 
 #include <scapix/jni/class.h>

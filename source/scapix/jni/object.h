@@ -82,10 +82,10 @@ public:
 	using object_impl::set_static_field;
 	using object_impl::class_object;
 
-	template <typename T>
+	template <reference T>
 	bool is_instance_of() const
 	{
-		return is_instance_of(detail::befriend<T, object>::class_object());
+		return is_instance_of(jni::class_object<T>());
 	}
 
 	bool is_instance_of(ref<class_> cls) const noexcept
