@@ -7,8 +7,8 @@
 #ifndef SCAPIX_JNI_OBJECT_IMPL_H
 #define SCAPIX_JNI_OBJECT_IMPL_H
 
-#include <cassert>
-#include <type_traits>
+#include <utility>
+#include <tuple>
 #include <scapix/core/fixed_string.h>
 #include <scapix/jni/type_traits.h>
 #include <scapix/jni/detail/api.h>
@@ -128,11 +128,9 @@ private:
 } // namespace scapix::jni
 
 #include <scapix/jni/class.h>
-#include <scapix/jni/cast.h>
 
 #ifdef SCAPIX_CACHE_CLASS_LOADER
 #include <scapix/jni/class_loader.h>
-#include <scapix/mpv/replace.h>
 #endif
 
 namespace scapix::jni {

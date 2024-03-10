@@ -22,6 +22,7 @@
 #include <scapix/jni/array.h>
 #include <scapix/jni/function.h>
 #include <scapix/jni/struct.h>
+#include <scapix/jni/cast.h>
 #include <scapix/jni/com/scapix/function.h>
 
 namespace scapix::jni {

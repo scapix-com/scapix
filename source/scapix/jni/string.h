@@ -10,6 +10,7 @@
 #ifndef SCAPIX_JNI_STRING_H
 #define SCAPIX_JNI_STRING_H
 
+#include <cassert>
 #include <stdexcept>
 #include <type_traits>
 #include <iterator>
