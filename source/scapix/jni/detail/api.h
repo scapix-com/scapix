@@ -180,7 +180,7 @@ inline void set_array_region(jni::ref<T[]> obj, jsize start, jsize len, const T*
 template <typename T>
 inline local_ref<T[]> new_array(jsize len, jni::ref<T> init)
 {
-	return check_result<T[]>(env()->NewObjectArray(len, class_object<T>().handle(), init.handle()));
+	return check_result<T[]>(env()->NewObjectArray(len, object_impl<class_name_v<element_type_t<T>>>::class_object().handle(), init.handle()));
 }
 
 template <typename T>

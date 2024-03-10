@@ -85,7 +85,7 @@ public:
 	template <reference T>
 	bool is_instance_of() const
 	{
-		return is_instance_of(jni::class_object<T>());
+		return is_instance_of(object_impl<class_name_v<element_type_t<T>>>::class_object());
 	}
 
 	bool is_instance_of(ref<class_> cls) const noexcept
