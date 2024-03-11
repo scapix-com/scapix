@@ -53,6 +53,11 @@ concept numeric = integral<T> || floating_point<T>;
 template <typename T>
 concept primitive = numeric<T> || std::same_as<T, jboolean>;
 
+// array_element
+
+template <typename T>
+concept array_element = reference<T> || primitive<T>;
+
 // is_array
 
 template <typename T>

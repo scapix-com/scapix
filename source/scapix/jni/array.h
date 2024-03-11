@@ -18,7 +18,7 @@
 
 namespace scapix::jni {
 
-template <typename T>
+template <array_element T>
 class array_base : public object<signature_v<T[]>>
 {
 	using base = object<signature_v<T[]>>;
