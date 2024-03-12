@@ -83,15 +83,17 @@ constexpr bool operator == (const fixed_string<Char, N1>& s1, const fixed_string
 	return std::ranges::equal(s1.content, s2.content);
 }
 
-//template <typename Char, std::size_t N1, std::size_t N2>
-//constexpr bool operator == (const Char(&s1)[N1], const fixed_string<Char, N2>& s2)
-//{
-//}
-//
-//template <typename Char, std::size_t N1, std::size_t N2>
-//constexpr bool operator == (const fixed_string<Char, N1>& s1, const Char(&s2)[N2])
-//{
-//}
+template <typename Char, std::size_t N1, std::size_t N2>
+constexpr bool operator == (const Char(&s1)[N1], const fixed_string<Char, N2>& s2)
+{
+	return std::ranges::equal(s1, s2.content);
+}
+
+template <typename Char, std::size_t N1, std::size_t N2>
+constexpr bool operator == (const fixed_string<Char, N1>& s1, const Char(&s2)[N2])
+{
+	return std::ranges::equal(s1.content, s2);
+}
 
 } // namespace scapix
 

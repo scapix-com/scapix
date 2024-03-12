@@ -67,17 +67,17 @@ public:
 		reference(const reference&) = delete;
 		reference(reference&&) = delete;
 
-		void operator &() = delete;
+		void operator & () = delete;
 
-		reference& operator =(const reference& other) { *this = other.get(); return *this; }
-		reference& operator =(reference&& other) { *this = other.get(); return *this; }
+		reference& operator = (const reference& other) { *this = other.get(); return *this; }
+		reference& operator = (reference&& other) { *this = other.get(); return *this; }
 
-		template <typename Y>
-		reference& operator =(ref<Y> value) { arr.set_element(pos, value); return *this; }
+		template <typename Y, scope Scope>
+		reference& operator = (const ref<Y, Scope>& value) { arr.set_element(pos, value); return *this; }
 
 		operator ref<T>() const { return get(); }
 		ref<T> get() const { return arr.get_element(pos); }
-		ref<T> operator ->() const { return get(); }
+		ref<T> operator -> () const { return get(); }
 
 	private:
 
@@ -160,11 +160,11 @@ public:
 		const_reference(const const_reference&) = delete;
 		const_reference(const_reference&&) = delete;
 
-		void operator &() = delete;
+		void operator & () = delete;
 
 		operator ref<T>() const { return get(); }
 		ref<T> get() const { return arr.get_element(pos); }
-		ref<T> operator ->() const { return get(); }
+		ref<T> operator -> () const { return get(); }
 
 	private:
 
@@ -273,7 +273,7 @@ public:
 		return (*this)[pos];
 	}
 
-	static ref<array> new_(jsize len, ref<element_type> init = {})
+	static ref<array> new_object(jsize len, ref<element_type> init = {})
 	{
 		return detail::check_result<array>(detail::env()->NewObjectArray(len, object_impl_t<element_type>::class_object().handle(), init.handle()));
 	}
@@ -442,7 +442,7 @@ class array<T> : public array_base<T>
 
 public:
 
-	static ref<array> new_(jsize len)
+	static ref<array> new_object(jsize len)
 	{
 		return detail::check_result<array>(detail::api::type<T>::new_array(len));
 	}

@@ -14,6 +14,7 @@
 namespace scapix::jni {
 
 template <fixed_string ClassName = "java/lang/Object", typename ...Bases>
+	requires (ClassName != "java/lang/Object" || sizeof...(Bases) == 0)
 class object;
 
 template <fixed_string ClassName, typename ...Bases>

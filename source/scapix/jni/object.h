@@ -18,6 +18,7 @@ namespace scapix::jni {
 #include <scapix/detail/warning/inaccessible_base.h>
 
 template <fixed_string ClassName, typename ...Bases>
+	requires (ClassName != "java/lang/Object" || sizeof...(Bases) == 0)
 class object : private object_impl<ClassName>, public Bases...
 {
 	using impl = object_impl<ClassName>;
@@ -31,7 +32,6 @@ public:
 	using impl::call_method;
 	using impl::call_nonvirtual_method;
 	using impl::call_static_method;
-	using impl::new_object;
 	using impl::get_field;
 	using impl::set_field;
 	using impl::get_static_field;
@@ -54,15 +54,6 @@ public:
 
 };
 
-template <typename T>
-struct always_false : std::false_type {}; 
-
-template <typename Base1, typename ...Bases>
-class object<"java/lang/Object", Base1, Bases...>
-{
-	static_assert(always_false<Base1>::value, "java/lang/Object should not specify base classes");
-};
-
 template <>
 class object<"java/lang/Object"> : private object_impl<"java/lang/Object">
 {
@@ -75,7 +66,6 @@ public:
 	using object_impl::call_method;
 	using object_impl::call_nonvirtual_method;
 	using object_impl::call_static_method;
-	using object_impl::new_object;
 	using object_impl::get_field;
 	using object_impl::set_field;
 	using object_impl::get_static_field;

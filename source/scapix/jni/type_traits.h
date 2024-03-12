@@ -18,7 +18,6 @@
 #include <scapix/jni/fwd/array.h>
 #include <scapix/jni/fwd/object.h>
 #include <scapix/jni/fwd/object_base.h>
-#include <scapix/jni/fwd/object_impl.h>
 
 namespace scapix::jni {
 

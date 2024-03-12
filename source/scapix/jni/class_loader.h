@@ -48,7 +48,7 @@ public:
 
 	static local_ref<class_> find_class(const char* name)
 	{
-		return loader->call_method<"loadClass", ref<class_>(ref<string>)>(string::new_(name));
+		return loader->call_method<"loadClass", ref<class_>(ref<string>)>(new_object<string>(name));
 	}
 
 private:

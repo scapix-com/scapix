@@ -86,10 +86,10 @@ class function_impl<InterfaceClassName, JniR(JniArgs...), Name> : public object<
 public:
 
 	template <typename R, typename ...Args>
-	static local_ref<function_impl> create(std::function<R(Args...)>&& func)
+	static local_ref<function_impl> new_object(std::function<R(Args...)>&& func)
 	{
 		cpp::function* ptr = new cpp::function_impl<R(Args...)>(std::move(func));
-		return base::template new_object<void(jlong)>(reinterpret_cast<jlong>(ptr));
+		return jni::new_object<function_impl, void(jlong)>(reinterpret_cast<jlong>(ptr));
 	}
 
 protected:

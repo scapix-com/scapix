@@ -8,23 +8,23 @@
 #define SCAPIX_JNI_OBJECT_IMPL_H
 
 #include <utility>
-#include <tuple>
 #include <scapix/core/fixed_string.h>
-#include <scapix/jni/type_traits.h>
 #include <scapix/jni/detail/api.h>
+#include <scapix/jni/type_traits.h>
+#include <scapix/jni/object_traits.h>
 #include <scapix/jni/fwd/ref.h>
 #include <scapix/jni/fwd/class.h>
+#include <scapix/jni/fwd/element.h>
 
 namespace scapix::jni {
 
 template <fixed_string ClassName>
 class object_impl
 {
-public:
-
 	static constexpr auto class_name = ClassName;
-	using base_classes = std::tuple<>;
 	using handle_type = jobject;
+
+public:
 
 	// call_method
 
@@ -66,20 +66,6 @@ public:
 	static auto call_static_method(jmethodID id, Args&&... args)
 	{
 		return detail::api::call<Type>::static_method(class_object().handle(), id, std::forward<Args>(args)...);
-	}
-
-	// new_object
-
-	template <typename Type, typename ...Args>
-	static local_ref<object_impl> new_object(Args&&... args)
-	{
-		return new_object<Type>(method_id<"<init>", Type>(), std::forward<Args>(args)...);
-	}
-
-	template <typename Type, typename ...Args>
-	static local_ref<object_impl> new_object(jmethodID id, Args&&... args)
-	{
-		return detail::api::call<Type>::template new_object<object_impl>(class_object().handle(), id, std::forward<Args>(args)...);
 	}
 
 	// get_field
@@ -163,6 +149,9 @@ protected:
 
 private:
 
+	template <reference Object, typename Type, typename ...Args>
+	friend ref<Object> new_object(Args&&... args) requires requires { element_type_t<Object>::class_name; };
+
 	template <fixed_string Name, typename Type>
 	static jmethodID method_id();
 
@@ -178,6 +167,27 @@ private:
 	handle_type handle_;
 
 };
+
+template <reference T>
+using object_impl_t = object_impl<class_name_v<element_type_t<T>>>;
+
+template <reference Object, typename Type, typename ...Args>
+ref<Object> new_object(jmethodID id, Args&&... args) requires requires { element_type_t<Object>::class_name; }
+{
+	return detail::api::call<Type>::template new_object<element_type_t<Object>>(object_impl_t<Object>::class_object().handle(), id, std::forward<Args>(args)...);
+}
+
+template <reference Object, typename Type, typename ...Args>
+ref<Object> new_object(Args&&... args) requires requires { element_type_t<Object>::class_name; }
+{
+	return new_object<Object, Type>(object_impl_t<Object>::template method_id<"<init>", Type>(), std::forward<Args>(args)...);
+}
+
+template <reference Object, typename ...Args>
+ref<Object> new_object(Args&&... args) requires requires { element_type_t<Object>::new_object(std::forward<Args>(args)...); }
+{
+	return element_type_t<Object>::new_object(std::forward<Args>(args)...);
+}
 
 } // namespace scapix::jni
 

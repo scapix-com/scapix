@@ -129,12 +129,12 @@ struct convert_string
 
 	static ref<string> jni(std::string_view str)
 	{
-//		return string::new_(str.data());
+//		return new_object<string>(str.data());
 
-		auto bytes = array<jbyte>::new_(static_cast<jsize>(str.size()));
+		auto bytes = new_object<array<jbyte>>(static_cast<jsize>(str.size()));
 		bytes->set_region(0, static_cast<jsize>(str.size()), (const jbyte*)str.data());
 
-		return string::new_object<void(ref<jbyte[]>, ref<charset>)>(bytes, utf8_charset());
+		return new_object<string, void(ref<jbyte[]>, ref<charset>)>(bytes, utf8_charset());
 	}
 };
 
@@ -209,7 +209,7 @@ struct convert<ref<array<J>>, std::vector<T, A>>
 	static ref<array<J>> jni(const std::vector<T, A>& v)
 	{
 		const auto size = static_cast<jsize>(v.size());
-		auto a = array<J>::new_(size);
+		auto a = new_object<array<J>>(size);
 		a->set_region(0, size, reinterpret_cast<const J*>(v.data()));
 		return a;
 	}
@@ -227,7 +227,7 @@ struct convert<ref<array<jboolean>>, std::vector<bool, A>>
 	static ref<array<jboolean>> jni(const std::vector<bool, A>& v)
 	{
 		const auto size = static_cast<jsize>(v.size());
-		auto a = array<jboolean>::new_(size);
+		auto a = new_object<array<jboolean>>(size);
 		auto e = a->elements<lock::critical>(size);
 		std::copy(v.begin(), v.end(), e.begin());
 		return a;
@@ -251,7 +251,7 @@ struct convert<ref<array<J>>, std::vector<T, A>>
 	static ref<array<J>> jni(const std::vector<T, A>& v)
 	{
 		const auto size = static_cast<jsize>(v.size());
-		auto a = array<J>::new_(size);
+		auto a = new_object<array<J>>(size);
 
 		for (jsize i = 0; i < size; ++i)
 			a[i] = convert_jni<ref<J>>(v[i]);
@@ -289,7 +289,7 @@ struct convert<ref<generic_type<java_util_treemap, JK, JV>>, std::map<K, V, C, A
 
 	static ref<java_util_treemap> jni(const std::map<K, V, C, A>& m)
 	{
-		auto tm = java_util_treemap::new_object<void()>();
+		auto tm = new_object<java_util_treemap, void()>();
 
 		for (auto& i : m)
 			tm->call_method<"put", ref<generic<JV>>(ref<generic<JK>>, ref<generic<JV>>)>(convert_jni<ref<JK>>(i.first), convert_jni<ref<JV>>(i.second));
@@ -329,7 +329,7 @@ struct convert<ref<generic_type<java_util_map, JK, JV>>, std::map<K, V, C, A>>
 
 	static ref<java_util_map> jni(const std::map<K, V, C, A>& m)
 	{
-		auto tm = java_util_treemap::new_object<void()>();
+		auto tm = new_object<java_util_treemap, void()>();
 
 		for (auto& i : m)
 			tm->call_method<"put", ref<generic<JV>>(ref<generic<JK>>, ref<generic<JV>>)>(convert_jni<ref<JK>>(i.first), convert_jni<ref<JV>>(i.second));
@@ -363,7 +363,7 @@ struct convert<ref<generic_type<java_util_treeset, JE>>, std::set<K, C, A>>
 
 	static ref<java_util_treeset> jni(const std::set<K, C, A>& s)
 	{
-		auto set = java_util_treeset::new_object<void()>();
+		auto set = new_object<java_util_treeset, void()>();
 
 		for (auto& i : s)
 			set->call_method<"add", jboolean(ref<generic<JE>>)>(convert_jni<ref<JE>>(i));
@@ -401,7 +401,7 @@ struct convert<ref<generic_type<java_util_hashmap, JK, JV>>, std::unordered_map<
 
 	static ref<java_util_hashmap> jni(const std::unordered_map<K, T, H, KE, A>& m)
 	{
-		auto tm = java_util_hashmap::new_object<void()>();
+		auto tm = new_object<java_util_hashmap, void()>();
 
 		for (auto& i : m)
 			tm->call_method<"put", ref<generic<JV>>(ref<generic<JK>>, ref<generic<JV>>)>(convert_jni<ref<JK>>(i.first), convert_jni<ref<JV>>(i.second));
@@ -435,7 +435,7 @@ struct convert<ref<generic_type<java_util_hashset, JE>>, std::unordered_set<K, H
 
 	static ref<java_util_hashset> jni(const std::unordered_set<K, H, KE, A>& s)
 	{
-		auto set = java_util_hashset::new_object<void()>();
+		auto set = new_object<java_util_hashset, void()>();
 
 		for (auto& i : s)
 			set->call_method<"add", jboolean(ref<generic<JE>>)>(convert_jni<ref<JE>>(i));
@@ -466,7 +466,7 @@ struct convert<ref<function<ClassName, JniR(JniArgs...), Name>>, std::function<R
 		if (!f)
 			return nullptr;
 
-		return com::scapix::function_impl<ClassName, JniR(JniArgs...), Name>::create(std::move(f));
+		return new_object<com::scapix::function_impl<ClassName, JniR(JniArgs...), Name>>(std::move(f));
 	}
 };
 
@@ -478,7 +478,7 @@ struct convert<Jni, Struct, std::enable_if_t<is_struct_v<Struct>>>
 
 	static ref<struct_object> jni(const Struct& value)
 	{
-		auto obj = struct_object::template new_object<void()>();
+		auto obj = new_object<struct_object, void()>();
 
 		meta::for_each<fields>([&](auto f)
 		{

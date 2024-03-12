@@ -44,9 +44,9 @@ class bridge_object : public object<ClassName, bridge>
 
 public:
 
-	static local_ref<bridge_object> create()
+	static local_ref<bridge_object> new_object()
 	{
-		return base::template new_object<void(ref<typename base::nop>)>(nullptr);
+		return jni::new_object<bridge_object, void(ref<typename base::nop>)>(nullptr);
 	}
 
 	T* get_ptr() const { return static_cast<T*>(base::get_ptr()); }
@@ -100,7 +100,7 @@ private:
 
 		if (!local)
 		{
-			local = bridge_object<ClassName, T>::create();
+			local = new_object<bridge_object<ClassName, T>>();
 			attach(local, std::move(shared_this));
 		}
 

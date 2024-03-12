@@ -131,14 +131,14 @@ class string : public object<"java/lang/String">
 {
 public:
 
-	static local_ref<string> new_(const jchar* buf, jsize len)
+	static local_ref<string> new_object(const jchar* buf, jsize len)
 	{
 		jstring str = detail::env()->NewString(buf, len);
 		detail::check_exception();
 		return local_ref<string>(str);
 	}
 
-	static local_ref<string> new_(const char* buf)
+	static local_ref<string> new_object(const char* buf)
 	{
 		jstring str = detail::env()->NewStringUTF(buf);
 		detail::check_exception();

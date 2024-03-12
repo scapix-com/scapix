@@ -44,7 +44,7 @@ public:
 		}
 		catch (const std::exception& e)
 		{
-			return string::new_(e.what());
+			return new_object<string>(e.what());
 		}
 		catch (...)
 		{
@@ -52,11 +52,11 @@ public:
 			int status;
 			auto name = abi::__cxa_current_exception_type()->name();
 			auto demangled_name = abi::__cxa_demangle(name, nullptr, nullptr, &status);
-			auto ret = string::new_(demangled_name);
+			auto ret = new_object<string>(demangled_name);
 			free(demangled_name);
 			return ret;
 		#else
-			return string::new_("unknown");
+			return new_object<string>("unknown");
 		#endif
 		}
 	}
@@ -87,7 +87,7 @@ public:
 
 	static local_ref<native_exception> new_object()
 	{
-		return object::new_object<void(jlong)>(reinterpret_cast<jlong>(new cpp::native_exception));
+		return jni::new_object<native_exception, void(jlong)>(reinterpret_cast<jlong>(new cpp::native_exception));
 	}
 
 	[[noreturn]] void rethrow() const

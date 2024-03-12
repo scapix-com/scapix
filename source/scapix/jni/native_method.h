@@ -144,7 +144,7 @@ struct native_method
 			}
 			catch (...)
 			{
-				com::scapix::native_exception::new_object()->throw_();
+				new_object<com::scapix::native_exception>()->throw_();
 			}
 
 			if constexpr (!std::is_void_v<R>)
@@ -176,7 +176,7 @@ struct native_method
 			}
 			catch (...)
 			{
-				com::scapix::native_exception::new_object()->throw_();
+				new_object<com::scapix::native_exception>()->throw_();
 			}
 
 			if constexpr (!std::is_void_v<R>)
