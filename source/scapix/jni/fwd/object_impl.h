@@ -10,6 +10,7 @@
 #include <tuple>
 #include <scapix/core/fixed_string.h>
 #include <scapix/jni/object_traits.h>
+#include <scapix/jni/fwd/element.h>
 
 namespace scapix::jni {
 
@@ -22,6 +23,9 @@ struct object_traits<object_impl<ClassName>>
 	static constexpr auto class_name = ClassName;
 	using base_classes = std::tuple<>;
 };
+
+template <typename T>
+using object_impl_t = object_impl<class_name_v<element_type_t<T>>>;
 
 } // namespace scapix::jni
 
