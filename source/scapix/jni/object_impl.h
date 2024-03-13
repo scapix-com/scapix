@@ -49,7 +49,10 @@ public:
 	}
 
 	template <typename Type, typename ...Args>
-	auto call_nonvirtual_method(jmethodID id, Args&&... args) const;
+	auto call_nonvirtual_method(jmethodID id, Args&&... args) const
+	{
+		return detail::api::call<Type>::nonvirtual_method(handle(), class_object().handle(), id, std::forward<Args>(args)...);
+	}
 
 	// call_static_method
 
@@ -60,7 +63,10 @@ public:
 	}
 
 	template <typename Type, typename ...Args>
-	static auto call_static_method(jmethodID id, Args&&... args);
+	static auto call_static_method(jmethodID id, Args&&... args)
+	{
+		return detail::api::call<Type>::static_method(class_object().handle(), id, std::forward<Args>(args)...);
+	}
 
 	// new_object
 
@@ -71,7 +77,10 @@ public:
 	}
 
 	template <typename Type, typename ...Args>
-	static local_ref<object_impl> new_object(jmethodID id, Args&&... args);
+	static local_ref<object_impl> new_object(jmethodID id, Args&&... args)
+	{
+		return detail::api::call<Type>::template new_object<object_impl>(class_object().handle(), id, std::forward<Args>(args)...);
+	}
 
 	// field
 
@@ -90,10 +99,16 @@ public:
 	// static field
 
 	template <fixed_string Name, typename Type>
-	static Type get_static_field();
+	static Type get_static_field()
+	{
+		return detail::api::get_static_field<Type>(class_object().handle(), static_field_id<Name, Type>());
+	}
 
 	template <fixed_string Name, typename Type>
-	static void set_static_field(Type value);
+	static void set_static_field(Type value)
+	{
+		detail::api::set_static_field<Type>(class_object().handle(), static_field_id<Name, Type>(), value);
+	}
 
 	//jmethodID FromReflectedMethod(jobject method);
 	//jfieldID FromReflectedField(jobject field);
@@ -127,48 +142,13 @@ private:
 
 } // namespace scapix::jni
 
-#include <scapix/jni/class.h>
-
 #ifdef SCAPIX_CACHE_CLASS_LOADER
 #include <scapix/jni/class_loader.h>
+#else
+#include <scapix/jni/class.h>
 #endif
 
 namespace scapix::jni {
-
-template <fixed_string ClassName>
-template <typename Type, typename ...Args>
-inline auto object_impl<ClassName>::call_nonvirtual_method(jmethodID id, Args&&... args) const
-{
-	return detail::api::call<Type>::nonvirtual_method(handle(), class_object().handle(), id, std::forward<Args>(args)...);
-}
-
-template <fixed_string ClassName>
-template <typename Type, typename ...Args>
-inline auto object_impl<ClassName>::call_static_method(jmethodID id, Args&&... args)
-{
-	return detail::api::call<Type>::static_method(class_object().handle(), id, std::forward<Args>(args)...);
-}
-
-template <fixed_string ClassName>
-template <typename Type, typename ...Args>
-inline local_ref<object_impl<ClassName>> object_impl<ClassName>::new_object(jmethodID id, Args&&... args)
-{
-	return detail::api::call<Type>::template new_object<object_impl>(class_object().handle(), id, std::forward<Args>(args)...);
-}
-
-template <fixed_string ClassName>
-template <fixed_string Name, typename Type>
-inline Type object_impl<ClassName>::get_static_field()
-{
-	return detail::api::get_static_field<Type>(class_object().handle(), static_field_id<Name, Type>());
-}
-
-template <fixed_string ClassName>
-template <fixed_string Name, typename Type>
-inline void object_impl<ClassName>::set_static_field(Type value)
-{
-	detail::api::set_static_field<Type>(class_object().handle(), static_field_id<Name, Type>(), value);
-}
 
 template <fixed_string ClassName>
 inline ref<class_> object_impl<ClassName>::class_object()
