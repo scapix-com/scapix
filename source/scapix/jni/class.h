@@ -105,6 +105,30 @@ public:
 		return detail::api::throw_new(handle(), message);
 	}
 
+	static jmethodID from_reflected_method(ref<object<"java/lang/reflect/Executable">> method)
+	{
+		return detail::env()->FromReflectedMethod(method.handle());
+	}
+
+	static jfieldID from_reflected_field(ref<object<"java/lang/reflect/Field">> field)
+	{
+		return detail::env()->FromReflectedField(field.handle());
+	}
+
+	ref<object<"java/lang/reflect/Executable">> to_reflected_method(jmethodID id, bool is_static)
+	{
+		jobject method = detail::env()->ToReflectedMethod(handle(), id, is_static);
+		detail::check_exception();
+		return ref<object<"java/lang/reflect/Executable">>(method);
+	}
+
+	ref<object<"java/lang/reflect/Field">> to_reflected_field(jfieldID id, bool is_static)
+	{
+		jobject field = detail::env()->ToReflectedField(handle(), id, is_static);
+		detail::check_exception();
+		return ref<object<"java/lang/reflect/Field">>(field);
+	}
+
 protected:
 
 	class_(handle_type h) : object(h) {}

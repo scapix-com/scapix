@@ -110,10 +110,21 @@ public:
 		detail::api::set_static_field<Type>(class_object().handle(), static_field_id<Name, Type>(), value);
 	}
 
-	//jmethodID FromReflectedMethod(jobject method);
-	//jfieldID FromReflectedField(jobject field);
-	//jobject ToReflectedMethod(jclass cls, jmethodID methodID, jboolean isStatic);
-	//jobject ToReflectedField(jclass cls, jfieldID fieldID, jboolean isStatic);
+	// reflect
+
+	template <fixed_string Name, typename Type>
+	static ref<object<"java/lang/reflect/Executable">> to_reflected_method();
+
+	template <fixed_string Name, typename Type>
+	static ref<object<"java/lang/reflect/Executable">> to_reflected_static_method();
+
+	template <fixed_string Name, typename Type>
+	static ref<object<"java/lang/reflect/Field">> to_reflected_field();
+
+	template <fixed_string Name, typename Type>
+	static ref<object<"java/lang/reflect/Field">> to_reflected_static_field();
+
+	// class_object
 
 	static ref<class_> class_object();
 
@@ -149,6 +160,34 @@ private:
 #endif
 
 namespace scapix::jni {
+
+template <fixed_string ClassName>
+template <fixed_string Name, typename Type>
+inline ref<object<"java/lang/reflect/Executable">> object_impl<ClassName>::to_reflected_method()
+{
+	return class_object()->to_reflected_method(method_id<Name, Type>(), false);
+}
+
+template <fixed_string ClassName>
+template <fixed_string Name, typename Type>
+inline ref<object<"java/lang/reflect/Executable">> object_impl<ClassName>::to_reflected_static_method()
+{
+	return class_object()->to_reflected_method(static_method_id<Name, Type>(), true);
+}
+
+template <fixed_string ClassName>
+template <fixed_string Name, typename Type>
+inline ref<object<"java/lang/reflect/Field">> object_impl<ClassName>::to_reflected_field()
+{
+	return class_object()->to_reflected_field(field_id<Name, Type>(), false);
+}
+
+template <fixed_string ClassName>
+template <fixed_string Name, typename Type>
+inline ref<object<"java/lang/reflect/Field">> object_impl<ClassName>::to_reflected_static_field()
+{
+	return class_object()->to_reflected_field(static_field_id<Name, Type>(), true);
+}
 
 template <fixed_string ClassName>
 inline ref<class_> object_impl<ClassName>::class_object()
