@@ -87,13 +87,13 @@ public:
 	template <fixed_string Name, typename Type>
 	Type get_field() const
 	{
-		return detail::api::get_field<Type>(handle(), field_id<Name, Type>());
+		return detail::api::type<Type>::get_field(handle(), field_id<Name, Type>());
 	}
 
 	template <fixed_string Name, typename Type>
 	void set_field(Type value) const
 	{
-		detail::api::set_field<Type>(handle(), field_id<Name, Type>(), value);
+		detail::api::type<Type>::set_field(handle(), field_id<Name, Type>(), value);
 	}
 
 	// static field
@@ -101,13 +101,13 @@ public:
 	template <fixed_string Name, typename Type>
 	static Type get_static_field()
 	{
-		return detail::api::get_static_field<Type>(class_object().handle(), static_field_id<Name, Type>());
+		return detail::api::type<Type>::get_static_field(class_object().handle(), static_field_id<Name, Type>());
 	}
 
 	template <fixed_string Name, typename Type>
 	static void set_static_field(Type value)
 	{
-		detail::api::set_static_field<Type>(class_object().handle(), static_field_id<Name, Type>(), value);
+		detail::api::type<Type>::set_static_field(class_object().handle(), static_field_id<Name, Type>(), value);
 	}
 
 	// reflect

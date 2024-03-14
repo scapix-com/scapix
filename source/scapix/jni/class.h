@@ -42,27 +42,27 @@ public:
 
 	jfieldID get_field_id(const char* name, const char* sig) const
 	{
-		return detail::api::get_field_id(handle(), name, sig);
+		return detail::check_result(detail::env()->GetFieldID(handle(), name, sig));
 	}
 
 	jfieldID get_static_field_id(const char* name, const char* sig) const
 	{
-		return detail::api::get_static_field_id(handle(), name, sig);
+		return detail::check_result(detail::env()->GetStaticFieldID(handle(), name, sig));
 	}
 
 	jmethodID get_method_id(const char* name, const char* sig) const
 	{
-		return detail::api::get_method_id(handle(), name, sig);
+		return detail::check_result(detail::env()->GetMethodID(handle(), name, sig));
 	}
 
 	jmethodID get_static_method_id(const char* name, const char* sig) const
 	{
-		return detail::api::get_static_method_id(handle(), name, sig);
+		return detail::check_result(detail::env()->GetStaticMethodID(handle(), name, sig));
 	}
 
 	void register_natives(const JNINativeMethod* methods, jint count) const
 	{
-		detail::api::register_natives(handle(), methods, count);
+		detail::check_result(detail::env()->RegisterNatives(handle(), methods, count));
 	}
 
 	template <int N>
@@ -73,12 +73,12 @@ public:
 
 	jint unregister_natives() const
 	{
-		return detail::api::unregister_natives(handle());
+		return detail::env()->UnregisterNatives(handle());
 	}
 
 	jint throw_new(const char* message) const
 	{
-		return detail::api::throw_new(handle(), message);
+		return detail::env()->ThrowNew(handle(), message);
 	}
 
 	static jmethodID from_reflected_method(ref<object<"java/lang/reflect/Executable">> method)

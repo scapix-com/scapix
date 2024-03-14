@@ -25,7 +25,7 @@ class array_base : public object<signature_v<T[]>>
 
 public:
 
-	jsize size() const { return detail::api::get_array_length(this->handle()); }
+	jsize size() const { return detail::env()->GetArrayLength(this->handle()); }
 
 protected:
 
@@ -273,7 +273,10 @@ public:
 		return (*this)[pos];
 	}
 
-	static ref<array> new_(jsize len, ref<element_type> init = {}) { return detail::api::new_array<element_type>(len, init); }
+	static ref<array> new_(jsize len, ref<element_type> init = {})
+	{
+		return detail::check_result<array>(detail::env()->NewObjectArray(len, object_impl_t<element_type>::class_object().handle(), init.handle()));
+	}
 
 	// for consistency with primitive array
 
@@ -286,8 +289,18 @@ protected:
 
 private:
 
-	ref<T> get_element(jsize index) const { return detail::api::get_array_element<element_type>(ref<T[]>(this->handle()), index); }
-	void set_element(jsize index, ref<T> value) { detail::api::set_array_element<element_type>(ref<T[]>(this->handle()), index, value); }
+	ref<T> get_element(jsize index) const
+	{
+		jobject element = detail::env()->GetObjectArrayElement(this->handle(), index);
+		detail::check_exception();
+		return local_ref<T>(element);
+	}
+
+	void set_element(jsize index, ref<T> value)
+	{
+		detail::env()->SetObjectArrayElement(this->handle(), index, value.handle());
+		detail::check_exception();
+	}
 
 };
 
@@ -310,10 +323,19 @@ public:
 	typedef std::reverse_iterator<iterator> reverse_iterator;
 	typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
+	// We rely on C++17 guaranteed copy elision.
+	// The same could be done in C++11 with Copy-List-Initialization (return {handle, size}).
+
+	array_elements(const array_elements&) = delete;
+	array_elements& operator=(const array_elements&) = delete;
+
+	array_elements(array_elements&&) = delete;
+	array_elements& operator=(array_elements&&) = delete;
+
 	~array_elements()
 	{
 		if (data_)
-			detail::api::release_array_elements<T, Lock>(ref<T[]>(array_), data_, static_cast<jint>(Mode));
+			release(static_cast<jint>(Mode));
 	}
 
 	pointer data() { return data_; }
@@ -364,7 +386,7 @@ public:
 
 	void commit()
 	{
-		detail::api::release_array_elements<T, Lock>(ref<T[]>(array_), data_, JNI_COMMIT);
+		release(JNI_COMMIT);
 	}
 
 	// After a call to release() or abort() object is in a valid but unspecified state:
@@ -374,7 +396,7 @@ public:
 	{
 		if (data_)
 		{
-			detail::api::release_array_elements<T, Lock>(ref<T[]>(array_), data_, 0);
+			release(0 /* JNI_COPY */);
 			data_ = 0;
 		}
 	}
@@ -383,7 +405,7 @@ public:
 	{
 		if (data_)
 		{
-			detail::api::release_array_elements<T, Lock>(ref<T[]>(array_), data_, JNI_ABORT);
+			release(JNI_ABORT);
 			data_ = 0;
 		}
 	}
@@ -392,20 +414,19 @@ private:
 
 	friend class array<T>;
 
-	using handle_type = typename array_base<T>::handle_type;
+	using handle_type = typename array<T>::handle_type;
 
-	array_elements(handle_type array, jsize size) : array_(array), data_(detail::api::get_array_elements<T, Lock>(ref<T[]>(array_), &is_copy_)), size_(size) {}
+	array_elements(handle_type array, jsize size) :
+		array_(array),
+		data_(detail::check_result(detail::api::array<T, Lock>::get_array_elements(array_, &is_copy_))),
+		size_(size)
+	{
+	}
 
-	// We rely on C++17 guaranteed copy elision.
-	// The same could be done in C++11 with Copy-List-Initialization (return {handle, size}).
-
-	array_elements(const array_elements&) = delete;
-	array_elements& operator=(const array_elements&) = delete;
-
-	array_elements(array_elements&&) = delete;
-	array_elements& operator=(array_elements&&) = delete;
-
-private:
+	void release(jint mode)
+	{
+		detail::api::array<T, Lock>::release_array_elements(array_, data_, mode);
+	}
 
 	handle_type array_;
 	jboolean is_copy_;
@@ -421,28 +442,58 @@ class array<T> : public array_base<T>
 
 public:
 
-	static ref<array> new_(jsize len) { return detail::api::new_array<T>(len); }
+	static ref<array> new_(jsize len)
+	{
+		return detail::check_result<array>(detail::api::type<T>::new_array(len));
+	}
 
 	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
-	array_elements<T, Lock, Mode> elements() { return array_elements<T, Lock, Mode>(this->handle(), this->size()); }
+	auto elements()
+	{
+		return array_elements<T, Lock, Mode>(this->handle(), this->size());
+	}
 
 	template <lock Lock = lock::noncritical, release_mode Mode = release_mode::copy>
-	array_elements<T, Lock, Mode> elements(jsize size) { return array_elements<T, Lock, Mode>(this->handle(), size); }
+	auto elements(jsize size)
+	{
+		return array_elements<T, Lock, Mode>(this->handle(), size);
+	}
 
 	template <lock Lock = lock::noncritical>
-	const array_elements<T, Lock, release_mode::abort> elements() const { return array_elements<T, Lock, release_mode::abort>(this->handle(), this->size()); }
+	const auto elements() const
+	{
+		return array_elements<T, Lock, release_mode::abort>(this->handle(), this->size());
+	}
 
 	template <lock Lock = lock::noncritical>
-	const array_elements<T, Lock, release_mode::abort> elements(jsize size) const { return array_elements<T, Lock, release_mode::abort>(this->handle(), size); }
+	const auto elements(jsize size) const
+	{
+		return array_elements<T, Lock, release_mode::abort>(this->handle(), size);
+	}
 
 	template <lock Lock = lock::noncritical>
-	const array_elements<T, Lock, release_mode::abort> const_elements() const { return array_elements<T, Lock, release_mode::abort>(this->handle(), this->size()); }
+	const auto const_elements() const
+	{
+		return array_elements<T, Lock, release_mode::abort>(this->handle(), this->size());
+	}
 
 	template <lock Lock = lock::noncritical>
-	const array_elements<T, Lock, release_mode::abort> const_elements(jsize size) const { return array_elements<T, Lock, release_mode::abort>(this->handle(), size); }
+	const auto const_elements(jsize size) const
+	{
+		return array_elements<T, Lock, release_mode::abort>(this->handle(), size);
+	}
 
-	void get_region(jsize start, jsize len, T* buf) const { detail::api::get_array_region(ref<T[]>(this->handle()), start, len, buf); }
-	void set_region(jsize start, jsize len, const T* buf) { detail::api::set_array_region(ref<T[]>(this->handle()), start, len, buf); }
+	void get_region(jsize start, jsize len, T* buf) const
+	{
+		detail::api::type<T>::get_array_region(this->handle(), start, len, buf);
+		detail::check_exception();
+	}
+
+	void set_region(jsize start, jsize len, const T* buf)
+	{
+		detail::api::type<T>::set_array_region(this->handle(), start, len, buf);
+		detail::check_exception();
+	}
 
 protected:
 

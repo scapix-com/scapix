@@ -97,7 +97,7 @@ public:
 	{
 		if (data_)
 		{
-			detail::api::release_string_chars<Char, Lock>(string_, data_);
+			detail::api::string<Char, Lock>::release_chars(string_, data_);
 			data_ = nullptr;
 		}
 	}
@@ -111,7 +111,12 @@ private:
 
 	friend class string;
 
-	string_chars(jstring string, jsize size) : string_(string), data_(detail::api::get_string_chars<Char, Lock>(string_, &is_copy_)), size_(size) {}
+	string_chars(jstring string, jsize size) :
+		string_(string),
+		data_(detail::api::string<Char, Lock>::get_chars(string_, &is_copy_)),
+		size_(size)
+	{
+	}
 
 private:
 
@@ -128,18 +133,22 @@ public:
 
 	static local_ref<string> new_(const jchar* buf, jsize len)
 	{
-		return detail::api::new_string(buf, len);
+		jstring str = detail::env()->NewString(buf, len);
+		detail::check_exception();
+		return local_ref<string>(str);
 	}
 
 	static local_ref<string> new_(const char* buf)
 	{
-		return detail::api::new_string(buf);
+		jstring str = detail::env()->NewStringUTF(buf);
+		detail::check_exception();
+		return local_ref<string>(str);
 	}
 
 	template <typename Char = jchar>
 	jsize length() const
 	{
-		return detail::api::get_string_length<Char>(handle());
+		return detail::api::string<Char>::length(handle());
 	}
 
 	template <typename Char = jchar, lock Lock = lock::noncritical>
@@ -160,7 +169,8 @@ public:
 	template <typename Char>
 	void get_region(jsize start, jsize len, Char* buf) const
 	{
-		detail::api::get_string_region(handle(), start, len, buf);
+		detail::api::string<Char>::get_region(handle(), start, len, buf);
+		detail::check_exception();
 	}
 
 protected:
