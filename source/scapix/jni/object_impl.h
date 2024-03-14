@@ -206,7 +206,7 @@ template <fixed_string ClassName>
 template <fixed_string Name, typename Type>
 inline jmethodID object_impl<ClassName>::method_id()
 {
-	static const jmethodID id(class_object()->get_method_id<Name, Type>());
+	static const jmethodID id(class_object()->get_method_id(Name, signature_v<Type>));
 	return id;
 }
 
@@ -214,7 +214,7 @@ template <fixed_string ClassName>
 template <fixed_string Name, typename Type>
 inline jmethodID object_impl<ClassName>::static_method_id()
 {
-	static const jmethodID id(class_object()->get_static_method_id<Name, Type>());
+	static const jmethodID id(class_object()->get_static_method_id(Name, signature_v<Type>));
 	return id;
 }
 
@@ -222,7 +222,7 @@ template <fixed_string ClassName>
 template <fixed_string Name, typename Type>
 inline jfieldID object_impl<ClassName>::field_id()
 {
-	static const jfieldID id(class_object()->get_field_id<Name, Type>());
+	static const jfieldID id(class_object()->get_field_id(Name, signature_v<Type>));
 	return id;
 }
 
@@ -230,7 +230,7 @@ template <fixed_string ClassName>
 template <fixed_string Name, typename Type>
 inline jfieldID object_impl<ClassName>::static_field_id()
 {
-	static const jfieldID id(class_object()->get_static_field_id<Name, Type>());
+	static const jfieldID id(class_object()->get_static_field_id(Name, signature_v<Type>));
 	return id;
 }
 

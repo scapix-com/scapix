@@ -40,30 +40,6 @@ public:
 		return detail::env()->IsAssignableFrom(source.handle(), handle());
 	}
 
-	template <fixed_string Name, typename Type>
-	jfieldID get_field_id() const
-	{
-		return get_field_id(Name, signature_v<Type>);
-	}
-
-	template <fixed_string Name, typename Type>
-	jfieldID get_static_field_id() const
-	{
-		return get_static_field_id(Name, signature_v<Type>);
-	}
-
-	template <fixed_string Name, typename Type>
-	jmethodID get_method_id() const
-	{
-		return get_method_id(Name, signature_v<Type>);
-	}
-
-	template <fixed_string Name, typename Type>
-	jmethodID get_static_method_id() const
-	{
-		return get_static_method_id(Name, signature_v<Type>);
-	}
-
 	jfieldID get_field_id(const char* name, const char* sig) const
 	{
 		return detail::api::get_field_id(handle(), name, sig);
