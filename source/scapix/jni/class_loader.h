@@ -25,26 +25,28 @@ This implements the option "Cache a reference to the ClassLoader object somewher
 
 class class_loader
 {
+	using java_lang_class_loader = object<"java/lang/ClassLoader">;
+
 public:
 
 	static void init()
 	{
 		auto app_cls = class_::find_class("com/scapix/NativeException");
 		auto cls = app_cls->get_object_class();
-		auto get_class_loader_method = cls->get_method_id<"getClassLoader", ref<object<"java/lang/ClassLoader">>()>();
-		loader = app_cls->call_method<ref<object<"java/lang/ClassLoader">>()>(get_class_loader_method);
+		auto get_class_loader_method = cls->get_method_id("getClassLoader", signature_v<ref<java_lang_class_loader>()>);
+		loader = app_cls->call_method<ref<java_lang_class_loader>()>(get_class_loader_method);
 		auto loader_cls = loader->get_object_class();
-		load_class_method = loader_cls->get_method_id<"loadClass", ref<object<"java/lang/Class">>(ref<object<"java/lang/String">>)>();
+		load_class_method = loader_cls->get_method_id("loadClass", signature_v<ref<class_>(ref<string>)>);
 	}
 
 	static local_ref<class_> find_class(const char* name)
 	{
-		return loader->call_method<ref<object<"java/lang/Class">>(ref<object<"java/lang/String">>)>(load_class_method, string::new_(name));
+		return loader->call_method<ref<class_>(ref<string>)>(load_class_method, string::new_(name));
 	}
 
 private:
 
-	inline static static_global_ref<object<"java/lang/ClassLoader">> loader;
+	inline static static_global_ref<java_lang_class_loader> loader;
 	inline static jmethodID load_class_method;
 
 };
