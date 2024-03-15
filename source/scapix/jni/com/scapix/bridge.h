@@ -28,7 +28,7 @@ public:
 
 	using nop = object<"com/scapix/Bridge$Nop">;
 
-	void set_ptr(cpp::object_base* p) { set_field<"ptr">(reinterpret_cast<jlong>(p)); }
+	void set_ptr(cpp::object_base* p) { set_field<"ptr", jlong>(reinterpret_cast<jlong>(p)); }
 	cpp::object_base* get_ptr() const { return reinterpret_cast<cpp::object_base*>(get_field<"ptr", jlong>()); }
 
 protected:
