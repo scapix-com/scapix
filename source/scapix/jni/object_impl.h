@@ -82,32 +82,60 @@ public:
 		return detail::api::call<Type>::template new_object<object_impl>(class_object().handle(), id, std::forward<Args>(args)...);
 	}
 
-	// field
+	// get_field
 
 	template <fixed_string Name, typename Type>
 	Type get_field() const
 	{
-		return detail::api::type<Type>::get_field(handle(), field_id<Name, Type>());
+		return get_field<Type>(field_id<Name, Type>());
 	}
+
+	template <typename Type>
+	Type get_field(jfieldID id) const
+	{
+		return detail::api::type<Type>::get_field(handle(), id);
+	}
+
+	// set_field
 
 	template <fixed_string Name, typename Type>
-	void set_field(Type value) const
+	void set_field(std::type_identity_t<Type> value) const
 	{
-		detail::api::type<Type>::set_field(handle(), field_id<Name, Type>(), value);
+		set_field<Type>(field_id<Name, Type>(), value);
 	}
 
-	// static field
+	template <typename Type>
+	void set_field(jfieldID id, std::type_identity_t<Type> value) const
+	{
+		detail::api::type<Type>::set_field(handle(), id, value);
+	}
+
+	// get_static_field
 
 	template <fixed_string Name, typename Type>
 	static Type get_static_field()
 	{
-		return detail::api::type<Type>::get_static_field(class_object().handle(), static_field_id<Name, Type>());
+		return get_static_field<Type>(static_field_id<Name, Type>());
 	}
 
-	template <fixed_string Name, typename Type>
-	static void set_static_field(Type value)
+	template <typename Type>
+	static Type get_static_field(jfieldID id)
 	{
-		detail::api::type<Type>::set_static_field(class_object().handle(), static_field_id<Name, Type>(), value);
+		return detail::api::type<Type>::get_static_field(class_object().handle(), id);
+	}
+
+	// set_static_field
+
+	template <fixed_string Name, typename Type>
+	static void set_static_field(std::type_identity_t<Type> value)
+	{
+		set_static_field<Type>(static_field_id<Name, Type>(), value);
+	}
+
+	template <typename Type>
+	static void set_static_field(jfieldID id, std::type_identity_t<Type> value)
+	{
+		detail::api::type<Type>::set_static_field(class_object().handle(), id, value);
 	}
 
 	// reflect
