@@ -113,6 +113,7 @@ class ref
 public:
 
 	using element_type = element_type_t<T>;
+	using handle_type = handle_type_t<element_type>;
 	static constexpr auto class_name = class_name_v<element_type>;
 
 	static_assert(!is_ref_v<T> && !is_ref_v<element_type>);
@@ -186,8 +187,6 @@ public:
 
 	auto handle() const
 	{
-		using handle_type = handle_type_t<element_type>;
-
 		return static_cast<handle_type>(object);
 	}
 
@@ -196,9 +195,9 @@ public:
 		ref(h).swap(*this);
 	}
 
-	jobject release()
+	auto release()
 	{
-		auto temp(object);
+		auto temp(static_cast<handle_type>(object));
 		object = nullptr;
 		return temp;
 	}
@@ -243,6 +242,7 @@ class ref<T, scope::generic>
 public:
 
 	using element_type = element_type_t<T>;
+	using handle_type = handle_type_t<element_type>;
 	static constexpr auto class_name = class_name_v<element_type>;
 
 	static_assert(!is_ref_v<T> && !is_ref_v<element_type>);
@@ -332,8 +332,6 @@ public:
 
 	auto handle() const
 	{
-		using handle_type = handle_type_t<element_type>;
-
 		return static_cast<handle_type>(object);
 	}
 
@@ -342,9 +340,9 @@ public:
 		ref(h).swap(*this);
 	}
 
-	jobject release()
+	auto release()
 	{
-		auto temp(object);
+		auto temp(static_cast<handle_type>(object));
 		object = nullptr;
 		return temp;
 	}
