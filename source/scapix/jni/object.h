@@ -83,7 +83,7 @@ public:
 	using object_impl::class_object;
 
 	template <reference T>
-	bool is_instance_of() const
+	bool is_instance_of() const noexcept
 	{
 		return is_instance_of(object_impl_t<T>::class_object());
 	}
@@ -91,6 +91,15 @@ public:
 	bool is_instance_of(ref<class_> cls) const noexcept
 	{
 		return detail::env()->IsInstanceOf(handle(), cls.handle());
+	}
+
+	template <reference T>
+	ref<T> instance_of() const noexcept
+	{
+		if (is_instance_of<T>())
+			return ref<T>(handle());
+
+		return nullptr;
 	}
 
 	local_ref<class_> get_object_class() const noexcept

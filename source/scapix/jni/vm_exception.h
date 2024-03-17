@@ -20,24 +20,32 @@ class vm_exception : public std::exception
 {
 public:
 
-	virtual const char* what() const noexcept override { return message().c_str(); }
-
-	ref<throwable> get() const { return exception; }
-
-	const std::string& class_name() const
+	const char* what() const noexcept override
 	{
-		if (cls_name.empty())
-			get_class_name();
+		if (description.empty())
+		{
+			try
+			{
+				description = prefix + class_name() + ": " + message();
+			}
+			catch (...)
+			{
+				return prefix;
+			}
+		}
 
-		return cls_name;
+		return description.c_str();
 	}
 
-	const std::string& message() const
+	template <convertible_object<throwable> T>
+	ref<T> instance_of() const noexcept
 	{
-		if (msg.empty())
-			get_message();
+		return exception->instance_of<T>();
+	}
 
-		return msg;
+	ref<throwable> get() const noexcept
+	{
+		return exception;
 	}
 
 private:
@@ -45,31 +53,26 @@ private:
 	friend void detail::throw_exception(jthrowable e);
 	friend void detail::throw_exception_nested(jthrowable e);
 
-	vm_exception(local_ref<throwable>&& e) : exception(std::move(e)) {}
+	explicit vm_exception(local_ref<throwable>&& e) : exception(std::move(e)) {}
 
 private:
 
-	void get_class_name() const
+	inline constexpr static char prefix[] = "jni::vm_exception: ";
+
+	std::string class_name() const
 	{
-		cls_name = exception->get_object_class()->call_method<"getName", ref<string>()>();
+		return exception->get_object_class()->call_method<"getName", ref<string>()>();
 	}
 
-	void get_message() const
+	std::string message() const
 	{
-		msg = exception->call_method<"getMessage", ref<string>()>();
+		return exception->call_method<"getMessage", ref<string>()>();
 	}
 
 	local_ref<throwable> exception;
-	mutable std::string cls_name;
-	mutable std::string msg;
+	mutable std::string description;
 
 };
-
-inline bool operator == (const vm_exception& e, const std::string& cls_name) { return e.class_name() == cls_name; }
-inline bool operator == (const std::string& cls_name, const vm_exception& e) { return e.class_name() == cls_name; }
-
-inline bool operator == (const vm_exception& e, const char* cls_name) { return e.class_name() == cls_name; }
-inline bool operator == (const char* cls_name, const vm_exception& e) { return e.class_name() == cls_name; }
 
 } // namespace scapix::jni
 

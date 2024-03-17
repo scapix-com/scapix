@@ -39,7 +39,7 @@ which can throw any exception thrown by executed Java code:
 
 	local_ref<throwable> exception(e);
 
-	if (auto native = dynamic_pointer_cast<com::scapix::native_exception>(std::move(exception)))
+	if (auto native = exception->instance_of<com::scapix::native_exception>())
 		native->rethrow();
 
 	throw vm_exception(std::move(exception));
