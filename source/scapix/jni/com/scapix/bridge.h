@@ -198,7 +198,7 @@ struct convert_shared<ref<J>, T, std::enable_if_t<std::is_base_of_v<com::scapix:
 		if (!v)
 			return nullptr;
 
-		return static_pointer_cast<T>(v->get_ptr()->scapix_shared());
+		return std::static_pointer_cast<T>(v->get_ptr()->scapix_shared());
 	}
 
 	static ref<com::scapix::bridge_object<ref<J>::class_name, T>> jni(std::shared_ptr<T> v)
