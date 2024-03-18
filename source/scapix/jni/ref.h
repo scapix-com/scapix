@@ -356,6 +356,13 @@ public:
 
 private:
 
+	template <typename X, typename Y, scope Scope>
+	friend ref<X, Scope> static_pointer_cast(ref<Y, Scope>&& r);
+
+	ref(jobject h, scope s) noexcept : object(h), scp(s) {}
+
+private:
+
 	element_type make_element() const
 	{
 		return detail::befriend<element_type, ref>(handle());

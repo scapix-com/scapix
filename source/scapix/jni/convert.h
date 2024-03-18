@@ -334,7 +334,7 @@ struct convert<ref<generic_type<java_util_map, JK, JV>>, std::map<K, V, C, A>>
 		for (auto& i : m)
 			tm->call_method<"put", ref<generic<JV>>(ref<generic<JK>>, ref<generic<JV>>)>(convert_jni<ref<JK>>(i.first), convert_jni<ref<JV>>(i.second));
 
-		return static_pointer_cast<java_util_map>(tm);
+		return static_pointer_cast<java_util_map>(std::move(tm));
 	}
 };
 
