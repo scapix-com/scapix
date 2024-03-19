@@ -1,11 +1,11 @@
 /*
-	scapix/meta/any_of.h
+	scapix/core/meta/any_of.h
 
 	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_META_ANY_OF_H
-#define SCAPIX_META_ANY_OF_H
+#ifndef SCAPIX_CORE_META_ANY_OF_H
+#define SCAPIX_CORE_META_ANY_OF_H
 
 #include <type_traits>
 
@@ -28,4 +28,4 @@ struct any_of<L<>, P> : std::false_type {};
 
 } // namespace scapix::meta
 
-#endif // SCAPIX_META_ANY_OF_H
+#endif // SCAPIX_CORE_META_ANY_OF_H

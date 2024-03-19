@@ -9,9 +9,9 @@
 
 #include <type_traits>
 #include <scapix/core/fixed_string.h>
-#include <scapix/meta/any_of.h>
-#include <scapix/meta/for_each.h>
-#include <scapix/meta/iota.h>
+#include <scapix/core/meta/any_of.h>
+#include <scapix/core/meta/for_each.h>
+#include <scapix/core/meta/iota.h>
 #include <scapix/jni/env.h>
 #include <scapix/jni/object_traits.h>
 #include <scapix/jni/fwd/element.h>

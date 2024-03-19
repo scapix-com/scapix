@@ -10,9 +10,9 @@
 #include <cstring>
 #include <string>
 #include <memory>
-#include <scapix/meta/for_each.h>
-#include <scapix/meta/transform.h>
-#include <scapix/meta/iota.h>
+#include <scapix/core/meta/for_each.h>
+#include <scapix/core/meta/transform.h>
+#include <scapix/core/meta/iota.h>
 #include <scapix/core/type_traits.h>
 #include <scapix/link/cs/type_traits.h>
 #include <scapix/link/cs/api_base.h>

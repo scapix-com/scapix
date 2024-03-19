@@ -15,7 +15,7 @@
 
 namespace scapix::jni {
 
-#include <scapix/detail/warning/inaccessible_base.h>
+#include <scapix/core/warning/inaccessible_base.h>
 
 template <fixed_string ClassName, typename ...Bases>
 	requires (ClassName != "java/lang/Object" || sizeof...(Bases) == 0)
@@ -111,7 +111,7 @@ protected:
 
 };
 
-#include <scapix/detail/warning/pop.h>
+#include <scapix/core/warning/pop.h>
 
 } // namespace scapix::jni
 

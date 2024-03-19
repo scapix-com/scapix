@@ -1,5 +1,5 @@
 /*
-	scapix/detail/warning/pop.h
+	scapix/core/warning/pop.h
 
 	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
 */

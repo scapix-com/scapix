@@ -1,11 +1,11 @@
 /*
-	scapix/meta/iota.h
+	scapix/core/meta/iota.h
 
 	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_META_IOTA_H
-#define SCAPIX_META_IOTA_H
+#ifndef SCAPIX_CORE_META_IOTA_H
+#define SCAPIX_CORE_META_IOTA_H
 
 #include <scapix/core/tuple.h>
 
@@ -31,4 +31,4 @@ using iota_c = from_sequence<std::make_index_sequence<N>>;
 
 } // namespace scapix::meta
 
-#endif // SCAPIX_META_IOTA_H
+#endif // SCAPIX_CORE_META_IOTA_H

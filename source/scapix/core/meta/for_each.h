@@ -1,11 +1,11 @@
 /*
-	scapix/meta/for_each.h
+	scapix/core/meta/for_each.h
 
 	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_META_FOR_EACH_H
-#define SCAPIX_META_FOR_EACH_H
+#ifndef SCAPIX_CORE_META_FOR_EACH_H
+#define SCAPIX_CORE_META_FOR_EACH_H
 
 #include <utility>
 #include <initializer_list>
@@ -36,4 +36,4 @@ constexpr F for_each(F&& f)
 
 } // namespace scapix::meta
 
-#endif // SCAPIX_META_FOR_EACH_H
+#endif // SCAPIX_CORE_META_FOR_EACH_H

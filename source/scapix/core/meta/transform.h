@@ -1,11 +1,11 @@
 /*
-	scapix/meta/transform.h
+	scapix/core/meta/transform.h
 
 	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
 */
 
-#ifndef SCAPIX_META_TRANSFORM_H
-#define SCAPIX_META_TRANSFORM_H
+#ifndef SCAPIX_CORE_META_TRANSFORM_H
+#define SCAPIX_CORE_META_TRANSFORM_H
 
 namespace scapix::meta {
 namespace detail {
@@ -26,4 +26,4 @@ using transform = typename detail::transform_impl<F, List>::type;
 
 } // namespace scapix::meta
 
-#endif // SCAPIX_META_TRANSFORM_H
+#endif // SCAPIX_CORE_META_TRANSFORM_H

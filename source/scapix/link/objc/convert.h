@@ -16,8 +16,8 @@
 #include <functional>
 #include <experimental/type_traits>
 #include <scapix/core/type_traits.h>
-#include <scapix/meta/for_each.h>
-#include <scapix/meta/iota.h>
+#include <scapix/core/meta/for_each.h>
+#include <scapix/core/meta/iota.h>
 #include <scapix/link/objc/struct.h>
 
 #import <Foundation/Foundation.h>

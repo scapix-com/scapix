@@ -16,7 +16,7 @@
 #include <unordered_set>
 #include <functional>
 #include <experimental/type_traits>
-#include <scapix/meta/for_each.h>
+#include <scapix/core/meta/for_each.h>
 #include <scapix/jni/ref.h>
 #include <scapix/jni/string.h>
 #include <scapix/jni/array.h>

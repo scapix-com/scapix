@@ -20,7 +20,7 @@
 #include <emscripten/val.h>
 #include <scapix/core/type_traits.h>
 #include <scapix/core/fixed_string.h>
-#include <scapix/meta/for_each.h>
+#include <scapix/core/meta/for_each.h>
 #include <scapix/link/js/type_traits.h>
 #include <scapix/link/js/struct.h>
 
