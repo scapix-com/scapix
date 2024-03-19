@@ -7,26 +7,21 @@
 #ifndef SCAPIX_JNI_VM_H
 #define SCAPIX_JNI_VM_H
 
+#include <stdexcept>
+#include <string>
 #include <scapix/jni/env.h>
+#include <scapix/jni/detail/init.h>
 
 namespace scapix::jni {
 
-inline bool init_created_vm() noexcept
+inline void create_vm(JavaVMInitArgs* args)
 {
-	jint count;
-	JNI_GetCreatedJavaVMs(&detail::jvm_ptr, 1, &count);
-	return count != 0;
-}
+	auto r = JNI_CreateJavaVM(&detail::jvm_ptr, detail::env_.addr(), args);
 
-inline void deinit_created_vm() noexcept
-{
-	detail::jvm_ptr = nullptr;
-	detail::env_.ptr = nullptr;
-}
+	if (r != JNI_OK)
+		throw std::runtime_error("JNI_CreateJavaVM failed: " + std::to_string(r));
 
-inline jint create_vm(JavaVMInitArgs* args) noexcept
-{
-	return JNI_CreateJavaVM(&detail::jvm_ptr, detail::env_.addr(), args);
+	detail::init();
 }
 
 inline jint destroy_vm() noexcept

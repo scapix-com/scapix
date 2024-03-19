@@ -9,14 +9,7 @@
 
 #include <scapix/jni/env.h>
 #include <scapix/jni/vm_exception.h>
-#include <scapix/jni/native_method.h>
-#include <scapix/jni/com/scapix/native_exception.h>
-#include <scapix/jni/com/scapix/bridge.h>
-#include <scapix/jni/com/scapix/function.h>
-
-#ifdef SCAPIX_CACHE_CLASS_LOADER
-#include <scapix/jni/class_loader.h>
-#endif
+#include <scapix/jni/detail/init.h>
 
 namespace scapix::jni {
 
@@ -27,14 +20,7 @@ inline jint on_load(JavaVM* vm, void* reserved, void(*init)() = []{})
 		detail::jvm_ptr = vm;
 		get_env();
 
-		com::scapix::native_exception::native_methods::register_();
-		com::scapix::bridge_::native_methods::register_();
-		com::scapix::function::native_methods::register_();
-
-		#ifdef SCAPIX_CACHE_CLASS_LOADER
-		class_loader::init();
-		#endif
-
+		detail::init();
 		init();
 
 		return JNI_VERSION_1_6;
