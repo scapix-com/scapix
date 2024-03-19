@@ -36,6 +36,10 @@ public:
 	using impl::set_field;
 	using impl::get_static_field;
 	using impl::set_static_field;
+	using impl::to_reflected_method;
+	using impl::to_reflected_static_method;
+	using impl::to_reflected_field;
+	using impl::to_reflected_static_field;
 	using impl::class_object;
 
 protected:
@@ -70,6 +74,10 @@ public:
 	using object_impl::set_field;
 	using object_impl::get_static_field;
 	using object_impl::set_static_field;
+	using object_impl::to_reflected_method;
+	using object_impl::to_reflected_static_method;
+	using object_impl::to_reflected_field;
+	using object_impl::to_reflected_static_field;
 	using object_impl::class_object;
 
 	template <reference T>
