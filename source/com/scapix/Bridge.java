@@ -5,7 +5,6 @@
 */
 
 package com.scapix;
-import com.scapix.NativeException; // force compilation
 
 public class Bridge
 {
