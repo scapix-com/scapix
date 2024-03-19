@@ -35,11 +35,11 @@ if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
 
 #   file(GLOB_RECURSE java_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*/*.java)
     get_target_property(java_sources scapix INTERFACE_SOURCES)
-    add_jar(scapix_jni SOURCES ${java_sources})
+    add_jar(scapix_jni_jar SOURCES ${java_sources})
 
-    add_dependencies(scapix scapix_jni)
+    add_dependencies(scapix scapix_jni_jar)
 
-    get_target_property(scapix_jni_jar_file scapix_jni JAR_FILE)
+    get_target_property(scapix_jni_jar_file scapix_jni_jar JAR_FILE)
     file(RELATIVE_PATH scapix_jni_jar_file_relative ${CMAKE_BINARY_DIR} ${scapix_jni_jar_file})
     target_compile_definitions(scapix PUBLIC SCAPIX_JNI_JAR_FILE="${scapix_jni_jar_file_relative}")
 endif()
