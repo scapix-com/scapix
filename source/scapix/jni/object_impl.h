@@ -149,8 +149,8 @@ protected:
 
 private:
 
-	template <reference Object, typename Type, typename ...Args>
-	friend ref<Object> new_object(Args&&... args) requires requires { element_type_t<Object>::class_name; };
+	template <typename /*reference*/ Object, typename Type, typename ...Args>
+	friend ref<Object> new_object(Args&&... args); // requires requires { element_type_t<Object>::class_name; };
 
 	template <fixed_string Name, typename Type>
 	static jmethodID method_id();
@@ -177,8 +177,9 @@ ref<Object> new_object(jmethodID id, Args&&... args) requires requires { element
 	return detail::api::call<Type>::template new_object<element_type_t<Object>>(object_impl_t<Object>::class_object().handle(), id, std::forward<Args>(args)...);
 }
 
-template <reference Object, typename Type, typename ...Args>
-ref<Object> new_object(Args&&... args) requires requires { element_type_t<Object>::class_name; }
+// https://github.com/llvm/llvm-project/issues/63536
+template <typename /*reference*/ Object, typename Type, typename ...Args>
+ref<Object> new_object(Args&&... args) // requires requires { element_type_t<Object>::class_name; }
 {
 	return new_object<Object, Type>(object_impl_t<Object>::template method_id<"<init>", Type>(), std::forward<Args>(args)...);
 }
