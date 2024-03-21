@@ -37,41 +37,6 @@ Examples:
 - [scapix_example_objc](https://github.com/scapix-com/scapix_example_objc) - minimal example, ObjC/Swift, XCode integration
 - [example1](https://github.com/scapix-com/example1) - extended example, all languages
 
-## Java Link
-
-Modern C++17 wrapper for JNI:
-- type-safe APIs
-- automatic resource management
-- ZERO runtime overhead compared to manually written JNI code
-- automatic C++/Java type conversion for many standard types (std::string, std::vector, etc.)
-- automatic C++/Java exception tunneling
-- comes with pre-generated C++ headers for all JDK and Android Java APIs
-- automatically generate C++ headers for any Java code, including your own
-
-```cpp
-#include <scapix/java_api/java/lang/System.h>
-#include <scapix/java_api/java/util/Locale.h>
-#include <scapix/java_api/java/text/DateFormatSymbols.h>
-
-using namespace scapix::link::java;
-using namespace scapix::java_api;
-
-void test()
-{
-    // C++ objects are automatically converted to and from corresponding Java types.
-    // This works for any type supported by scapix::link::java::convert<> interface,
-    // which supports many STL types and can be extended for your own types.
-
-    std::string version = java::lang::System::getProperty("java.version");
-    std::vector<std::string> languages = java::util::Locale::getISOLanguages();
-    std::vector<std::vector<std::string>> zone_strings = java::text::DateFormatSymbols::getInstance()->getZoneStrings();
-    std::map<std::string, std::string> properties = java::lang::System::getProperties();
-}
-```
-
-[Java Link Documentation](https://www.scapix.com/java_link)\
-[Java Link Example](https://github.com/scapix-com/example2)
-
 ## License
 
 Please carefully read [license agreement](LICENSE.txt).
