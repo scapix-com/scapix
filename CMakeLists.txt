@@ -2,47 +2,12 @@ cmake_minimum_required(VERSION 3.14...3.26)
 
 project(scapix CXX)
 
-find_package(ScapixBin REQUIRED)
-
 set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python, js, cs")
 set(SCAPIX_JAVA_API "jdk-11.0.2" CACHE STRING "subfolder of 'scapix/java_api' folder: jdk-11.0.2, android-28, etc.")
-
 set(_SCAPIX_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
-set(SCAPIX_EXE "${SCAPIX_EXE}" CACHE INTERNAL "")
-set(SCAPIX_JAVA_EXE "${SCAPIX_JAVA_EXE}" CACHE INTERNAL "")
 
-file(GLOB_RECURSE sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*)
-source_group(TREE ${_SCAPIX_PATH}/source PREFIX "source" FILES ${sources})
-
-if(${SCAPIX_BRIDGE} STREQUAL java)
-    file(GLOB_RECURSE java_api_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/java_api/${SCAPIX_JAVA_API}/scapix/java_api/*)
-    source_group(TREE ${_SCAPIX_PATH}/java_api/${SCAPIX_JAVA_API}/scapix/java_api PREFIX "java_api" FILES ${java_api_sources})
-endif()
-
-add_library(scapix ${sources} ${java_api_sources})
-
-if(${SCAPIX_BRIDGE} STREQUAL java)
-    file(GLOB_RECURSE interface_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*/*.java)
-elseif(${SCAPIX_BRIDGE} STREQUAL cs)
-    file(GLOB_RECURSE interface_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*/*.cs)
-endif()
-
-target_sources(scapix INTERFACE ${interface_sources})
-
-if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
-    find_package(Java REQUIRED COMPONENTS Development)
-    include(UseJava)
-
-#   file(GLOB_RECURSE java_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*/*.java)
-    get_target_property(java_sources scapix INTERFACE_SOURCES)
-    add_jar(scapix_jni_jar SOURCES ${java_sources})
-
-    add_dependencies(scapix scapix_jni_jar)
-
-    get_target_property(scapix_jni_jar_file scapix_jni_jar JAR_FILE)
-    target_compile_definitions(scapix PUBLIC SCAPIX_JNI_JAR_FILE="${scapix_jni_jar_file}")
-endif()
-
+# to do: remove duplication
+set(PROJECT_ROOT ${CMAKE_SOURCE_DIR})
 set(bridges
     "cpp"
     "java"
@@ -52,6 +17,26 @@ set(bridges
     "cs"
 #   "swift"
 )
+
+find_package(ScapixBin REQUIRED)
+
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*)
+source_group(TREE ${_SCAPIX_PATH}/source PREFIX "source" FILES ${sources})
+
+add_library(scapix ${sources}) # should be INTERFACE
+
+if(${SCAPIX_BRIDGE} STREQUAL cs)
+    file(GLOB_RECURSE interface_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*.cs)
+    target_sources(scapix INTERFACE ${interface_sources})
+endif()
+
+if(${SCAPIX_BRIDGE} STREQUAL java)
+    find_package(ScapixJNI REQUIRED)
+    target_link_libraries(scapix PUBLIC scapix::jni)
+    if(CMODULE_scapix_jni_SOURCE_DIR)
+        file(COPY "${CMODULE_scapix_jni_SOURCE_DIR}/source/com" DESTINATION "${PROJECT_ROOT}/generated/bridge/java")
+    endif()
+endif()
 
 foreach(bridge ${bridges})
     if(NOT ${SCAPIX_BRIDGE} STREQUAL ${bridge})
@@ -63,20 +48,9 @@ foreach(bridge ${bridges})
     endif()
 endforeach()
 
-if(NOT ${SCAPIX_BRIDGE} STREQUAL java)
-    file(GLOB_RECURSE jni_sources CONFIGURE_DEPENDS
-        ${_SCAPIX_PATH}/source/scapix/jni/*.*
-    )
-    set_source_files_properties(${jni_sources} PROPERTIES HEADER_FILE_ONLY TRUE)
-endif()
-
 if(${SCAPIX_BRIDGE} STREQUAL objc)
     target_compile_options(scapix PUBLIC "-fobjc-arc")
     set_source_files_properties(${_SCAPIX_PATH}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_OPTIONS "-fno-objc-arc")
-endif()
-
-if(MSVC)
-    target_compile_options(scapix PUBLIC /permissive-)
 endif()
 
 target_compile_features(scapix PUBLIC cxx_std_20)
@@ -91,31 +65,7 @@ if(scapix_cxx_standard AND scapix_cxx_standard_required)
 endif()
 
 target_include_directories(scapix PUBLIC ${_SCAPIX_PATH}/source)
-target_include_directories(scapix PUBLIC ${_SCAPIX_PATH}/java_api/${SCAPIX_JAVA_API})
 target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE})
-
-if(${SCAPIX_BRIDGE} STREQUAL java AND NOT ANDROID)
-    # Save CMAKE_FIND_FRAMEWORK
-    if(DEFINED CMAKE_FIND_FRAMEWORK)
-        set(SCAPIX_CMAKE_FIND_FRAMEWORK ${CMAKE_FIND_FRAMEWORK})
-    else()
-        unset(SCAPIX_CMAKE_FIND_FRAMEWORK)
-    endif()
-
-    set(CMAKE_FIND_FRAMEWORK LAST)
-    find_package(JNI REQUIRED)
-
-    # Restore CMAKE_FIND_FRAMEWORK
-    if(DEFINED SCAPIX_CMAKE_FIND_FRAMEWORK)
-        set(CMAKE_FIND_FRAMEWORK ${SCAPIX_CMAKE_FIND_FRAMEWORK})
-        unset(SCAPIX_CMAKE_FIND_FRAMEWORK)
-    else()
-        unset(CMAKE_FIND_FRAMEWORK)
-    endif()
-
-    target_include_directories(scapix PUBLIC ${JNI_INCLUDE_DIRS})
-    target_link_libraries(scapix PUBLIC ${JNI_LIBRARIES})
-endif()
 
 function(camel_case source target)
     set(up true)
@@ -155,9 +105,9 @@ foreach(import_target ${SCAPIX_IMPORT_TARGETS})
     get_property(headers TARGET ${import_target} PROPERTY SCAPIX_BRIDGE_HEADERS)
     list(APPEND bridge_headers ${headers})
 endforeach()
-set(PROJECT_ROOT ${CMAKE_SOURCE_DIR})
 
 # to do: remove duplication
+set(PROJECT_ROOT ${CMAKE_SOURCE_DIR})
 set(bridges
     "cpp"
     "java"
@@ -194,10 +144,6 @@ if(XCODE)
         "OTHER_LDFLAGS = $(inherited) -l${scapix_output_name} -lscapix -lc++\n"
         "LIBRARY_SEARCH_PATHS = $(inherited) \"${target_binary_dir}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\" \"${scapix_binary_dir}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"\n"
 	)
-endif()
-
-if(${SCAPIX_BRIDGE} STREQUAL java)
-    file(COPY "${_SCAPIX_PATH}/source/com" DESTINATION "${PROJECT_ROOT}/generated/bridge/java")
 endif()
 
 get_target_property(scapix_position_independent_code ${target} POSITION_INDEPENDENT_CODE)
