@@ -20,22 +20,21 @@ set(bridges
 
 find_package(ScapixBin REQUIRED)
 
+add_library(scapix) # should be INTERFACE
+
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*)
 source_group(TREE ${_SCAPIX_PATH}/source PREFIX "source" FILES ${sources})
-
-add_library(scapix ${sources}) # should be INTERFACE
-
-if(${SCAPIX_BRIDGE} STREQUAL cs)
-    file(GLOB_RECURSE interface_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*.cs)
-    target_sources(scapix INTERFACE ${interface_sources})
-endif()
+target_sources(scapix PRIVATE ${sources})
 
 if(${SCAPIX_BRIDGE} STREQUAL java)
     find_package(ScapixJNI REQUIRED)
     target_link_libraries(scapix PUBLIC scapix::jni)
-    if(CMODULE_scapix_jni_SOURCE_DIR)
-        file(COPY "${CMODULE_scapix_jni_SOURCE_DIR}/source/com" DESTINATION "${PROJECT_ROOT}/generated/bridge/java")
-    endif()
+    scapix_jni_source_group()
+endif()
+
+if(${SCAPIX_BRIDGE} STREQUAL cs)
+    file(GLOB_RECURSE interface_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*.cs)
+    target_sources(scapix INTERFACE ${interface_sources})
 endif()
 
 foreach(bridge ${bridges})
@@ -149,6 +148,13 @@ endif()
 get_target_property(scapix_position_independent_code ${target} POSITION_INDEPENDENT_CODE)
 set_target_properties(scapix PROPERTIES POSITION_INDEPENDENT_CODE ${scapix_position_independent_code})
 
+if(${SCAPIX_BRIDGE} STREQUAL java)
+    get_target_property(scapix_jni_dir scapix::jni SOURCE_DIR)
+    file(COPY "${scapix_jni_dir}/source/com" DESTINATION "${PROJECT_ROOT}/generated/bridge/java")
+    # This only works if target is defined in the same directory which calls scapix_bridge():
+    scapix_jni_source_group()
+endif()
+
 if(${SCAPIX_BRIDGE} STREQUAL python)
     set(PYBIND11_FINDPYTHON ON)
     find_package(Pybind11 REQUIRED)
@@ -157,6 +163,11 @@ if(${SCAPIX_BRIDGE} STREQUAL python)
 endif()
 
 target_link_libraries(${target} PUBLIC scapix)
+
+get_target_property(interface_sources scapix INTERFACE_SOURCES)
+if(interface_sources)
+    source_group(TREE ${_SCAPIX_PATH}/source/scapix PREFIX "scapix" FILES ${interface_sources})
+endif()
 
 # JVM on macOS looks for native libs with .dylib extension
 if(APPLE AND ${SCAPIX_BRIDGE} STREQUAL java)
@@ -524,8 +535,10 @@ endfunction(scapix_add_target)
 
 function(scapix_fix_sources target)
     get_target_property(sources ${target} INTERFACE_SOURCES)
-    set_source_files_properties(${sources} PROPERTIES GENERATED TRUE)
     source_group(TREE ${CMAKE_SOURCE_DIR}/generated PREFIX "generated" FILES ${sources})
+
+    # not needed in CMake 3.20+
+    set_source_files_properties(${sources} PROPERTIES GENERATED TRUE)
     #set_source_files_properties(${sources} PROPERTIES HEADER_FILE_ONLY TRUE)
 
     #get_target_property(sources scapix INTERFACE_SOURCES)
