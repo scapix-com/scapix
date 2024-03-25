@@ -9,9 +9,7 @@
 
 #include <type_traits>
 
-namespace scapix {
-namespace link {
-namespace js {
+namespace scapix::link::js {
 
 template<typename T>
 struct is_native : std::false_type {};
@@ -34,8 +32,6 @@ template<> struct is_native<double> : std::true_type {};
 template<typename T>
 constexpr bool is_native_v = is_native<T>::value;
 
-} // namespace js
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::js
 
 #endif // SCAPIX_LINK_JS_TYPE_TRAITS_H

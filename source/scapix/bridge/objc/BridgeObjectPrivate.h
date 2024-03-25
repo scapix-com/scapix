@@ -3,16 +3,11 @@
 #include <memory>
 #include <mutex>
 
-namespace scapix {
-namespace bridge {
-namespace objc {
+namespace scapix::bridge::objc {
 
 class object_base;
 
-} // namespace objc
-} // namespace bridge
-} // namespace scapix
-
+} // namespace scapix::bridge::objc
 
 @interface BridgeObject ()
 {

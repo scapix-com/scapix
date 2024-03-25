@@ -15,17 +15,14 @@
 #include <CoreFoundation/CFBase.h>
 
 namespace scapix {
-namespace link {
-namespace objc {
+namespace link::objc {
 
 template <typename ObjC, typename Cpp, typename>
 struct convert_shared;
 
-} // namespace objc
-} // namespace link
+} // namespace link::objc
 
-namespace bridge {
-namespace objc {
+namespace bridge::objc {
 
 class object_base
 {
@@ -85,8 +82,7 @@ protected:
 
 };
 
-} // namespace objc
-} // namespace bridge
+} // namespace bridge::objc
 } // namespace scapix
 
 #if defined(__OBJC__) && __has_feature(objc_arc)
@@ -95,8 +91,7 @@ protected:
 #import "BridgeObjectPrivate.h"
 
 namespace scapix {
-namespace bridge {
-namespace objc {
+namespace bridge::objc {
 
 inline void object_base::attach(CFTypeRef obj, std::shared_ptr<object_base> shared_this)
 {
@@ -195,11 +190,9 @@ inline auto call(ObjcArgs... args)
 	return call_impl<Func>::template select<>::template call<ObjcRet>(std::forward<ObjcArgs>(args)...);
 }
 
-} // namespace objc
-} // namespace bridge
+} // namespace bridge::objc
 
-namespace link {
-namespace objc {
+namespace link::objc {
 
 // only used to convert 'this'
 
@@ -236,8 +229,7 @@ struct convert_shared<Wrapper, Bridge, std::enable_if_t<bridge::is_object<Bridge
 	}
 };
 
-} // namespace objc
-} // namespace link
+} // namespace link::objc
 } // namespace scapix
 
 #endif // __OBJC__

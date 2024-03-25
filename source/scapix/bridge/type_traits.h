@@ -10,9 +10,7 @@
 #include <type_traits>
 #include <cstdint>
 
-namespace scapix {
-namespace bridge {
-
+namespace scapix::bridge {
 namespace SCAPIX_BRIDGE {
 
 class object_base;
@@ -36,7 +34,6 @@ template <> struct is_arithmetic<double> : std::true_type {};
 template <typename T>
 constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
 
-} // namespace bridge
-} // namespace scapix
+} // namespace scapix::bridge
 
 #endif // SCAPIX_BRIDGE_TYPE_TRAITS_H

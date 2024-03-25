@@ -22,9 +22,7 @@
 
 #import <Foundation/Foundation.h>
 
-namespace scapix {
-namespace link {
-namespace objc {
+namespace scapix::link::objc {
 
 template <typename ObjC, typename Cpp, typename = void>
 struct convert;
@@ -532,8 +530,6 @@ struct convert<ObjcStruct, Struct, std::enable_if_t<is_struct_v<Struct>>>
 	}
 };
 
-} // namespace objc
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::objc
 
 #endif // SCAPIX_LINK_OBJC_CONVERT_H

@@ -11,9 +11,7 @@
 #include <scapix/core/remove_function_qualifiers.h>
 #include <scapix/link/js/convert.h>
 
-namespace scapix {
-namespace link {
-namespace js {
+namespace scapix::link::js {
 
 // Clang bug:
 // https://bugs.llvm.org/show_bug.cgi?id=42805
@@ -90,8 +88,6 @@ protected:
 
 };
 
-} // namespace js
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::js
 
 #endif // SCAPIX_LINK_JS_BIND_H

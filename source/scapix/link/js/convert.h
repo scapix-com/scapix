@@ -24,9 +24,7 @@
 #include <scapix/link/js/type_traits.h>
 #include <scapix/link/js/struct.h>
 
-namespace scapix {
-namespace link {
-namespace js {
+namespace scapix::link::js {
 
 //template <typename T>
 //using param = std::conditional_t<std::experimental::is_detected_v<has_convert_cpp_t<emscripten::val, T>>, emscripten::val, T>;
@@ -398,8 +396,6 @@ struct convert<emscripten::val, Struct, std::enable_if_t<is_struct_v<Struct>>>
 
 };
 
-} // namespace js
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::js
 
 #endif // SCAPIX_LINK_JS_CONVERT_H

@@ -7,19 +7,13 @@
 #ifndef SCAPIX_BRIDGE_CPP_OBJECT_H
 #define SCAPIX_BRIDGE_CPP_OBJECT_H
 
-#include <memory>
-
-namespace scapix {
-namespace bridge {
-namespace cpp {
+namespace scapix::bridge::cpp {
 
 template <typename>
 class object
 {
 };
 
-} // namespace cpp
-} // namespace bridge
-} // namespace scapix
+} // namespace scapix::bridge::cpp
 
 #endif // SCAPIX_BRIDGE_CPP_OBJECT_H

@@ -10,13 +10,11 @@
 #define SCAPIX_INCLUDE(a,b,c) <a/b/c>
 #include SCAPIX_INCLUDE(scapix/bridge, SCAPIX_BRIDGE, object.h)
 
-namespace scapix {
-namespace bridge {
+namespace scapix::bridge {
 
 template <typename T>
 using object = SCAPIX_BRIDGE::object<T>;
 
-} // namespace bridge
-} // namespace scapix
+} // namespace scapix::bridge
 
 #endif // SCAPIX_BRIDGE_OBJECT_H

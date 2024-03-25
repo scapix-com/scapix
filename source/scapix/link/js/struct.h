@@ -10,9 +10,7 @@
 #include <type_traits>
 #include <scapix/core/fixed_string.h>
 
-namespace scapix {
-namespace link {
-namespace js {
+namespace scapix::link::js {
 
 template <typename Struct>
 struct struct_;
@@ -33,8 +31,6 @@ struct field
 	static constexpr auto ptr = Ptr;
 };
 
-} // namespace js
-} // namespace link
-} // namespace scapix
+} // namespace scapix::link::js
 
 #endif // SCAPIX_LINK_JS_STRUCT_H
