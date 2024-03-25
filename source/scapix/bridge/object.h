@@ -7,8 +7,8 @@
 #ifndef SCAPIX_BRIDGE_OBJECT_H
 #define SCAPIX_BRIDGE_OBJECT_H
 
-#include <scapix/config.h>
-#include SCAPIX_BRIDGE_INCLUDE(object.h)
+#define SCAPIX_INCLUDE(a,b,c) <a/b/c>
+#include SCAPIX_INCLUDE(scapix/bridge, SCAPIX_BRIDGE, object.h)
 
 namespace scapix {
 namespace bridge {
