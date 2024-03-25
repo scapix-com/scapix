@@ -5,6 +5,8 @@ project(scapix CXX)
 set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python, js, cs")
 set(_SCAPIX_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
 
+message(STATUS "SCAPIX_BRIDGE: ${SCAPIX_BRIDGE}")
+
 # to do: remove duplication
 set(PROJECT_ROOT ${CMAKE_SOURCE_DIR})
 set(bridges
