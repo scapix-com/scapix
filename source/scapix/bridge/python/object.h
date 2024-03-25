@@ -1,25 +1,19 @@
 /*
+	scapix/bridge/python/object.h
 
-scapix/bridge/python/object.h
-
+	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_BRIDGE_PYTHON_OBJECT_H
 #define SCAPIX_BRIDGE_PYTHON_OBJECT_H
 
-#include <memory>
-
-namespace scapix {
-namespace bridge {
-namespace python {
+namespace scapix::bridge::python {
 
 template <typename>
 class object
 {
 };
 
-} // namespace python
-} // namespace bridge
-} // namespace scapix
+} // namespace scapix::bridge::python
 
 #endif // SCAPIX_BRIDGE_PYTHON_OBJECT_H
