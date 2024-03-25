@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.14...3.26)
 project(scapix CXX)
 
 set(SCAPIX_BRIDGE "cpp" CACHE STRING "cpp, java, objc, python, js, cs")
-set(SCAPIX_JAVA_API "jdk-11.0.2" CACHE STRING "subfolder of 'scapix/java_api' folder: jdk-11.0.2, android-28, etc.")
 set(_SCAPIX_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
 
 # to do: remove duplication
