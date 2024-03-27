@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14...3.26)
+cmake_minimum_required(VERSION 3.20...3.27)
 
 project(scapix CXX)
 
@@ -26,6 +26,9 @@ add_library(scapix) # should be INTERFACE
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*)
 source_group(TREE ${_SCAPIX_PATH}/source PREFIX "source" FILES ${sources})
 target_sources(scapix PRIVATE ${sources})
+
+find_package(ScapixCore REQUIRED)
+target_link_libraries(scapix PUBLIC scapix::core)
 
 if(${SCAPIX_BRIDGE} STREQUAL java)
     find_package(ScapixJNI REQUIRED)
@@ -498,14 +501,6 @@ foreach(bridge_header ${bridge_headers})
         VERBATIM
     )
 
-    # GENERATED property implicitly set for OUTPUT arguments of add_custom_command().
-    # Before CMake 3.18 GENERATED property visible only in the directory where it is set.
-    # In CMake 3.18 we can make GENERATED property visible also in target directory.
-    # In CMake 3.20 GENERATED property visible in all directories.
-    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.18)
-        set_source_files_properties(${generated_sources} TARGET_DIRECTORY ${target} PROPERTIES GENERATED TRUE)
-    endif()
-
     list(APPEND all_generated_sources ${generated_sources})
 
 endforeach(bridge_header)
@@ -537,10 +532,6 @@ endfunction(scapix_add_target)
 function(scapix_fix_sources target)
     get_target_property(sources ${target} INTERFACE_SOURCES)
     source_group(TREE ${CMAKE_SOURCE_DIR}/generated PREFIX "generated" FILES ${sources})
-
-    # not needed in CMake 3.20+
-    set_source_files_properties(${sources} PROPERTIES GENERATED TRUE)
-    #set_source_files_properties(${sources} PROPERTIES HEADER_FILE_ONLY TRUE)
 
     get_target_property(sources scapix INTERFACE_SOURCES)
     if(sources)
