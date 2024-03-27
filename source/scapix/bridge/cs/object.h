@@ -9,9 +9,9 @@
 
 #include <memory>
 #include <cassert>
+#include <concepts>
 #include <scapix/link/cs/ref.h>
 #include <scapix/link/cs/convert.h>
-#include <scapix/bridge/type_traits.h>
 
 #ifdef ENABLE_IL2CPP
 #define SCAPIX_NO_RESURRECTION
@@ -131,8 +131,8 @@ object_base* init(link::cs::api::handle_type weak_wrapper, Args&&... args)
 
 namespace link::cs {
 
-template <typename T>
-struct convert_shared<ref<>, T, std::enable_if_t<bridge::is_object<T>>>
+template <std::derived_from<bridge::cs::object_base> T>
+struct convert_shared<ref<>, T>
 {
 	static std::shared_ptr<T> cpp(ref<> v)
 	{
