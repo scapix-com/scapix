@@ -9,9 +9,9 @@
 #include <memory>
 #include <utility>
 #include <cassert>
+#include <concepts>
 #include <scapix/core/type_traits.h>
 #include <scapix/core/remove_function_qualifiers.h>
-#include <scapix/bridge/type_traits.h>
 #include <CoreFoundation/CFBase.h>
 
 namespace scapix {
@@ -118,9 +118,6 @@ inline Wrapper object_base::get_wrapper(std::shared_ptr<object_base> shared_this
 	return (__bridge Wrapper)wrapper;
 }
 
-template <typename T>
-constexpr bool is_wrapper = std::is_convertible_v<BridgeObject*, T>;
-
 template <typename F>
 struct init_impl;
 
@@ -196,22 +193,18 @@ namespace link::objc {
 
 // only used to convert 'this'
 
-template <typename Wrapper, typename Bridge>
-struct convert<Wrapper, Bridge, std::enable_if_t<bridge::is_object<Bridge>>>
+template <std::convertible_to<BridgeObject*> Wrapper, std::derived_from<bridge::objc::object_base> Bridge>
+struct convert<Wrapper, Bridge>
 {
-	static_assert(bridge::objc::is_wrapper<Wrapper>);
-
 	static Bridge& cpp(Wrapper value)
 	{
 		return *static_cast<Bridge*>(value->shared.get());
 	}
 };
 
-template <typename Wrapper, typename Bridge>
-struct convert_shared<Wrapper, Bridge, std::enable_if_t<bridge::is_object<Bridge>>>
+template <std::convertible_to<BridgeObject*> Wrapper, std::derived_from<bridge::objc::object_base> Bridge>
+struct convert_shared<Wrapper, Bridge>
 {
-	static_assert(bridge::objc::is_wrapper<Wrapper>);
-
 	static std::shared_ptr<Bridge> cpp(Wrapper value)
 	{
 		if (!value)
