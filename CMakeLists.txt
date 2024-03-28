@@ -21,18 +21,27 @@ set(bridges
 
 find_package(ScapixBin REQUIRED)
 
-add_library(scapix) # should be INTERFACE
+file(GLOB_RECURSE bridge_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/scapix/bridge/${SCAPIX_BRIDGE}/*.cpp ${_SCAPIX_PATH}/source/scapix/bridge/${SCAPIX_BRIDGE}/*.mm)
+file(GLOB_RECURSE link_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/scapix/link/${SCAPIX_BRIDGE}/*.cpp ${_SCAPIX_PATH}/source/scapix/link/${SCAPIX_BRIDGE}/*.mm)
+
+if(bridge_sources OR link_sources)
+    add_library(scapix)
+    set(scapix_public PUBLIC)
+else()
+    add_library(scapix INTERFACE)
+    set(scapix_public INTERFACE)
+endif()
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*)
 source_group(TREE ${_SCAPIX_PATH}/source PREFIX "source" FILES ${sources})
 target_sources(scapix PRIVATE ${sources})
 
 find_package(ScapixCore REQUIRED)
-target_link_libraries(scapix PUBLIC scapix::core)
+target_link_libraries(scapix ${scapix_public} scapix::core)
 
 if(${SCAPIX_BRIDGE} STREQUAL java)
     find_package(ScapixJNI REQUIRED)
-    target_link_libraries(scapix PUBLIC scapix::jni)
+    target_link_libraries(scapix ${scapix_public} scapix::jni)
     scapix_jni_source_group()
 endif()
 
@@ -56,7 +65,7 @@ if(${SCAPIX_BRIDGE} STREQUAL objc)
     set_source_files_properties(${_SCAPIX_PATH}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_OPTIONS "-fno-objc-arc")
 endif()
 
-target_compile_features(scapix PUBLIC cxx_std_20)
+target_compile_features(scapix ${scapix_public} cxx_std_20)
 
 # scapix looks at COMPILE_FEATURES, not CXX_STANDARD
 
@@ -64,11 +73,11 @@ get_target_property(scapix_cxx_standard scapix CXX_STANDARD)
 get_target_property(scapix_cxx_standard_required scapix CXX_STANDARD_REQUIRED)
 
 if(scapix_cxx_standard AND scapix_cxx_standard_required)
-    target_compile_features(scapix PUBLIC cxx_std_${scapix_cxx_standard})
+    target_compile_features(scapix ${scapix_public} cxx_std_${scapix_cxx_standard})
 endif()
 
-target_include_directories(scapix PUBLIC ${_SCAPIX_PATH}/source)
-target_compile_definitions(scapix PUBLIC SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE})
+target_include_directories(scapix ${scapix_public} ${_SCAPIX_PATH}/source)
+target_compile_definitions(scapix ${scapix_public} SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE})
 
 function(camel_case source target)
     set(up true)
