@@ -500,7 +500,7 @@ foreach(bridge_header ${bridge_headers})
 
     add_custom_command(
         OUTPUT ${generated_sources}
-        COMMAND ${SCAPIX_EXE} -scapix-domain=${domain} ${bridge_header} -- "${scapix_clang_config}"
+        COMMAND ${SCAPIX_EXE} -scapix-domain=${domain} ${bridge_header_absolute} -- "${scapix_clang_config}"
         MAIN_DEPENDENCY ${bridge_header_absolute}
         IMPLICIT_DEPENDS CXX ${bridge_header_absolute}
         DEPENDS ${SCAPIX_EXE}
