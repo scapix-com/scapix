@@ -111,6 +111,11 @@ set(target ${SCAPIX_TARGET})
 set(domain ${SCAPIX_DOMAIN})
 set(bridge_headers ${SCAPIX_HEADERS})
 
+if(SCAPIX_BRIDGE STREQUAL "cpp")
+    target_link_libraries(${target} PUBLIC scapix)
+    return()
+endif()
+
 string(REPLACE "." "/" domain_path ${domain})
 
 foreach(import_target ${SCAPIX_IMPORT_TARGETS})
