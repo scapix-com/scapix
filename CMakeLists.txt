@@ -500,8 +500,8 @@ foreach(bridge_header ${bridge_headers})
 
     list(APPEND scapix_clang_config -xc++)
     list(APPEND scapix_clang_config -std=$<IF:$<IN_LIST:cxx_std_26,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++26,$<IF:$<IN_LIST:cxx_std_23,$<TARGET_PROPERTY:${target},COMPILE_FEATURES>>,c++23,c++20>>)
-    list(APPEND scapix_clang_config $<$<BOOL:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>>:-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>>)
-    list(APPEND scapix_clang_config $<$<BOOL:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>>:-D$<JOIN:$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,;-D>>)
+    list(APPEND scapix_clang_config $<LIST:TRANSFORM,$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,PREPEND,-I>)
+    list(APPEND scapix_clang_config $<LIST:TRANSFORM,$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>,PREPEND,-D>)
 
     add_custom_command(
         OUTPUT ${generated_sources}
