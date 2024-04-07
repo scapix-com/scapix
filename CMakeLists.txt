@@ -39,20 +39,20 @@ target_sources(scapix PRIVATE ${sources})
 find_package(ScapixCore REQUIRED)
 target_link_libraries(scapix ${scapix_public} scapix::core)
 
-if(${SCAPIX_BRIDGE} STREQUAL java)
+if(SCAPIX_BRIDGE STREQUAL "java")
     find_package(ScapixJNI REQUIRED)
     target_link_libraries(scapix ${scapix_public} scapix::jni)
     scapix_jni_source_group()
 endif()
 
-if(${SCAPIX_BRIDGE} STREQUAL cs)
-    file(GLOB_RECURSE interface_sources CONFIGURE_DEPENDS ${_SCAPIX_PATH}/source/*.cs)
+if(SCAPIX_BRIDGE STREQUAL "cs")
+    file(GLOB_RECURSE interface_sources ${_SCAPIX_PATH}/source/*.cs)
     target_sources(scapix INTERFACE ${interface_sources})
 endif()
 
 foreach(bridge ${bridges})
-    if(NOT ${SCAPIX_BRIDGE} STREQUAL ${bridge})
-        file(GLOB_RECURSE bridge_sources CONFIGURE_DEPENDS
+    if(NOT SCAPIX_BRIDGE STREQUAL bridge)
+        file(GLOB_RECURSE bridge_sources
             ${_SCAPIX_PATH}/source/scapix/link/${bridge}/*.*
             ${_SCAPIX_PATH}/source/scapix/bridge/${bridge}/*.*
         )
@@ -60,7 +60,7 @@ foreach(bridge ${bridges})
     endif()
 endforeach()
 
-if(${SCAPIX_BRIDGE} STREQUAL objc)
+if(SCAPIX_BRIDGE STREQUAL "objc")
     target_compile_options(scapix PUBLIC "-fobjc-arc")
     set_source_files_properties(${_SCAPIX_PATH}/source/scapix/bridge/objc/BridgeObject.mm PROPERTIES COMPILE_OPTIONS "-fno-objc-arc")
 endif()
@@ -166,14 +166,14 @@ endif()
 get_target_property(scapix_position_independent_code ${target} POSITION_INDEPENDENT_CODE)
 set_target_properties(scapix PROPERTIES POSITION_INDEPENDENT_CODE ${scapix_position_independent_code})
 
-if(${SCAPIX_BRIDGE} STREQUAL java)
+if(SCAPIX_BRIDGE STREQUAL "java")
     get_target_property(scapix_jni_dir scapix::jni SOURCE_DIR)
     file(COPY "${scapix_jni_dir}/source/com" DESTINATION "${PROJECT_ROOT}/generated/bridge/java")
     # This only works if target is defined in the same directory which calls scapix_bridge():
     scapix_jni_source_group()
 endif()
 
-if(${SCAPIX_BRIDGE} STREQUAL python)
+if(SCAPIX_BRIDGE STREQUAL "python")
     set(PYBIND11_FINDPYTHON ON)
     find_package(Pybind11 REQUIRED)
     target_link_libraries(${target} PRIVATE pybind11::module)
@@ -188,7 +188,7 @@ if(interface_sources)
 endif()
 
 # JVM on macOS looks for native libs with .dylib extension
-if(APPLE AND ${SCAPIX_BRIDGE} STREQUAL java)
+if(APPLE AND SCAPIX_BRIDGE STREQUAL "java")
     set_target_properties(${target} PROPERTIES SUFFIX ".dylib")
 endif()
 
@@ -412,7 +412,7 @@ set(all_generated_sources)
 
 foreach(bridge_header ${bridge_headers})
 
-    if(IS_ABSOLUTE ${bridge_header})
+    if(IS_ABSOLUTE bridge_header)
         file(RELATIVE_PATH bridge_header_relative ${PROJECT_ROOT} ${bridge_header})
         set(bridge_header_absolute ${bridge_header})
     else()
@@ -533,7 +533,7 @@ function(scapix_add_target target domain)
         target_link_options(${target} PRIVATE --bind)
     #   target_link_options(${target} PRIVATE --emrun)
     else()
-        if(${SCAPIX_BRIDGE} STREQUAL java OR ${SCAPIX_BRIDGE} STREQUAL python OR ${SCAPIX_BRIDGE} STREQUAL cs)
+        if(SCAPIX_BRIDGE STREQUAL "java" OR SCAPIX_BRIDGE STREQUAL "python" OR SCAPIX_BRIDGE STREQUAL "cs")
             set(LIBRARY_TYPE SHARED)
         endif()
         add_library(${target} ${LIBRARY_TYPE})
