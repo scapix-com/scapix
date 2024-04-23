@@ -13,26 +13,11 @@
 
 namespace scapix::link::js {
 
-// Clang bug:
-// https://bugs.llvm.org/show_bug.cgi?id=42805
-
-//template <typename Class, typename... Args>
-//std::shared_ptr<Class> constructor(param_t<Args>... args)
-//{
-//	return std::make_shared<Class>(convert_cpp<Args>(std::forward<param_t<Args>>(args))...);
-//}
-
 template <typename Class, typename... Args>
-struct constructor_impl
+std::shared_ptr<Class> constructor(param_t<Args>... args)
 {
-	static std::shared_ptr<Class> func(param_t<Args>... args)
-	{
-		return std::make_shared<Class>(convert_cpp<Args>(std::forward<param_t<Args>>(args))...);
-	}
-};
-
-template <typename Class, typename... Args>
-constexpr auto constructor = &constructor_impl<Class, Args...>::func;
+	return std::make_shared<Class>(convert_cpp<Args>(std::forward<param_t<Args>>(args))...);
+}
 
 template <typename Signature, Signature Function>
 struct function_impl
