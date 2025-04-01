@@ -79,6 +79,17 @@ endif()
 target_include_directories(scapix ${scapix_public} ${_SCAPIX_PATH}/source)
 target_compile_definitions(scapix ${scapix_public} SCAPIX_BRIDGE=${SCAPIX_BRIDGE} SCAPIX_BRIDGE_${SCAPIX_BRIDGE})
 
+function(scapix_resolve_apple_sdk_path sdk_name ret)
+  execute_process(
+    COMMAND xcrun -sdk ${sdk_name} --show-sdk-path
+    OUTPUT_VARIABLE _stdout
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_VARIABLE _stderr
+    RESULT_VARIABLE _failed
+  )
+  set(${ret} "${_stdout}" PARENT_SCOPE)
+endfunction()
+
 function(camel_case source target)
     set(up true)
     set(res "")
@@ -491,7 +502,12 @@ foreach(bridge_header ${bridge_headers})
         if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
             list(APPEND scapix_clang_config -arch arm64)
         endif()
-        list(APPEND scapix_clang_config --sysroot ${CMAKE_OSX_SYSROOT})
+        if(CMAKE_OSX_SYSROOT)
+          set(apple_sysroot ${CMAKE_OSX_SYSROOT})
+        else()
+          scapix_resolve_apple_sdk_path(macosx apple_sysroot)
+        endif()
+        list(APPEND scapix_clang_config --sysroot ${apple_sysroot})
     elseif(EMSCRIPTEN)
         list(APPEND scapix_clang_config -DEMSCRIPTEN -target wasm32-unknown-emscripten --sysroot ${EMSCRIPTEN_SYSROOT} -iwithsysroot /include/compat)
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_TARGET)
