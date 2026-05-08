@@ -14,7 +14,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <functional>
-#include <experimental/type_traits>
 #include <scapix/core/type_traits.h>
 #include <scapix/core/meta/for_each.h>
 #include <scapix/core/meta/iota.h>
@@ -38,12 +37,6 @@ decltype(auto) convert_cpp(ObjC&& objc)
 {
 	return convert<std::remove_cvref_t<ObjC>, std::remove_cvref_t<Cpp>>::cpp(std::forward<ObjC>(objc));
 }
-
-template<typename ObjC, typename Cpp>
-using has_convert_objc_t = decltype(std::declval<ObjC>() = convert<std::remove_cvref_t<ObjC>, std::remove_cvref_t<Cpp>>::objc(std::declval<Cpp>()));
-
-template<typename ObjC, typename Cpp>
-using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<std::remove_cvref_t<ObjC>, std::remove_cvref_t<Cpp>>::cpp(std::declval<ObjC>()));
 
 template <typename ObjC, typename Cpp>
 struct convert<ObjC, Cpp, std::enable_if_t<std::is_arithmetic_v<ObjC> && std::is_arithmetic_v<Cpp>>>
@@ -94,15 +87,19 @@ struct convert<ObjC, Cpp, std::enable_if_t<std::is_enum_v<Cpp>>>
 template <typename ObjC, typename Cpp, typename = void>
 struct convert_shared;
 
-template<typename ObjC, typename Cpp>
-using has_convert_shared_t = decltype(convert_shared<ObjC, Cpp>::objc(std::declval<std::shared_ptr<Cpp>>()));
+template <typename ObjC, typename Cpp>
+concept has_convert_shared = requires(ObjC objc, std::shared_ptr<Cpp> cpp)
+{
+	objc = convert_shared<ObjC, Cpp>::objc(cpp);
+	cpp = convert_shared<ObjC, Cpp>::cpp(objc);
+};
 
 template <typename ObjC, typename T>
 struct convert<ObjC, std::shared_ptr<T>>
 {
 	static std::shared_ptr<T> cpp(ObjC value)
 	{
-		if constexpr (std::experimental::is_detected_v<has_convert_shared_t, ObjC, T>)
+		if constexpr (has_convert_shared<ObjC, T>)
 			return convert_shared<ObjC, T>::cpp(value);
 		else
 			return std::make_shared<T>(convert_cpp<T>(value));
@@ -110,7 +107,7 @@ struct convert<ObjC, std::shared_ptr<T>>
 
 	static ObjC objc(std::shared_ptr<T> value)
 	{
-		if constexpr (std::experimental::is_detected_v<has_convert_shared_t, ObjC, T>)
+		if constexpr (has_convert_shared<ObjC, T>)
 			return convert_shared<ObjC, T>::objc(value);
 		else
 			return convert_objc<ObjC>(*value);
