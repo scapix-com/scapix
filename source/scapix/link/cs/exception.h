@@ -10,6 +10,7 @@
 #include <string>
 #include <exception>
 #include <scapix/link/cs/api.h>
+#include <scapix/link/cs/ref.h>
 
 namespace scapix::link::cs {
 
@@ -17,21 +18,11 @@ class exception : public std::exception
 {
 public:
 
-	exception(const exception&) = delete;
-	exception& operator = (const exception&) = delete;
-
-	~exception()
-	{
-		api::funcs.release_ref(cs_exception);
-	}
-
 	virtual const char* what() const noexcept override { return message().c_str(); }
 
 	api::handle_type release()
 	{
-		auto temp = cs_exception;
-		cs_exception = nullptr;
-		return temp;
+		return cs_exception.release();
 	}
 
 	const std::string& message() const
@@ -46,17 +37,16 @@ private:
 
 	friend void api::throw_exception();
 
-	exception(api::handle_type e) : cs_exception(std::move(e)) {}
+	exception(api::handle_type e) : cs_exception(e) {}
 
 private:
 
 	void get_message() const
 	{
-		api::funcs.get_exception_message(cs_exception, &msg);
+		api::funcs.get_exception_message(cs_exception.get(), &msg);
 	}
 
-	// to do: use ref<>
-	api::handle_type cs_exception;
+	ref<> cs_exception;
 	mutable std::string msg;
 
 };
