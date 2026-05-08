@@ -16,7 +16,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <functional>
-#include <experimental/type_traits>
 #include <emscripten/val.h>
 #include <scapix/core/type_traits.h>
 #include <scapix/core/fixed_string.h>
@@ -25,9 +24,6 @@
 #include <scapix/link/js/struct.h>
 
 namespace scapix::link::js {
-
-//template <typename T>
-//using param = std::conditional_t<std::experimental::is_detected_v<has_convert_cpp_t<emscripten::val, T>>, emscripten::val, T>;
 
 template <typename T>
 struct param
@@ -58,12 +54,6 @@ decltype(auto) convert_cpp(Js&& js)
 {
 	return convert<std::remove_cvref_t<Js>, std::remove_cvref_t<Cpp>>::cpp(std::forward<Js>(js));
 }
-
-template<typename Js, typename Cpp>
-using has_convert_js_t = decltype(std::declval<Js>() = convert<std::remove_cvref_t<Js>, std::remove_cvref_t<Cpp>>::js(std::declval<Cpp>()));
-
-template<typename Js, typename Cpp>
-using has_convert_cpp_t = decltype(std::declval<Cpp>() = convert<std::remove_cvref_t<Js>, std::remove_cvref_t<Cpp>>::cpp(std::declval<Js>()));
 
 template <typename T>
 struct convert<emscripten::val, T, std::enable_if_t<is_native_v<T>>>
