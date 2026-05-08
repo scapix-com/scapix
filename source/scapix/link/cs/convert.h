@@ -15,7 +15,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <functional>
-#include <experimental/type_traits>
 #include <scapix/core/tuple.h>
 #include <scapix/core/meta/for_each.h>
 #include <scapix/core/meta/transform.h>
@@ -74,14 +73,18 @@ template <typename Cs, typename Cpp, typename = void>
 struct convert_shared;
 
 template <typename Cpp>
-using has_convert_shared_t = decltype(convert_shared<ref<>, Cpp>::cs(std::declval<std::shared_ptr<Cpp>>()));
+concept has_convert_shared = requires(ref<> cs, std::shared_ptr<Cpp> cpp)
+{
+	cs = convert_shared<ref<>, Cpp>::cs(cpp);
+	cpp = convert_shared<ref<>, Cpp>::cpp(cs);
+};
 
 template <typename T>
 struct convert<ref<>, std::shared_ptr<T>>
 {
 	static std::shared_ptr<T> cpp(ref<>&& value)
 	{
-		if constexpr (std::experimental::is_detected_v<has_convert_shared_t, T>)
+		if constexpr (has_convert_shared<T>)
 			return convert_shared<ref<>, T>::cpp(value);
 		else
 			return std::make_shared<T>(convert_cpp<T>(value));
@@ -89,7 +92,7 @@ struct convert<ref<>, std::shared_ptr<T>>
 
 	static ref<> cs(std::shared_ptr<T> value)
 	{
-		if constexpr (std::experimental::is_detected_v<has_convert_shared_t, T>)
+		if constexpr (has_convert_shared<T>)
 			return convert_shared<ref<>, T>::cs(value);
 		else
 			return convert_cs<ref<>>(*value);
