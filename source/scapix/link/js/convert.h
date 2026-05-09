@@ -364,7 +364,7 @@ struct convert<emscripten::val, Struct, std::enable_if_t<is_struct_v<Struct>>>
 
 		meta::for_each<fields>([&]<typename Field>()
 		{
-			obj.set(Field::name, convert_js<emscripten::val>(value.*Field::ptr));
+			obj.set((const char*)Field::name, convert_js<emscripten::val>(value.*Field::ptr));
 		});
 
 		return obj;
@@ -376,7 +376,7 @@ struct convert<emscripten::val, Struct, std::enable_if_t<is_struct_v<Struct>>>
 
 		meta::for_each<fields>([&]<typename Field>()
 		{
-			obj.*Field::ptr = convert_cpp<decltype(obj.*Field::ptr)>(value[Field::name]);
+			obj.*Field::ptr = convert_cpp<decltype(obj.*Field::ptr)>(value[(const char*)Field::name]);
 		});
 
 		return obj;
