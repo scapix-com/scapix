@@ -7,12 +7,12 @@
 #ifndef SCAPIX_BRIDGE_JAVA_OBJECT_H
 #define SCAPIX_BRIDGE_JAVA_OBJECT_H
 
-#include <scapix/jni/com/scapix/bridge.h>
+#include <scapix/jni/bridge/bridge.h>
 
 namespace scapix::bridge::java {
 
 template <typename T>
-using object = jni::com::scapix::cpp::object<T>;
+using object = jni::bridge::cpp::object<T>;
 
 } // namespace scapix::bridge::java
 

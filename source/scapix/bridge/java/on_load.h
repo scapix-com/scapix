@@ -7,33 +7,8 @@
 #ifndef SCAPIX_BRIDGE_JAVA_ON_LOAD_H
 #define SCAPIX_BRIDGE_JAVA_ON_LOAD_H
 
-#include <jni.h>
+#pragma message("warning: header <scapix/bridge/java/on_load.h> is deprecated, #include <scapix/jni/bridge/on_load.h> instead")
 
-/*
-
-By default Scapix generates JNI_OnLoad() function for target library.
-You can also use your own JNI_OnLoad(), which then needs to call scapix_JNI_OnLoad().
-
-```CMake
-target_compile_definitions(scapix PUBLIC SCAPIX_CUSTOM_JNI_ONLOAD)
-```
-
-```C
-#include <scapix/bridge/java/on_load.h>
-
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
-{
-	// ... your additional JNI init code ...
-
-	return scapix_JNI_OnLoad(vm, reserved);
-}
-```
-
-*/
-
-#ifdef __cplusplus
-extern "C"
-#endif
-jint scapix_JNI_OnLoad(JavaVM* vm, void* reserved);
+#include <scapix/jni/bridge/on_load.h>
 
 #endif // SCAPIX_BRIDGE_JAVA_ON_LOAD_H
