@@ -1,7 +1,7 @@
 /*
 	scapix/bridge/object.h
 
-	Copyright (c) 2019-2024 Boris Rasin (boris@scapix.com)
+	Copyright (c) 2019-2026 Boris Rasin (boris@scapix.com)
 */
 
 #ifndef SCAPIX_BRIDGE_OBJECT_H
